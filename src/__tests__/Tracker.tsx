@@ -1,10 +1,11 @@
 import React from 'react';
+import axios from 'axios';
+import moment from 'moment';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
 import Tracker from '../Tracker/Tracker';
-
-jest.useFakeTimers();
+import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../Tracker/constants';
 
 let container: HTMLDivElement;
 beforeEach(() => {
@@ -17,27 +18,49 @@ afterEach(() => {
   container.remove();
 });
 
-it('manages time track by clicks', (): void => {
-  act(() => render(<Tracker />, container));
-  const timerDisplay: HTMLSpanElement | null = document.querySelector(
-    '[data-testid=timer-content]'
+it('alternates the icon on click', (): void => {
+  act(() => {
+    render(<Tracker />, container);
+  });
+  const buttonIcon: HTMLImageElement | null = document.querySelector('[data-testid=timer-icon]');
+  const timerButton: HTMLButtonElement | null = document.querySelector(
+    '[data-testid=timer-button]'
   );
+
+  const clickOnTimerButton = (): void => {
+    act(() => {
+      if (timerButton) fireEvent(timerButton, new MouseEvent('click', { bubbles: true }));
+    });
+  };
+  clickOnTimerButton();
+  expect(buttonIcon?.src).toBe(`http://localhost${STOP_BUTTON_ICON}`);
+  clickOnTimerButton();
+  expect(buttonIcon?.src).toBe(`http://localhost${START_BUTTON_ICON}`);
+});
+
+it('do a POST request on backend when click twice', (): void => {
+  act(() => {
+    render(<Tracker />, container);
+  });
+
+  const mockedStartTime: moment.Moment = moment();
+  const mockedEndTime: moment.Moment = mockedStartTime.clone().add(5, 'seconds');
+
+  const POSTCallerSpy = jest.spyOn(axios, 'post');
   const timerButton: HTMLButtonElement | null = document.querySelector(
     '[data-testid=timer-button]'
   );
 
   act(() => {
-    if (timerButton !== null) {
+    if (timerButton) {
       fireEvent(timerButton, new MouseEvent('click', { bubbles: true }));
-      jest.advanceTimersByTime(5000);
+      fireEvent(timerButton, new MouseEvent('click', { bubbles: true }));
     }
   });
 
-  expect(timerDisplay?.innerHTML).toBe('00:05');
+  expect(POSTCallerSpy).toBeCalledTimes(1);
+  expect(POSTCallerSpy.mock.calls[0]).toBe(mockedStartTime);
+  expect(POSTCallerSpy.mock.calls[1]).toBe(mockedEndTime);
 
-  act(() => {
-    if (timerButton) fireEvent(timerButton, new MouseEvent('click', { bubbles: true }));
-  });
-
-  expect(timerDisplay?.innerHTML).toBe('00:00');
+  POSTCallerSpy.mockRestore();
 });
