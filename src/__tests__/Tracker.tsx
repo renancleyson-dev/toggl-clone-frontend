@@ -18,6 +18,12 @@ afterEach(() => {
   container.remove();
 });
 
+it('renders without crashing', (): void => {
+  act(() => {
+    render(<Tracker />, container);
+  });
+});
+
 it('alternates the icon on click', (): void => {
   act(() => {
     render(<Tracker />, container);
@@ -38,7 +44,7 @@ it('alternates the icon on click', (): void => {
   expect(buttonIcon?.src).toBe(`http://localhost${START_BUTTON_ICON}`);
 });
 
-it('do a POST request on backend when click twice', (): void => {
+it('do a POST request to store a time record when click twice', (): void => {
   act(() => {
     render(<Tracker />, container);
   });
@@ -59,8 +65,10 @@ it('do a POST request on backend when click twice', (): void => {
   });
 
   expect(POSTCallerSpy).toBeCalledTimes(1);
-  expect(POSTCallerSpy.mock.calls[0]).toBe(mockedStartTime);
-  expect(POSTCallerSpy.mock.calls[1]).toBe(mockedEndTime);
+  expect(POSTCallerSpy.mock.calls[1]).toBe({
+    startTime: mockedStartTime,
+    endTime: mockedEndTime,
+  });
 
   POSTCallerSpy.mockRestore();
 });
