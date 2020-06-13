@@ -23,7 +23,7 @@ it('renders without crashing', (): void => {
   });
 });
 
-it('manages time track by clicks', (): void => {
+it('show the current Duration relative to a Moment on H:MM:SS format', (): void => {
   const startTime = moment().subtract(1, 'hours').subtract(25, 'minutes').subtract(5, 'seconds');
   act(() => {
     render(<Timer isTracking startTime={startTime} />, container);
@@ -38,4 +38,23 @@ it('manages time track by clicks', (): void => {
   });
 
   expect(timerDisplay?.innerHTML).toBe('1:25:05');
+});
+
+it('resets duration when tracking stops', (): void => {
+  const startTime = moment().subtract(1, 'hours');
+  const isTracking = false;
+
+  act(() => {
+    render(<Timer isTracking={isTracking} startTime={startTime} />, container);
+  });
+
+  const timerDisplay: HTMLSpanElement | null = document.querySelector(
+    '[data-testid=timer-content]'
+  );
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  expect(timerDisplay?.innerHTML).toBe('00:00');
 });
