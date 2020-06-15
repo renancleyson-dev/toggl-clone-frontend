@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import Timer from '../Tracker/Timer';
+import Timer from '../../Tracker/Timer';
 
 jest.useFakeTimers();
 
@@ -48,9 +48,7 @@ it('resets duration when tracking stops', (): void => {
     render(<Timer isTracking={isTracking} startTime={startTime} />, container);
   });
 
-  const timerDisplay: HTMLSpanElement | null = document.querySelector(
-    '[data-testid=timer-content]'
-  );
+  const timerDisplay: HTMLDivElement | null = document.querySelector('[data-testid=timer-content]');
 
   act(() => {
     jest.advanceTimersByTime(1000);
