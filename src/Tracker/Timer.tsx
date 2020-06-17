@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import format from '../helpers/formatDuration';
+import { TrackContext } from '../Contexts/TrackContext';
 
-interface Props {
-  isTracking: boolean;
-  startTime: moment.Moment | undefined;
-}
-
-// UI to show and control the time passed along the tracking
-export default function Timer({ isTracking, startTime }: Props) {
+// UI to show duration of the tracking
+export default function Timer() {
   const [duration, setDuration] = useState<moment.Duration>(moment.duration(0));
-
+  const { startTime, isTracking } = useContext(TrackContext);
   useEffect(() => {
     let timer: number;
     const handleOnTracking = () => {
@@ -27,5 +23,5 @@ export default function Timer({ isTracking, startTime }: Props) {
     return () => clearInterval(timer);
   }, [isTracking, startTime]);
 
-  return <span data-testid="timer-content">{format(duration)}</span>;
+  return <div data-testid="timer-content">{format(duration)}</div>;
 }
