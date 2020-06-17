@@ -1,9 +1,10 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { fireEvent } from '@testing-library/react';
+import moment from 'moment';
+import MockedTrackContext from '../../mocks/MockedTrackContext';
+import MockedUserContext from '../../mocks/MockedUserContext';
 import Tracker from '../../Tracker/Tracker';
-import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../../helpers/constants';
 
 let container: HTMLDivElement;
 beforeEach(() => {
@@ -16,30 +17,17 @@ afterEach(() => {
   container.remove();
 });
 
+const mockedUser = { id: 1, name: 'renan', email: 'a@gmail.com' };
+
 it('renders without crashing', (): void => {
   act(() => {
-    render(<Tracker />, container);
+    render(
+      <MockedUserContext user={mockedUser}>
+        <MockedTrackContext isTracking={false} startTime={moment()}>
+          <Tracker />
+        </MockedTrackContext>
+      </MockedUserContext>,
+      container
+    );
   });
-});
-
-it('alternates the icon on click', (): void => {
-  act(() => {
-    render(<Tracker />, container);
-  });
-  const buttonIcon: HTMLImageElement | null = document.querySelector('[data-testid=timer-icon]');
-  const timerButton: HTMLButtonElement | null = document.querySelector(
-    '[data-testid=timer-button]'
-  );
-
-  const clickOnTimerButton = (): void => {
-    act(() => {
-      if (timerButton) fireEvent(timerButton, new MouseEvent('click', { bubbles: true }));
-    });
-  };
-  clickOnTimerButton();
-  expect(buttonIcon?.src).toBe(`http://localhost${STOP_BUTTON_ICON}`);
-  expect(buttonIcon?.alt).toBe('Stop Tracking');
-  clickOnTimerButton();
-  expect(buttonIcon?.src).toBe(`http://localhost${START_BUTTON_ICON}`);
-  expect(buttonIcon?.alt).toBe('Start Tracking');
 });

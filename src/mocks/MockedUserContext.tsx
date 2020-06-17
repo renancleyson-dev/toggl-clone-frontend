@@ -1,16 +1,30 @@
 import React, { useContext, useEffect } from 'react';
 import UserProvider, { UserContext } from '../Contexts/UserContext';
 
-const SetMockUser = ({ children }: { children: React.ReactNode }) => {
+const mockedUser = {
+  id: 1,
+  name: 'renan',
+  email: 'renancleyson.f@gmail.com',
+};
+
+interface Props {
+  user: { id: number; name: string; email: string };
+  children: React.ReactNode;
+}
+
+const SetMockUser = ({ user, children }: Props) => {
   const { setUser } = useContext(UserContext);
-  useEffect(() => setUser({ id: '1', name: '', email: '' }), [setUser]);
+  useEffect(() => setUser(user), [setUser, user]);
   return <>{children}</>;
 };
 
-const MockedUserContext = ({ children }: { children: React.ReactNode }) => (
+const MockedUserContext = ({ user, children }: Props) => (
   <UserProvider>
-    <SetMockUser>{children}</SetMockUser>
+    <SetMockUser user={user}>{children}</SetMockUser>
   </UserProvider>
 );
+MockedUserContext.defaultProps = {
+  user: mockedUser,
+};
 
 export default MockedUserContext;

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import History from '../../History/History';
+import MockedUserContext from '../../mocks/MockedUserContext';
 
 let container: HTMLDivElement;
 beforeEach(() => {
@@ -16,6 +17,11 @@ afterEach(() => {
 
 it('renders without crashing', (): void => {
   act(() => {
-    render(<History />, container);
+    render(
+      <MockedUserContext>
+        <History />
+      </MockedUserContext>,
+      container
+    );
   });
 });
