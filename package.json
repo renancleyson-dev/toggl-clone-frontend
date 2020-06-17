@@ -26,26 +26,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "plugins": [
-      "prettier"
-    ],
-    "extends": [
-      "react-app",
-      "eslint-config-airbnb",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error",
-      "import/no-unresolved": "off",
-      "import/extensions": "off",
-      
-      "react/jsx-filename-extension": [
-        2,
-        { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
-      ]
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",
