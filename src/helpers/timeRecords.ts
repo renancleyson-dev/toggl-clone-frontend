@@ -64,3 +64,9 @@ export const deleteTimeRecord = (
     .delete(`users/${userId}/time_records/${timeRecordId}`)
     .then(() => {})
     .catch((error) => error);
+
+export const fetchCategories = (userId: number): Promise<ITimeRecord> =>
+  axios
+    .get(`users/${userId}/categories`)
+    .then((response) => response.data)
+    .catch((error) => error);
