@@ -46,5 +46,5 @@ it('shows categories on a select element', (): void => {
   const categoriesOnOptions = options.map((option) => option.value);
 
   expect(categoriesOnOptions).toStrictEqual(categories);
-  expect(selectCategory?.value).toBe(categories[0]);
+  expect(selectCategory).toHaveValue(categories[0]);
 });

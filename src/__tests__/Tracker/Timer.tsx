@@ -21,7 +21,7 @@ afterEach(() => {
 it('renders without crashing', (): void => {
   act(() => {
     render(
-      <MockedTrackContext isTracking startTime={moment()}>
+      <MockedTrackContext>
         <Timer />
       </MockedTrackContext>,
       container
@@ -52,7 +52,7 @@ it('show the current Duration relative to a Moment on H:MM:SS format', (): void 
     jest.advanceTimersByTime(1000);
   });
 
-  expect(timerDisplay?.innerHTML).toBe('1:25:05');
+  expect(timerDisplay).toContainHTML('1:25:05');
 });
 
 it('resets duration when tracking stops', (): void => {
@@ -76,5 +76,5 @@ it('resets duration when tracking stops', (): void => {
     jest.advanceTimersByTime(1000);
   });
 
-  expect(timerDisplay?.innerHTML).toBe('00:00');
+  expect(timerDisplay).toContainHTML('00:00');
 });

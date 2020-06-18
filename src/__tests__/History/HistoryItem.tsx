@@ -66,9 +66,9 @@ it('shows a time record', (): void => {
     '[data-testid=time-record-label]'
   );
 
-  expect(timer?.innerHTML).toBe('00:05');
-  expect(label?.value).toBe(timeRecord.label);
-  expect(category?.value).toBe(timeRecord.category);
+  expect(timer).toContainHTML('00:05');
+  expect(label).toHaveValue(timeRecord.label);
+  expect(category).toHaveValue(timeRecord.category);
 });
 
 it('starts a new time tracking', (): void => {});

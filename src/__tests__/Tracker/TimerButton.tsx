@@ -38,7 +38,7 @@ it('alternates the icon on click', (): void => {
   act(() => {
     render(
       <MockedUserContext>
-        <MockedTrackContext isTracking={false} startTime={moment()}>
+        <MockedTrackContext>
           <TimerButton />
         </MockedTrackContext>
       </MockedUserContext>,
@@ -59,9 +59,9 @@ it('alternates the icon on click', (): void => {
   };
 
   clickOnTimerButton();
-  expect(buttonIcon?.src).toBe(`http://localhost${STOP_BUTTON_ICON}`);
-  expect(buttonIcon?.alt).toBe('Stop Tracking');
+  expect(buttonIcon).toHaveAttribute('src', STOP_BUTTON_ICON);
+  expect(buttonIcon).toHaveAttribute('alt', 'Stop Tracking');
   clickOnTimerButton();
-  expect(buttonIcon?.src).toBe(`http://localhost${START_BUTTON_ICON}`);
-  expect(buttonIcon?.alt).toBe('Start Tracking');
+  expect(buttonIcon).toHaveAttribute('src', START_BUTTON_ICON);
+  expect(buttonIcon).toHaveAttribute('alt', 'Start Tracking');
 });
