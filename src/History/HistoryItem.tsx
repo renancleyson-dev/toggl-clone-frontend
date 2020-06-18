@@ -4,18 +4,18 @@ import styled from 'styled-components';
 import { updateTimeRecord } from '../helpers/timeRecords';
 import formatDuration from '../helpers/formatDuration';
 import { UserContext } from '../Contexts/UserContext';
+import Categories from '../Components/Categories';
+import EditTimeRecord from './EditTimeRecord';
 
 const TimeRecordWrapper = styled.div``;
 const Label = styled.input``;
-const Category = styled.select``;
 const DurationDisplay = styled.div``;
 
 interface Props {
   startTime: moment.Moment;
   endTime: moment.Moment;
-  label: string;
-  actualCategory: string;
-  categories?: string[];
+  recordLabel: string;
+  recordCategory?: string;
   id: number;
 }
 
@@ -23,48 +23,40 @@ interface Props {
 export default function HistoryItem({
   startTime,
   endTime,
-  label,
-  actualCategory,
-  categories,
+  recordLabel,
+  recordCategory,
   id,
 }: Props) {
-  const [labelText, setLabelText] = useState<string>('');
-  const [categoryText, setCategoryText] = useState<string>('');
+  const [label, setLabel] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
   const { user } = useContext(UserContext);
   const duration = moment.duration(endTime.diff(startTime));
-  const categoryOptions =
-    categories &&
-    categories.map((category) => (
-      <option key={category} value={category}>
-        {category}
-      </option>
-    ));
+  const onChangeCategories = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(event.target.value);
+    updateTimeRecord(user.id, id, { category: event.target.value });
+  };
 
   useEffect(() => {
-    setLabelText(label);
-    setCategoryText(actualCategory);
-  }, [label, actualCategory]);
+    setLabel(recordLabel);
+    setCategory(recordCategory || '');
+  }, [recordLabel, recordCategory]);
 
   return (
     <TimeRecordWrapper>
       <Label
         data-testid="time-record-label"
-        value={labelText}
-        onChange={(e) => setLabelText(e.target.value)}
-        onBlur={() => updateTimeRecord(user.id, id, { label: labelText })}
+        value={label}
+        onChange={(e) => setLabel(e.target.value)}
+        onBlur={() => updateTimeRecord(user.id, id, { label })}
       />
-      <Category
-        data-testid="time-record-category"
-        value={categoryText}
-        onChange={(e) => setCategoryText(e.target.value)}
-        onBlur={() => updateTimeRecord(user.id, id, { category: categoryText })}
-      >
-        <option value={actualCategory}>{actualCategory}</option>
-        {categoryOptions}
-      </Category>
+      <Categories category={category} onChange={onChangeCategories} />
       <DurationDisplay data-testid="time-record-duration">
         {formatDuration(duration)}
       </DurationDisplay>
+      <EditTimeRecord />
     </TimeRecordWrapper>
   );
 }
+HistoryItem.defaultProps = {
+  recordCategory: '',
+};

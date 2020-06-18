@@ -30,9 +30,9 @@ it('renders without crashing', (): void => {
         <HistoryItem
           startTime={timeRecord.startTime}
           endTime={timeRecord.endTime}
-          actualCategory={timeRecord.category}
+          recordCategory={timeRecord.category}
           id={1}
-          label={timeRecord.label}
+          recordLabel={timeRecord.label}
         />
       </MockedTrackContext>,
       container
@@ -43,12 +43,12 @@ it('renders without crashing', (): void => {
 it('shows a time record', (): void => {
   act(() => {
     render(
-      <MockedTrackContext>
+      <MockedTrackContext categories={[timeRecord.category]}>
         <HistoryItem
           startTime={timeRecord.startTime}
           endTime={timeRecord.endTime}
-          actualCategory={timeRecord.category}
-          label={timeRecord.label}
+          recordCategory={timeRecord.category}
+          recordLabel={timeRecord.label}
           id={1}
         />
       </MockedTrackContext>,
