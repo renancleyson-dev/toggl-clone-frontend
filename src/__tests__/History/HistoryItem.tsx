@@ -30,7 +30,8 @@ it('renders without crashing', (): void => {
         <HistoryItem
           startTime={timeRecord.startTime}
           endTime={timeRecord.endTime}
-          category={timeRecord.category}
+          actualCategory={timeRecord.category}
+          id={1}
           label={timeRecord.label}
         />
       </MockedTrackContext>,
@@ -46,8 +47,9 @@ it('shows a time record', (): void => {
         <HistoryItem
           startTime={timeRecord.startTime}
           endTime={timeRecord.endTime}
-          category={timeRecord.category}
+          actualCategory={timeRecord.category}
           label={timeRecord.label}
+          id={1}
         />
       </MockedTrackContext>,
       container
@@ -65,8 +67,8 @@ it('shows a time record', (): void => {
   );
 
   expect(timer?.innerHTML).toBe('00:05');
-  expect(label?.innerHTML).toBe(timeRecord.label);
-  expect(category?.innerHTML).toBe(timeRecord.category);
+  expect(label?.value).toBe(timeRecord.label);
+  expect(category?.value).toBe(timeRecord.category);
 });
 
 it('starts a new time tracking', (): void => {});

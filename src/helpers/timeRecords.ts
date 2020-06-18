@@ -23,29 +23,43 @@ export const fetchTimeRecord = (
 export const createTimeRecord = (
   startTime: string,
   endTime: string,
-  userId: number
+  userId: number,
+  label?: string,
+  category?: string
 ): Promise<void | Error> =>
   axios
     .post(`users/${userId}/time_records`, {
-      params: { start_time: startTime, end_time: endTime },
+      data: { start_time: startTime, end_time: endTime, label, category },
     })
     .then(() => {})
     .catch((error) => error);
 
 export const updateTimeRecord = (
-  startTime: string,
-  endTime: string,
   userId: number,
-  timeRecordId: number
+  timeRecordId: number,
+  data: {
+    startTime?: string;
+    endTime?: string;
+    label?: string;
+    category?: string;
+  }
 ): Promise<void | Error> =>
   axios
     .put(`users/${userId}/time_records/${timeRecordId}`, {
-      params: { start_time: startTime, end_time: endTime },
+      data: {
+        start_time: data.startTime,
+        end_time: data.endTime,
+        label: data.label,
+        category: data.category,
+      },
     })
     .then(() => {})
     .catch((error) => error);
 
-export const deleteTimeRecord = (userId: number, timeRecordId: number): Promise<void | Error> =>
+export const deleteTimeRecord = (
+  userId: number,
+  timeRecordId: number
+): Promise<void | Error> =>
   axios
     .delete(`users/${userId}/time_records/${timeRecordId}`)
     .then(() => {})
