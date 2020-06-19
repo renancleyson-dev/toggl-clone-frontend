@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
+import { fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import EditTimeRecord from '../../History/EditTimeRecord';
 import MockedTrackContext from '../../mocks/MockedTrackContext';
@@ -30,13 +31,13 @@ it('renders without crashing', (): void => {
   });
 });
 
-it('edits a start time and end time of a time record', (): void => {
-  const timeRecord = {
-    startTime: moment().subtract(1, 'minute'),
-    endTime: moment().add(1, 'second'),
-    id: 1,
-  };
+const timeRecord = {
+  startTime: moment().subtract(1, 'minute'),
+  endTime: moment().add(1, 'second'),
+  id: 1,
+};
 
+it('adapts the end time input based on start time input', (): void => {
   act(() => {
     render(
       <MockedUserContext>
@@ -44,6 +45,12 @@ it('edits a start time and end time of a time record', (): void => {
       </MockedUserContext>,
       container
     );
+  });
+
+  const showButton: HTMLImageElement | null = document.querySelector('[alt=Editor]');
+
+  act(() => {
+    if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
   });
 
   const startTimeInput: HTMLInputElement | null = document.querySelector(
@@ -61,4 +68,37 @@ it('edits a start time and end time of a time record', (): void => {
   });
 
   expect(endTimeInput).toHaveValue('12:00:02');
+});
+
+it('adapts the end time input based on start time input', (): void => {
+  act(() => {
+    render(
+      <MockedUserContext>
+        <EditTimeRecord {...timeRecord} />
+      </MockedUserContext>,
+      container
+    );
+  });
+
+  const showButton: HTMLButtonElement | null = document.querySelector('[alt=Editor]');
+
+  act(() => {
+    if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
+  });
+
+  const startTimeInput: HTMLInputElement | null = document.querySelector(
+    '[data-testid=start-time-input]'
+  );
+  const endTimeInput: HTMLInputElement | null = document.querySelector(
+    '[data-testid=end-time-input]'
+  );
+
+  expect(startTimeInput).toHaveValue(timeRecord.startTime.format('H:mm:ss'));
+  expect(endTimeInput).toHaveValue(timeRecord.endTime.format('H:mm:ss'));
+
+  act(() => {
+    if (endTimeInput) endTimeInput.value = '12:00:02';
+  });
+
+  expect(endTimeInput).toHaveValue('12:00:00');
 });
