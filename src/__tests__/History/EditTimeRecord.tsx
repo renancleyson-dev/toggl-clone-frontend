@@ -4,6 +4,7 @@ import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import EditTimeRecord from '../../History/EditTimeRecord';
+import { userFormat } from '../../helpers/timeFormats';
 import MockedTrackContext from '../../mocks/MockedTrackContext';
 import MockedUserContext from '../../mocks/MockedUserContext';
 
@@ -33,7 +34,7 @@ it('renders without crashing', (): void => {
 
 const timeRecord = {
   startTime: moment().subtract(1, 'minute'),
-  endTime: moment().add(1, 'second'),
+  endTime: moment(),
   id: 1,
 };
 
@@ -47,8 +48,7 @@ it('adapts the end time input based on start time input', (): void => {
     );
   });
 
-  const showButton: HTMLImageElement | null = document.querySelector('[alt=Editor]');
-
+  const showButton: HTMLImageElement | null = document.querySelector('[type=button]');
   act(() => {
     if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
   });
@@ -60,45 +60,13 @@ it('adapts the end time input based on start time input', (): void => {
     '[data-testid=end-time-input]'
   );
 
-  expect(startTimeInput).toHaveValue(timeRecord.startTime.format('H:mm:ss'));
-  expect(endTimeInput).toHaveValue(timeRecord.endTime.format('H:mm:ss'));
+  expect(startTimeInput).toHaveValue(timeRecord.startTime.format(userFormat));
+  expect(endTimeInput).toHaveValue(timeRecord.endTime.format(userFormat));
 
   act(() => {
-    if (startTimeInput) startTimeInput.value = '12:00:00';
+    if (startTimeInput)
+      fireEvent.change(startTimeInput, { target: { value: '12:00:00' } });
   });
 
-  expect(endTimeInput).toHaveValue('12:00:02');
-});
-
-it('adapts the end time input based on start time input', (): void => {
-  act(() => {
-    render(
-      <MockedUserContext>
-        <EditTimeRecord {...timeRecord} />
-      </MockedUserContext>,
-      container
-    );
-  });
-
-  const showButton: HTMLButtonElement | null = document.querySelector('[alt=Editor]');
-
-  act(() => {
-    if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
-  });
-
-  const startTimeInput: HTMLInputElement | null = document.querySelector(
-    '[data-testid=start-time-input]'
-  );
-  const endTimeInput: HTMLInputElement | null = document.querySelector(
-    '[data-testid=end-time-input]'
-  );
-
-  expect(startTimeInput).toHaveValue(timeRecord.startTime.format('H:mm:ss'));
-  expect(endTimeInput).toHaveValue(timeRecord.endTime.format('H:mm:ss'));
-
-  act(() => {
-    if (endTimeInput) endTimeInput.value = '12:00:02';
-  });
-
-  expect(endTimeInput).toHaveValue('12:00:00');
+  expect(endTimeInput).toHaveValue('12:01:00');
 });
