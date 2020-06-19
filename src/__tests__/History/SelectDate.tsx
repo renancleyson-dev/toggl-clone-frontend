@@ -5,7 +5,7 @@ import { fireEvent } from '@testing-library/react';
 import moment from 'moment';
 import MockedTrackContext from '../../mocks/MockedTrackContext';
 import MockedUserContext from '../../mocks/MockedUserContext';
-import SelectDate from '../../History/SelectDate';
+import SelectDate from '../../Components/SelectDate';
 
 let container: HTMLDivElement;
 beforeEach(() => {
@@ -100,7 +100,9 @@ it('selects a start date on click', (): void => {
     );
   });
 
-  const dayToBeSelect: HTMLInputElement | null = document.querySelector('[value=30]');
+  const dayToBeSelect: HTMLInputElement | null = document.querySelector(
+    'input[value="30"]'
+  );
   act(() => {
     if (dayToBeSelect) {
       fireEvent(dayToBeSelect, new MouseEvent('click', { bubbles: true }));
@@ -123,14 +125,16 @@ it('selects an end date after selecting a start date', (): void => {
   });
 
   const startDayToBeSelect: HTMLInputElement | null = document.querySelector(
-    '[value=29]'
+    'input[value="29"]'
   );
   act(() => {
     if (startDayToBeSelect) {
       fireEvent(startDayToBeSelect, new MouseEvent('click', { bubbles: true }));
     }
   });
-  const endDayToBeSelect: HTMLInputElement | null = document.querySelector('[value=30]');
+  const endDayToBeSelect: HTMLInputElement | null = document.querySelector(
+    'input[value="30"]'
+  );
 
   expect(endDayToBeSelect).toHaveAttribute('checked', true);
 });
