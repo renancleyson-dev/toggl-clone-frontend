@@ -5,10 +5,11 @@ import { updateTimeRecord } from '../helpers/timeRecords';
 import formatDuration from '../helpers/formatDuration';
 import { UserContext } from '../Contexts/UserContext';
 import Categories from '../Components/Categories';
+import { TextInput } from '../formStyles';
 import EditTimeRecord from './EditTimeRecord';
 
 const TimeRecordWrapper = styled.div``;
-const Label = styled.input``;
+const Label = styled(TextInput)``;
 const DurationDisplay = styled.div``;
 
 interface Props {
