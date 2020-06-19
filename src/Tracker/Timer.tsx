@@ -8,7 +8,7 @@ export default function Timer() {
   const [duration, setDuration] = useState<moment.Duration>(moment.duration(0));
   const { startTime, isTracking } = useContext(TrackContext);
   useEffect(() => {
-    let timer: number;
+    let timer = -1;
     const handleOnTracking = () => {
       return setInterval(() => {
         setDuration(moment.duration(moment().diff(startTime)));
@@ -19,6 +19,7 @@ export default function Timer() {
       timer = handleOnTracking();
     } else {
       setDuration(moment.duration(0));
+      if (timer > -1) clearInterval(timer);
     }
     return () => clearInterval(timer);
   }, [isTracking, startTime]);
