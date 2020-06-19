@@ -53,8 +53,8 @@ it('edits a start time and end time of a time record', (): void => {
     '[data-testid=end-time-input]'
   );
 
-  expect(startTimeInput?.value).toBe(timeRecord.startTime.format('H:mm:ss'));
-  expect(endTimeInput?.value).toBe(timeRecord.endTime.format('H:mm:ss'));
+  expect(startTimeInput).toHaveValue(timeRecord.startTime.format('H:mm:ss'));
+  expect(endTimeInput).toHaveValue(timeRecord.endTime.format('H:mm:ss'));
 
   act(() => {
     if (startTimeInput) startTimeInput.value = '12:00:00';
