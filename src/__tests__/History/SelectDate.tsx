@@ -51,7 +51,7 @@ it('selects a start date on mount when a time record id is provide', (): void =>
   );
 
   const selectedDay = days.find((date) => date.checked);
-  expect(selectedDay).toBe(startTime.day);
+  expect(selectedDay).toHaveValue(startTime.day());
   expect(month).toContainHTML(startTime.format('MMM'));
 });
 
