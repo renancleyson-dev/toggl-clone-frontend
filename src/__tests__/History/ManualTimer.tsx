@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
 import moment from 'moment';
-import EditTimeRecord from '../../History/EditTimeRecord';
+import ManualTimer from '../../History/ManualTimer';
 import { userFormat } from '../../helpers/timeFormats';
 import MockedTrackContext from '../../mocks/MockedTrackContext';
 import MockedUserContext from '../../mocks/MockedUserContext';
@@ -24,7 +24,7 @@ it('renders without crashing', (): void => {
     render(
       <MockedUserContext>
         <MockedTrackContext>
-          <EditTimeRecord />
+          <ManualTimer />
         </MockedTrackContext>
       </MockedUserContext>,
       container
@@ -42,7 +42,7 @@ it('adapts the end time input based on start time input', (): void => {
   act(() => {
     render(
       <MockedUserContext>
-        <EditTimeRecord {...timeRecord} />
+        <ManualTimer {...timeRecord} />
       </MockedUserContext>,
       container
     );

@@ -19,7 +19,8 @@ const getDuration = (startTime?: moment.Moment, endTime?: moment.Moment) => {
   return moment.duration(endTimeMoment.diff(startTimeMoment));
 };
 
-export default function ManualTracker({ id, startTime, endTime }: Props) {
+// UI to manage the start and end time of a record
+export default function ManualTimer({ id, startTime, endTime }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [timeRecordStartTime, setTimeRecordStartTime] = useState<string>();
   const [timeRecordEndTime, setTimeRecordEndTime] = useState<string>();
