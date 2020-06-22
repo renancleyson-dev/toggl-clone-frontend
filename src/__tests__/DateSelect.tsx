@@ -3,9 +3,9 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
 import moment from 'moment';
-import MockedTrackContext from '../../mocks/MockedTrackContext';
-import MockedUserContext from '../../mocks/MockedUserContext';
-import SelectDate from '../../Components/SelectDate';
+import MockedTrackContext from '../mocks/MockedTrackContext';
+import MockedUserContext from '../mocks/MockedUserContext';
+import DateSelect from '../Components/DateSelect/DateSelect';
 
 let container: HTMLDivElement;
 beforeEach(() => {
@@ -18,12 +18,15 @@ afterEach(() => {
   container.remove();
 });
 
+const startTime = moment().subtract(2, 'days').subtract(1, 'hour');
+const endTime = moment().add(1, 'day').add(1, 'hours');
+
 it('renders without crashing', (): void => {
   act(() => {
     render(
       <MockedUserContext>
         <MockedTrackContext>
-          <SelectDate />
+          <DateSelect startTime={startTime} endTime={endTime} />
         </MockedTrackContext>
       </MockedUserContext>,
       container
@@ -32,13 +35,11 @@ it('renders without crashing', (): void => {
 });
 
 it('selects a start date on mount when a time record id is provide', (): void => {
-  const startTime = moment().subtract(2, 'days').subtract(1, 'hour');
-  const endTime = moment().add(1, 'day').add(1, 'hours');
   act(() => {
     render(
       <MockedUserContext>
         <MockedTrackContext>
-          <SelectDate startTime={startTime} endTime={endTime} />
+          <DateSelect startTime={startTime} endTime={endTime} />
         </MockedTrackContext>
       </MockedUserContext>,
       container
@@ -51,8 +52,11 @@ it('selects a start date on mount when a time record id is provide', (): void =>
   );
 
   const selectedDay = days.find((date) => date.checked);
-  expect(selectedDay).toHaveValue(startTime.day());
-  expect(month).toContainHTML(startTime.format('MMM'));
+
+  expect(selectedDay).not.toBeUndefined();
+  // @ts-ignore: impossible to be undefined due to the line above
+  expect(parseInt(selectedDay.value)).toBe(startTime.day());
+  expect(month).toHaveTextContent(startTime.format('MMM'));
 });
 
 it('shows actual month and manages selected month with buttons', (): void => {
@@ -60,7 +64,7 @@ it('shows actual month and manages selected month with buttons', (): void => {
     render(
       <MockedUserContext>
         <MockedTrackContext>
-          <SelectDate />
+          <DateSelect startTime={startTime} endTime={endTime} />
         </MockedTrackContext>
       </MockedUserContext>,
       container
@@ -68,12 +72,11 @@ it('shows actual month and manages selected month with buttons', (): void => {
   });
 
   const month: HTMLDivElement | null = document.querySelector('[data-testid=month]');
-  const previousMonthButton: HTMLButtonElement | null = document.querySelector(
-    '[data-testid=previous-button]'
+  const previousButton: HTMLButtonElement | null = document.querySelector(
+    '[data-testid=month-previous-button]'
   );
-
-  const nextMonthButton: HTMLButtonElement | null = document.querySelector(
-    '[data-testid=next-button]'
+  const nextButton: HTMLButtonElement | null = document.querySelector(
+    '[data-testid=month-next-button]'
   );
 
   const callButtonMonth = (button: HTMLButtonElement | null) => {
@@ -81,11 +84,12 @@ it('shows actual month and manages selected month with buttons', (): void => {
       if (button) fireEvent(button, new MouseEvent('click', { bubbles: true }));
     });
   };
-  expect(month).toContainHTML(moment().format('MMM'));
-  callButtonMonth(previousMonthButton);
-  expect(month).toContainHTML(moment().subtract(1, 'month').format('MMM'));
-  callButtonMonth(nextMonthButton);
-  expect(month).toContainHTML(moment().add(1, 'month').format('MMM'));
+  expect(month).toHaveTextContent(moment().format('MMM'));
+  callButtonMonth(previousButton);
+  expect(month).toHaveTextContent(moment().subtract(1, 'month').format('MMM'));
+  callButtonMonth(nextButton);
+  callButtonMonth(nextButton);
+  expect(month).toHaveTextContent(moment().add(1, 'month').format('MMM'));
 });
 
 it('selects a start date on click', (): void => {
@@ -93,7 +97,7 @@ it('selects a start date on click', (): void => {
     render(
       <MockedUserContext>
         <MockedTrackContext>
-          <SelectDate />
+          <DateSelect startTime={startTime} endTime={endTime} />
         </MockedTrackContext>
       </MockedUserContext>,
       container
@@ -109,15 +113,15 @@ it('selects a start date on click', (): void => {
     }
   });
 
-  expect(dayToBeSelect).toHaveAttribute('checked', true);
+  expect(dayToBeSelect?.checked).toBe(true);
 });
 
-it('selects an end date after selecting a start date', (): void => {
+it('let selects an end date after selecting a start date', (): void => {
   act(() => {
     render(
       <MockedUserContext>
         <MockedTrackContext>
-          <SelectDate />
+          <DateSelect startTime={startTime} endTime={endTime} />
         </MockedTrackContext>
       </MockedUserContext>,
       container
@@ -135,6 +139,11 @@ it('selects an end date after selecting a start date', (): void => {
   const endDayToBeSelect: HTMLInputElement | null = document.querySelector(
     'input[value="30"]'
   );
+  act(() => {
+    if (endDayToBeSelect) {
+      fireEvent(endDayToBeSelect, new MouseEvent('click', { bubbles: true }));
+    }
+  });
 
-  expect(endDayToBeSelect).toHaveAttribute('checked', true);
+  expect(endDayToBeSelect?.checked).toBe(true);
 });

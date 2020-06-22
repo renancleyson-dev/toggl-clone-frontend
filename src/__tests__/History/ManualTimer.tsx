@@ -19,24 +19,24 @@ afterEach(() => {
   container.remove();
 });
 
+const timeRecord = {
+  startTime: moment().subtract(1, 'minute'),
+  endTime: moment(),
+  id: 1,
+};
+
 it('renders without crashing', (): void => {
   act(() => {
     render(
       <MockedUserContext>
         <MockedTrackContext>
-          <ManualTimer />
+          <ManualTimer {...timeRecord} />
         </MockedTrackContext>
       </MockedUserContext>,
       container
     );
   });
 });
-
-const timeRecord = {
-  startTime: moment().subtract(1, 'minute'),
-  endTime: moment(),
-  id: 1,
-};
 
 it('adapts the end time input based on start time input', (): void => {
   act(() => {
