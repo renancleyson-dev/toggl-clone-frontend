@@ -6,7 +6,7 @@ import formatDuration from '../helpers/formatDuration';
 import { UserContext } from '../Contexts/UserContext';
 import Categories from '../Components/Categories';
 import { TextInput } from '../formStyles';
-import EditTimeRecord from './EditTimeRecord';
+import ManualTimer from './ManualTimer';
 
 const TimeRecordWrapper = styled.div``;
 const Label = styled(TextInput)``;
@@ -16,11 +16,11 @@ interface Props {
   startTime: moment.Moment;
   endTime: moment.Moment;
   recordLabel: string;
-  recordCategory?: string;
+  recordCategory: string;
   id: number;
 }
 
-// UI to show the history of a specific day
+// UI to show a specific time record
 export default function HistoryItem({
   startTime,
   endTime,
@@ -39,7 +39,7 @@ export default function HistoryItem({
 
   useEffect(() => {
     setLabel(recordLabel);
-    setCategory(recordCategory || '');
+    setCategory(recordCategory);
   }, [recordLabel, recordCategory]);
 
   return (
@@ -54,7 +54,7 @@ export default function HistoryItem({
       <DurationDisplay data-testid="time-record-duration">
         {formatDuration(duration)}
       </DurationDisplay>
-      <EditTimeRecord />
+      <ManualTimer startTime={startTime} endTime={endTime} />
     </TimeRecordWrapper>
   );
 }
