@@ -4,18 +4,19 @@ import moment from 'moment';
 import { TextInput } from '../formStyles';
 import formatDuration from '../helpers/formatDuration';
 import { toMoment, userFormat } from '../helpers/timeFormats';
-import SelectDate from './SelectDate';
+import DateSelect from './DateSelect/DateSelect';
 
 const EditTimeRecordWrapper = styled.div``;
 const TimeInput = styled(TextInput)``;
 const DurationDisplay = styled.div``;
 
 interface Props {
-  timeRecordStartTime: string | undefined;
-  timeRecordEndTime: string | undefined;
-  setTimeRecordStartTime: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setTimeRecordEndTime: React.Dispatch<React.SetStateAction<string | undefined>>;
-  duration: moment.Duration | undefined;
+  timeRecordStartTime: string;
+  timeRecordEndTime: string;
+  setTimeRecordStartTime: React.Dispatch<React.SetStateAction<string>>;
+  setTimeRecordEndTime: React.Dispatch<React.SetStateAction<string>>;
+  duration: moment.Duration;
+  timeData: { startTime: moment.Moment; endTime: moment.Moment };
 }
 
 // UI to set start and end time of some time record
@@ -25,9 +26,10 @@ export default function TimeRecordEditor({
   setTimeRecordStartTime,
   setTimeRecordEndTime,
   duration,
+  timeData,
 }: Props) {
-  const handleEndTimeAdaptation = (startTime: string | undefined) => {
-    return startTime && moment(startTime, toMoment).add(duration).format(userFormat);
+  const handleEndTimeAdaptation = (startTime: string) => {
+    return moment(startTime, toMoment).add(duration).format(userFormat);
   };
 
   return (
@@ -45,10 +47,8 @@ export default function TimeRecordEditor({
         value={timeRecordEndTime}
         onChange={(e) => setTimeRecordEndTime(e.target.value)}
       />
-      <DurationDisplay data-testid="time-record-duration">
-        {duration && formatDuration(duration)}
-      </DurationDisplay>
-      <SelectDate />
+      <DurationDisplay>{formatDuration(duration)}</DurationDisplay>
+      <DateSelect startTime={timeData.startTime} endTime={timeData.endTime} />
     </EditTimeRecordWrapper>
   );
 }
