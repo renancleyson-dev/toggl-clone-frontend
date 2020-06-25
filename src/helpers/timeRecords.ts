@@ -8,16 +8,16 @@ interface ITimeRecord {
   timeRecordId: number;
 }
 
-export const fetchTimeRecord = (
+export const fetchTimeRecord = async (
   page: number,
   perPage: number,
   userId: number
-): Promise<ITimeRecord> =>
+): Promise<{ data: ITimeRecord[] }> =>
   axios.get(`users/${userId}/time_records`, {
     params: { page, per_page: perPage },
   });
 
-export const createTimeRecord = (
+export const createTimeRecord = async (
   startTime: string,
   endTime: string,
   userId: number,
@@ -28,7 +28,7 @@ export const createTimeRecord = (
     data: { start_time: startTime, end_time: endTime, label, category },
   });
 
-export const updateTimeRecord = (
+export const updateTimeRecord = async (
   userId: number,
   timeRecordId: number,
   data: {
@@ -47,7 +47,7 @@ export const updateTimeRecord = (
     },
   });
 
-export const deleteTimeRecord = (
+export const deleteTimeRecord = async (
   userId: number,
   timeRecordId: number
 ): Promise<void | Error> => axios.delete(`users/${userId}/time_records/${timeRecordId}`);
