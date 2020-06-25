@@ -43,7 +43,6 @@ export default function History() {
   const { user } = useContext(UserContext);
   const records = timeRecords.map(recordsMapper);
 
-  console.log('tou aqui')
   const loadMore = (page: number) => {
     if (user) {
       fetchTimeRecord(page, 8, user.id).then((response) => {
