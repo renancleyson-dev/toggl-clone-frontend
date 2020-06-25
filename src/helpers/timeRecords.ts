@@ -13,12 +13,9 @@ export const fetchTimeRecord = (
   perPage: number,
   userId: number
 ): Promise<ITimeRecord> =>
-  axios
-    .get(`users/${userId}/time_records`, {
-      params: { page, per_page: perPage },
-    })
-    .then((response) => response.data)
-    .catch((error) => error);
+  axios.get(`users/${userId}/time_records`, {
+    params: { page, per_page: perPage },
+  });
 
 export const createTimeRecord = (
   startTime: string,
@@ -27,12 +24,9 @@ export const createTimeRecord = (
   label?: string,
   category?: string
 ): Promise<void | Error> =>
-  axios
-    .post(`users/${userId}/time_records`, {
-      data: { start_time: startTime, end_time: endTime, label, category },
-    })
-    .then(() => {})
-    .catch((error) => error);
+  axios.post(`users/${userId}/time_records`, {
+    data: { start_time: startTime, end_time: endTime, label, category },
+  });
 
 export const updateTimeRecord = (
   userId: number,
@@ -44,29 +38,19 @@ export const updateTimeRecord = (
     category?: string;
   }
 ): Promise<void | Error> =>
-  axios
-    .put(`users/${userId}/time_records/${timeRecordId}`, {
-      data: {
-        start_time: data.startTime,
-        end_time: data.endTime,
-        label: data.label,
-        category: data.category,
-      },
-    })
-    .then(() => {})
-    .catch((error) => error);
+  axios.put(`users/${userId}/time_records/${timeRecordId}`, {
+    data: {
+      start_time: data.startTime,
+      end_time: data.endTime,
+      label: data.label,
+      category: data.category,
+    },
+  });
 
 export const deleteTimeRecord = (
   userId: number,
   timeRecordId: number
-): Promise<void | Error> =>
-  axios
-    .delete(`users/${userId}/time_records/${timeRecordId}`)
-    .then(() => {})
-    .catch((error) => error);
+): Promise<void | Error> => axios.delete(`users/${userId}/time_records/${timeRecordId}`);
 
 export const fetchCategories = (userId: number): Promise<ITimeRecord> =>
-  axios
-    .get(`users/${userId}/categories`)
-    .then((response) => response.data)
-    .catch((error) => error);
+  axios.get(`users/${userId}/categories`);

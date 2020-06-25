@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
@@ -7,6 +8,8 @@ import ManualTimer from '../../History/ManualTimer';
 import { userFormat } from '../../helpers/timeFormats';
 import MockedTrackContext from '../../mocks/MockedTrackContext';
 import MockedUserContext from '../../mocks/MockedUserContext';
+
+jest.mock('axios');
 
 let container: HTMLDivElement;
 beforeEach(() => {
@@ -17,6 +20,7 @@ beforeEach(() => {
 afterEach(() => {
   unmountComponentAtNode(container);
   container.remove();
+  jest.clearAllMocks();
 });
 
 const timeRecord = {
@@ -69,4 +73,24 @@ it('adapts the end time input based on start time input', (): void => {
   });
 
   expect(endTimeInput).toHaveValue('12:01:00');
+});
+
+it('calls an PUT verb on the API after being close', () => {
+  act(() => {
+    render(
+      <MockedUserContext>
+        <ManualTimer {...timeRecord} />
+      </MockedUserContext>,
+      container
+    );
+  });
+
+  const showButton: HTMLButtonElement | null = document.querySelector('[type=button]');
+  const showButtonClick = () =>
+    act(() => {
+      if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
+    });
+  showButtonClick();
+  showButtonClick();
+  expect(axios.put).toBeCalledTimes(1);
 });

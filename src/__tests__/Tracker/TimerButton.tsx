@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
@@ -19,13 +20,16 @@ beforeEach(() => {
 afterEach(() => {
   unmountComponentAtNode(container);
   container.remove();
+  jest.clearAllMocks();
 });
+
+jest.mock('axios');
 
 it('renders without crashing', (): void => {
   act(() => {
     render(
       <MockedUserContext>
-        <MockedTrackContext isTracking startTime={moment()}>
+        <MockedTrackContext>
           <TimerButton />
         </MockedTrackContext>
       </MockedUserContext>,
@@ -64,4 +68,27 @@ it('alternates the icon on click', (): void => {
   clickOnTimerButton();
   expect(buttonIcon).toHaveAttribute('src', START_BUTTON_ICON);
   expect(buttonIcon).toHaveAttribute('alt', 'Start Tracking');
+});
+
+it('stores a time record on backend after stop tracking', (): void => {
+  act(() => {
+    render(
+      <MockedUserContext>
+        <MockedTrackContext isTracking startTime={moment().subtract(5, 'minutes')}>
+          <TimerButton />
+        </MockedTrackContext>
+      </MockedUserContext>,
+      container
+    );
+  });
+
+  const timerButton: HTMLButtonElement | null = document.querySelector(
+    '[data-testid=timer-button]'
+  );
+
+  act(() => {
+    if (timerButton) fireEvent(timerButton, new MouseEvent('click', { bubbles: true }));
+  });
+
+  expect(axios.post).toBeCalledTimes(1);
 });
