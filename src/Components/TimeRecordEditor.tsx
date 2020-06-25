@@ -17,6 +17,7 @@ interface Props {
   setTimeRecordEndTime: React.Dispatch<React.SetStateAction<string>>;
   duration: moment.Duration;
   timeData: { startTime: moment.Moment; endTime: moment.Moment };
+  editorRef: React.MutableRefObject<null>;
 }
 
 // UI to set start and end time of some time record
@@ -27,13 +28,14 @@ export default function TimeRecordEditor({
   setTimeRecordEndTime,
   duration,
   timeData,
+  editorRef,
 }: Props) {
   const handleEndTimeAdaptation = (startTime: string) => {
     return moment(startTime, toMoment).add(duration).format(userFormat);
   };
 
   return (
-    <EditTimeRecordWrapper>
+    <EditTimeRecordWrapper ref={editorRef}>
       <TimeInput
         data-testid="start-time-input"
         value={timeRecordStartTime}

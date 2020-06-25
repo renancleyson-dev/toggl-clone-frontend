@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import moment from 'moment';
 import { UserContext } from '../Contexts/UserContext';
 import { updateTimeRecord } from '../helpers/timeRecords';
 import { toMoment, userFormat } from '../helpers/timeFormats';
 import { MANUAL_TRACKER_ICON } from '../helpers/constants';
 import TimeRecordEditor from '../Components/TimeRecordEditor';
+import useOutsideCallback from '../hooks/useOutsideCallback';
 
 const getDuration = (startTime: string, endTime: string) => {
   const startTimeMoment = moment(startTime, toMoment);
@@ -42,25 +43,28 @@ export default function ManualTimer({ id, startTime, endTime }: Props) {
   const [timeRecordStartTime, setTimeRecordStartTime] = useState<string>('');
   const [timeRecordEndTime, setTimeRecordEndTime] = useState<string>('');
   const { user } = useContext(UserContext);
+  const editorRef = useRef(null);
+  useOutsideCallback(editorRef, () => {
+    if (id) {
+      const newStartTime = setMomentTime(startTime, timeRecordStartTime).format();
+      const newEndTime = setMomentTime(endTime, timeRecordEndTime).format();
+      updateTimeRecord(user.id, id, { startTime: newStartTime, endTime: newEndTime });
+      setIsOpen(false);
+    }
+  });
   useEffect(() => {
     if (!(timeRecordStartTime && timeRecordEndTime)) {
       setTimeRecordStartTime(startTime.format(userFormat));
       setTimeRecordEndTime(endTime.format(userFormat));
     }
-    if (!isOpen && id) {
-      const newStartTime = setMomentTime(startTime, timeRecordStartTime).format();
-      const newEndTime = setMomentTime(endTime, timeRecordEndTime).format();
-      updateTimeRecord(user.id, id, { startTime: newStartTime, endTime: newEndTime });
-    }
   }, [timeRecordStartTime, timeRecordEndTime, startTime, endTime, user, id, isOpen]);
 
-  if (!isOpen) {
-    return <ShowButton setIsOpen={setIsOpen} />;
-  }
+  if (!isOpen) return <ShowButton setIsOpen={setIsOpen} />;
   return (
     <>
       <ShowButton setIsOpen={setIsOpen} />
       <TimeRecordEditor
+        editorRef={editorRef}
         timeRecordStartTime={timeRecordStartTime}
         timeRecordEndTime={timeRecordEndTime}
         setTimeRecordStartTime={setTimeRecordStartTime}
