@@ -54,7 +54,7 @@ export default function HistoryItem({
       <DurationDisplay data-testid="time-record-duration">
         {formatDuration(duration)}
       </DurationDisplay>
-      <ManualTimer startTime={startTime} endTime={endTime} />
+      <ManualTimer id={id} startTime={startTime} endTime={endTime} />
     </TimeRecordWrapper>
   );
 }

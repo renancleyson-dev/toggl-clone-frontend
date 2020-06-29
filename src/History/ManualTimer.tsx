@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import { UserContext } from '../Contexts/UserContext';
-import { updateTimeRecord } from '../helpers/timeRecords';
 import { toMoment, userFormat } from '../helpers/timeFormats';
 import { MANUAL_TRACKER_ICON } from '../helpers/constants';
 import TimeRecordEditor from '../Components/TimeRecordEditor';
-import useOutsideCallback from '../hooks/useOutsideCallback';
 
 const getDuration = (startTime: string, endTime: string) => {
   const startTimeMoment = moment(startTime, toMoment);
@@ -14,19 +12,14 @@ const getDuration = (startTime: string, endTime: string) => {
   return moment.duration(endTimeMoment.diff(startTimeMoment));
 };
 
-const setMomentTime = (timeMoment: moment.Moment, timeString: string) => {
-  return moment(timeString, toMoment)
-    .add(timeMoment.year())
-    .add(timeMoment.month())
-    .add(timeMoment.day());
-};
-
 const ShowButton = ({
+  isOpen,
   setIsOpen,
 }: {
+  isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => (
-  <button type="button" onClick={() => setIsOpen((prevState: boolean) => !prevState)}>
+  <button type="button" onClick={() => setIsOpen(true)} disabled={isOpen}>
     <img src={MANUAL_TRACKER_ICON} alt="Editor" />
   </button>
 );
@@ -43,15 +36,7 @@ export default function ManualTimer({ id, startTime, endTime }: Props) {
   const [timeRecordStartTime, setTimeRecordStartTime] = useState<string>('');
   const [timeRecordEndTime, setTimeRecordEndTime] = useState<string>('');
   const { user } = useContext(UserContext);
-  const editorRef = useRef(null);
-  useOutsideCallback(editorRef, () => {
-    if (id) {
-      const newStartTime = setMomentTime(startTime, timeRecordStartTime).format();
-      const newEndTime = setMomentTime(endTime, timeRecordEndTime).format();
-      updateTimeRecord(user.id, id, { startTime: newStartTime, endTime: newEndTime });
-      setIsOpen(false);
-    }
-  });
+
   useEffect(() => {
     if (!(timeRecordStartTime && timeRecordEndTime)) {
       setTimeRecordStartTime(startTime.format(userFormat));
@@ -59,18 +44,20 @@ export default function ManualTimer({ id, startTime, endTime }: Props) {
     }
   }, [timeRecordStartTime, timeRecordEndTime, startTime, endTime, user, id, isOpen]);
 
-  if (!isOpen) return <ShowButton setIsOpen={setIsOpen} />;
+  if (!isOpen) return <ShowButton isOpen={isOpen} setIsOpen={setIsOpen} />;
   return (
     <>
-      <ShowButton setIsOpen={setIsOpen} />
+      <ShowButton isOpen={isOpen} setIsOpen={setIsOpen} />
       <TimeRecordEditor
-        editorRef={editorRef}
+        id={id}
+        startTime={startTime}
+        endTime={endTime}
+        setIsOpen={setIsOpen}
         timeRecordStartTime={timeRecordStartTime}
         timeRecordEndTime={timeRecordEndTime}
         setTimeRecordStartTime={setTimeRecordStartTime}
         setTimeRecordEndTime={setTimeRecordEndTime}
         duration={getDuration(timeRecordStartTime, timeRecordEndTime)}
-        timeData={{ startTime, endTime }}
       />
     </>
   );

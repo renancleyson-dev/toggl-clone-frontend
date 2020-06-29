@@ -10,23 +10,17 @@ interface ITimeRecord {
   endTime: string;
   label: string;
   category: string;
-  timeRecordId: number;
+  id: number;
 }
 
-const recordsMapper = ({
-  startTime,
-  endTime,
-  label,
-  category,
-  timeRecordId,
-}: ITimeRecord) => (
+const recordsMapper = ({ startTime, endTime, label, category, id }: ITimeRecord) => (
   <HistoryItem
-    key={timeRecordId}
+    key={id}
     startTime={moment(startTime)}
     endTime={moment(endTime)}
     recordLabel={label}
     recordCategory={category}
-    id={timeRecordId}
+    id={id}
   />
 );
 
@@ -44,8 +38,8 @@ export default function History() {
   const records = timeRecords.map(recordsMapper);
 
   const loadMore = (page: number) => {
-    if (user) {
-      fetchTimeRecord(page, 8, user.id).then((response) => {
+    if (user && user.id) {
+      fetchTimeRecord(page, 3, user.id).then((response) => {
         if (response) {
           setTimeRecords((prevState: ITimeRecord[]) => [...prevState, ...response.data]);
           if (!response.data.length) {

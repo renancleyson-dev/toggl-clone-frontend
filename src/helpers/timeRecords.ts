@@ -5,7 +5,7 @@ interface ITimeRecord {
   endTime: string;
   label: string;
   category: string;
-  timeRecordId: number;
+  id: number;
 }
 
 export const fetchTimeRecord = async (
@@ -13,7 +13,7 @@ export const fetchTimeRecord = async (
   perPage: number,
   userId: number
 ): Promise<{ data: ITimeRecord[] }> =>
-  axios.get(`users/${userId}/time_records`, {
+  axios.get(`/users/${userId}/time_records`, {
     params: { page, per_page: perPage },
   });
 
@@ -24,8 +24,8 @@ export const createTimeRecord = async (
   label?: string,
   category?: string
 ): Promise<void | Error> =>
-  axios.post(`users/${userId}/time_records`, {
-    data: { start_time: startTime, end_time: endTime, label, category },
+  axios.post(`/users/${userId}/time_records`, {
+    time_record: { start_time: startTime, end_time: endTime, label, category },
   });
 
 export const updateTimeRecord = async (
@@ -38,8 +38,8 @@ export const updateTimeRecord = async (
     category?: string;
   }
 ): Promise<void | Error> =>
-  axios.put(`users/${userId}/time_records/${timeRecordId}`, {
-    data: {
+  axios.put(`/users/${userId}/time_records/${timeRecordId}`, {
+    time_record: {
       start_time: data.startTime,
       end_time: data.endTime,
       label: data.label,
@@ -50,7 +50,7 @@ export const updateTimeRecord = async (
 export const deleteTimeRecord = async (
   userId: number,
   timeRecordId: number
-): Promise<void | Error> => axios.delete(`users/${userId}/time_records/${timeRecordId}`);
+): Promise<void | Error> => axios.delete(`/users/${userId}/time_records/${timeRecordId}`);
 
 export const fetchCategories = (userId: number): Promise<ITimeRecord> =>
-  axios.get(`users/${userId}/categories`);
+  axios.get(`/users/${userId}/categories`);

@@ -31,7 +31,10 @@ export default function Provider({ children }: Props) {
       .find((row) => row.startsWith('user_id'))
       ?.split('=')[1];
 
-    if (userId) fetchUser(parseInt(userId, 10)).then((data) => setUser(data));
+    if (userId)
+      fetchUser(parseInt(userId, 10)).then((data) => {
+        setUser(data);
+      });
   }, []);
 
   return (
