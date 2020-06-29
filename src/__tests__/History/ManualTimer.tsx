@@ -1,8 +1,7 @@
 import React from 'react';
-import axios from 'axios';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, queryByTestId } from '@testing-library/react';
 import moment from 'moment';
 import ManualTimer from '../../History/ManualTimer';
 import { userFormat } from '../../helpers/timeFormats';
@@ -42,7 +41,24 @@ it('renders without crashing', (): void => {
   });
 });
 
-it('adapts the end time input based on start time input', (): void => {
+it('is showed on click', (): void => {
+  act(() => {
+    render(
+      <MockedUserContext>
+        <ManualTimer {...timeRecord} />
+      </MockedUserContext>,
+      container
+    );
+  });
+  const showButton: HTMLImageElement | null = document.querySelector('[type=button]');
+  act(() => {
+    if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
+  });
+
+  expect(queryByTestId(container, 'time-record-editor')).toBeInTheDocument();
+});
+
+it('adapts the start time input if end time is before it', (): void => {
   act(() => {
     render(
       <MockedUserContext>
@@ -56,26 +72,25 @@ it('adapts the end time input based on start time input', (): void => {
   act(() => {
     if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
   });
-
   const startTimeInput: HTMLInputElement | null = document.querySelector(
     '[data-testid=start-time-input]'
   );
   const endTimeInput: HTMLInputElement | null = document.querySelector(
     '[data-testid=end-time-input]'
   );
-
-  expect(startTimeInput).toHaveValue(timeRecord.startTime.format(userFormat));
-  expect(endTimeInput).toHaveValue(timeRecord.endTime.format(userFormat));
+  const newEndTime = timeRecord.endTime.clone().subtract(2, 'minutes');
 
   act(() => {
-    if (startTimeInput)
-      fireEvent.change(startTimeInput, { target: { value: '12:00:00' } });
+    if (endTimeInput)
+      fireEvent.change(endTimeInput, {
+        target: { value: newEndTime.format(userFormat) },
+      });
   });
-
-  expect(endTimeInput).toHaveValue('12:01:00');
+  const duration = timeRecord.endTime.diff(timeRecord.startTime);
+  expect(startTimeInput).toHaveValue(newEndTime.subtract(duration).format(userFormat));
 });
 
-it('calls an PUT verb on the API after being close', () => {
+it('adapts the end time input based on start time input', (): void => {
   act(() => {
     render(
       <MockedUserContext>
@@ -84,13 +99,26 @@ it('calls an PUT verb on the API after being close', () => {
       container
     );
   });
+  const showButton: HTMLImageElement | null = document.querySelector('[type=button]');
+  act(() => {
+    if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
+  });
 
-  const showButton: HTMLButtonElement | null = document.querySelector('[type=button]');
-  const showButtonClick = () =>
-    act(() => {
-      if (showButton) fireEvent(showButton, new MouseEvent('click', { bubbles: true }));
-    });
-  showButtonClick();
-  showButtonClick();
-  expect(axios.put).toBeCalledTimes(1);
+  const startTimeInput: HTMLInputElement | null = document.querySelector(
+    '[data-testid=start-time-input]'
+  );
+  const endTimeInput: HTMLInputElement | null = document.querySelector(
+    '[data-testid=end-time-input]'
+  );
+
+  const newStartTime = timeRecord.startTime.clone().add(5, 'minutes');
+  const duration = timeRecord.endTime.diff(timeRecord.startTime);
+  act(() => {
+    if (startTimeInput)
+      fireEvent.change(startTimeInput, {
+        target: { value: newStartTime.format(userFormat) },
+      });
+  });
+
+  expect(endTimeInput).toHaveValue(newStartTime.add(duration).format(userFormat));
 });
