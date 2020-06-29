@@ -4,7 +4,7 @@
   "private": true,
   "author": "Renan Cleyson",
   "repository": "https://github.com/Renan-Cleyson/time-tracker-frontend",
-  "description": "App to help on a better time management",
+  "description": "App to manage time tasks",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -56,5 +56,6 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^2.5.1",
     "prettier": "2.0.5"
-  }
+  },
+  "proxy": "http://127.0.0.1:5000"
 }
