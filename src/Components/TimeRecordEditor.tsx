@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { updateTimeRecord } from '../helpers/timeRecords';
+import { updateTimeRecord } from '../resources/timeRecords';
 import { TextInput } from '../formStyles';
 import formatDuration from '../helpers/formatDuration';
 import { toMoment, userFormat } from '../helpers/timeFormats';

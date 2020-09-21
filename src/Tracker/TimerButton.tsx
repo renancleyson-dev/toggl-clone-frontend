@@ -4,7 +4,7 @@ import moment from 'moment';
 import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../helpers/constants';
 import { UserContext } from '../Contexts/UserContext';
 import { TrackContext } from '../Contexts/TrackContext';
-import { createTimeRecord } from '../helpers/timeRecords';
+import { createTimeRecord } from '../resources/timeRecords';
 
 const Button = styled.button``;
 const Icon = styled.img``;

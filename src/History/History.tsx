@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroller';
 import { UserContext } from '../Contexts/UserContext';
-import { fetchTimeRecord } from '../helpers/timeRecords';
+import { fetchTimeRecord } from '../resources/timeRecords';
 import HistoryItem from './HistoryItem';
 
 interface ITimeRecord {

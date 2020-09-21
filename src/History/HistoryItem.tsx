@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import { updateTimeRecord } from '../helpers/timeRecords';
+import { updateTimeRecord } from '../resources/timeRecords';
 import formatDuration from '../helpers/formatDuration';
 import { UserContext } from '../Contexts/UserContext';
 import Categories from '../Components/Categories';

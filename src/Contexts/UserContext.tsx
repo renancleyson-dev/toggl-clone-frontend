@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchUser } from '../helpers/users';
+import { fetchUser } from '../resources/users';
 
 interface Props {
   children: React.ReactNode;
