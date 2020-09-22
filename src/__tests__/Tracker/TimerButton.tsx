@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from '../../axios';
+import mockAxios from '../../mocks/axios';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
@@ -10,6 +10,8 @@ import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../../helpers/constants';
 import TimerButton from '../../Tracker/TimerButton';
 
 jest.useFakeTimers();
+
+mockAxios.post.mockImplementationOnce(jest.fn());
 
 let container: HTMLDivElement;
 beforeEach(() => {
@@ -22,8 +24,6 @@ afterEach(() => {
   container.remove();
   jest.clearAllMocks();
 });
-
-jest.mock('axios');
 
 it('renders without crashing', (): void => {
   act(() => {
@@ -90,5 +90,5 @@ it('stores a time record on backend after stop tracking', (): void => {
     if (timerButton) fireEvent(timerButton, new MouseEvent('click', { bubbles: true }));
   });
 
-  expect(axios.post).toBeCalledTimes(1);
+  expect(mockAxios.post).toBeCalledTimes(1);
 });
