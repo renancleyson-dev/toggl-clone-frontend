@@ -5,10 +5,11 @@ const mockedUser = {
   id: 1,
   name: 'renan',
   email: 'renancleyson.f@gmail.com',
+  fullName: 'Renan Cleyson',
 };
 
 interface Props {
-  user: { id: number; name: string; email: string };
+  user: { id: number; name: string; email: string; fullName: string };
   children: React.ReactNode;
 }
 
