@@ -55,7 +55,7 @@ it('selects a start date on mount when a time record id is provide', (): void =>
 
   expect(selectedDay).not.toBeUndefined();
   // @ts-ignore: impossible to be undefined due to the line above
-  expect(parseInt(selectedDay.value)).toBe(startTime.day());
+  expect(parseInt(selectedDay.value)).toBe(startTime.date());
   expect(month).toHaveTextContent(startTime.format('MMM'));
 });
 

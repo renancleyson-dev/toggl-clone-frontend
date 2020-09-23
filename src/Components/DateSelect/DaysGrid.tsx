@@ -11,12 +11,12 @@ export default function DaysGrid({ timeMoment }: { timeMoment: moment.Moment }) 
   const [selectedDay, setSelectedDay] = useState<number>();
   const handleRadioOnClick = (day: number) => {
     setSelectedDay(day);
-    timeMoment.day(day);
+    timeMoment.date(day);
   };
 
   useEffect(() => {
     if (!selectedDay) {
-      setSelectedDay(timeMoment.day());
+      setSelectedDay(timeMoment.date());
     }
   }, [timeMoment, selectedDay]);
 
