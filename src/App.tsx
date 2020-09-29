@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Switch } from 'react-router-dom';
 import UserContextProvider from './Contexts/UserContext';
 import Routes from './Routes';
 
@@ -7,7 +7,9 @@ function App() {
   return (
     <UserContextProvider>
       <BrowserRouter>
-        <Routes />
+        <Switch>
+          <Routes />
+        </Switch>
       </BrowserRouter>
     </UserContextProvider>
   );

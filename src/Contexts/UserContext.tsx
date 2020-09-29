@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { setJsonWebToken } from '../axios';
+import { USER_KEY, JWT_KEY } from '../helpers/constants';
 import { fetchUser } from '../resources/users';
 
 interface Props {
@@ -7,7 +9,7 @@ interface Props {
 
 interface IUser {
   id: number;
-  name: string;
+  fullName: string;
   email: string;
 }
 
@@ -21,20 +23,20 @@ export const UserContext = React.createContext({} as ContextValue);
 export default function Provider({ children }: Props) {
   const [user, setUser] = useState<IUser>({
     id: 0,
-    name: '',
+    fullName: '',
     email: '',
   });
 
   useEffect(() => {
-    const userId = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('user_id'))
-      ?.split('=')[1];
+    const userId = localStorage.getItem(USER_KEY);
+    const jsonWebToken = localStorage.getItem(JWT_KEY);
 
-    if (userId)
+    if (userId && jsonWebToken) {
+      setJsonWebToken(jsonWebToken);
       fetchUser(parseInt(userId, 10)).then((data) => {
         setUser(data);
       });
+    }
   }, []);
 
   return (
