@@ -71,6 +71,7 @@ it('shows actual month and manages selected month with buttons', (): void => {
     );
   });
 
+  const initialStartTime = startTime.clone();
   const month: HTMLDivElement | null = document.querySelector('[data-testid=month]');
   const previousButton: HTMLButtonElement | null = document.querySelector(
     '[data-testid=month-previous-button]'
@@ -84,12 +85,15 @@ it('shows actual month and manages selected month with buttons', (): void => {
       if (button) fireEvent(button, new MouseEvent('click', { bubbles: true }));
     });
   };
-  expect(month).toHaveTextContent(moment().format('MMM'));
+
+  expect(month).toHaveTextContent(initialStartTime.format('MMM'));
   callButtonMonth(previousButton);
-  expect(month).toHaveTextContent(moment().subtract(1, 'month').format('MMM'));
+  expect(month).toHaveTextContent(
+    initialStartTime.clone().subtract(1, 'month').format('MMM')
+  );
   callButtonMonth(nextButton);
   callButtonMonth(nextButton);
-  expect(month).toHaveTextContent(moment().add(1, 'month').format('MMM'));
+  expect(month).toHaveTextContent(initialStartTime.clone().add(1, 'month').format('MMM'));
 });
 
 it('selects a start date on click', (): void => {
