@@ -2,7 +2,7 @@ import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import moment from 'moment';
-import MockedTrackContext from '../../mocks/MockedTrackContext';
+import MockedTrackContext from '../../__mocks__/MockedTrackContext';
 import HistoryItem from '../../History/HistoryItem';
 
 let container: HTMLDivElement;

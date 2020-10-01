@@ -3,8 +3,8 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
 import moment from 'moment';
-import MockedTrackContext from '../mocks/MockedTrackContext';
-import MockedUserContext from '../mocks/MockedUserContext';
+import MockedTrackContext from '../__mocks__/MockedTrackContext';
+import MockedUserContext from '../__mocks__/MockedUserContext';
 import DateSelect from '../Components/DateSelect/DateSelect';
 
 let container: HTMLDivElement;

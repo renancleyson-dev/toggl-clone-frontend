@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import MockedTrackContext from '../mocks/MockedTrackContext';
+import MockedTrackContext from '../__mocks__/MockedTrackContext';
 import Categories from '../Components/Categories';
 
 let container: HTMLDivElement;

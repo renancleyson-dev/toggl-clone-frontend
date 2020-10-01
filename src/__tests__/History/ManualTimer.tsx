@@ -5,8 +5,8 @@ import { fireEvent, queryByTestId } from '@testing-library/react';
 import moment from 'moment';
 import ManualTimer from '../../History/ManualTimer';
 import { userFormat } from '../../helpers/timeFormats';
-import MockedTrackContext from '../../mocks/MockedTrackContext';
-import MockedUserContext from '../../mocks/MockedUserContext';
+import MockedTrackContext from '../../__mocks__/MockedTrackContext';
+import MockedUserContext from '../../__mocks__/MockedUserContext';
 
 jest.mock('axios');
 
