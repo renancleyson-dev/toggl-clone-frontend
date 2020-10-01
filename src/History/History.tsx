@@ -39,7 +39,7 @@ export default function History() {
 
   const loadMore = (page: number) => {
     if (user && user.id) {
-      fetchTimeRecord(page, 3, user.id).then((response) => {
+      fetchTimeRecord(page).then((response) => {
         if (response) {
           setTimeRecords((prevState: ITimeRecord[]) => [...prevState, ...response.data]);
           if (!response.data.length) {
