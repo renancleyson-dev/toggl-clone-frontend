@@ -7,7 +7,7 @@ export default function PrivateRoute({ component: Component, ...rest }: RoutePro
   const userId = localStorage.getItem(USER_KEY);
   const { user } = useContext(UserContext);
 
-  if (!Component || !user.id || !userId) {
+  if (!Component || (userId && !user.id)) {
     return null;
   }
 
@@ -15,7 +15,7 @@ export default function PrivateRoute({ component: Component, ...rest }: RoutePro
     <Route
       {...rest}
       render={(props) =>
-        parseInt(userId, 10) === user.id ? (
+        userId && parseInt(userId, 10) === user.id ? (
           <Component {...props} />
         ) : (
           <Redirect to="/login" />
