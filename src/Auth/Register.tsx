@@ -1,10 +1,21 @@
 import React, { useContext } from 'react';
 import { Formik } from 'formik';
+import { Link } from 'react-router-dom';
 import { UserContext } from '../Contexts/UserContext';
-import TextInput from '../Components/TextInput';
 import { requiredField } from '../helpers/validations';
 import { createUser } from '../resources/users';
-import { SubmitButton } from './Styles';
+import {
+  FormBoxWrapper,
+  FormBox,
+  Form,
+  Label,
+  BottomText,
+  LoginTextInput,
+  SubmitButton,
+  Button,
+  FormRow,
+  BottomSection,
+} from './Styles';
 
 interface IForm {
   username: string;
@@ -17,6 +28,7 @@ interface IForm {
 const initialValues = {
   username: '',
   fullName: '',
+  termsAndPolicy: false,
   email: '',
   password: '',
   passwordConfirmation: '',
@@ -41,7 +53,7 @@ const validate = (fields: IForm) => {
   return errors;
 };
 
-export default function Register() {
+const RegisterForm = () => {
   const { setUser } = useContext(UserContext);
 
   const handleSubmit = async (
@@ -56,15 +68,41 @@ export default function Register() {
   return (
     <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
       {({ handleSubmit, isSubmitting }) => (
-        <form onSubmit={handleSubmit}>
-          <TextInput name="username" />
-          <TextInput name="fullName" />
-          <TextInput name="email" />
-          <TextInput name="password" type="password" />
-          <TextInput name="passwordConfirmation" type="password" />
-          <SubmitButton disabled={isSubmitting}>Register</SubmitButton>
-        </form>
+        <Form onSubmit={handleSubmit}>
+          <FormRow>
+            <Label htmlFor="email">Email</Label>
+            <LoginTextInput id="email" name="email" placeholder="Email" />
+          </FormRow>
+          <FormRow>
+            <Label htmlFor="password">Password</Label>
+            <LoginTextInput
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Password"
+            />
+          </FormRow>
+          <SubmitButton type="submit" disabled={isSubmitting}>
+            Submit
+          </SubmitButton>
+        </Form>
       )}
     </Formik>
+  );
+};
+
+export default function Register() {
+  return (
+    <FormBoxWrapper>
+      <FormBox>
+        <RegisterForm />
+      </FormBox>
+      <BottomSection>
+        <BottomText>Have an account already?</BottomText>
+        <Link to="/login">
+          <Button type="button">Login</Button>
+        </Link>
+      </BottomSection>
+    </FormBoxWrapper>
   );
 }

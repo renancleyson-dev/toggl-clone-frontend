@@ -4,26 +4,36 @@ import { Formik } from 'formik';
 import { UserContext } from '../Contexts/UserContext';
 import { requiredField } from '../helpers/validations';
 import { USER_KEY, JWT_KEY } from '../helpers/constants';
-import TextInput from '../Components/TextInput';
 import { login } from '../resources/users';
 import { setJsonWebToken } from '../axios';
-import { SubmitButton } from './Styles';
+import {
+  FormBoxWrapper,
+  FormBox,
+  Form,
+  Label,
+  BottomText,
+  LoginTextInput,
+  SubmitButton,
+  Button,
+  FormRow,
+  BottomSection,
+} from './Styles';
 import { Link } from 'react-router-dom';
 
 interface IForm {
-  username: string;
+  email: string;
   password: string;
 }
 
 const initialValues = {
-  username: '',
+  email: '',
   password: '',
 };
 
 const validate = (fields: IForm) => {
   const errors = {};
 
-  requiredField(fields.username, 'username', errors);
+  requiredField(fields.email, 'email', errors);
   requiredField(fields.password, 'password', errors);
 
   return errors;
@@ -48,15 +58,32 @@ export default function Login() {
   };
 
   return (
-    <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
-      {({ handleSubmit, isSubmitting }) => (
-        <form onSubmit={handleSubmit}>
-          <TextInput name="username" />
-          <TextInput name="password" />
-          <SubmitButton disabled={isSubmitting}>Sign in</SubmitButton>
-          <Link to="/register">Register</Link>
-        </form>
-      )}
-    </Formik>
+    <FormBoxWrapper>
+      <FormBox>
+        <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
+          {({ handleSubmit, isSubmitting }) => (
+            <Form onSubmit={handleSubmit}>
+              <FormRow>
+                <Label htmlFor="email">Email</Label>
+                <LoginTextInput id="email" name="email" placeholder="Email" />
+              </FormRow>
+              <FormRow>
+                <Label htmlFor="password">Password</Label>
+                <LoginTextInput id="password" name="password" placeholder="Password" />
+              </FormRow>
+              <SubmitButton type="submit" disabled={isSubmitting}>
+                Submit
+              </SubmitButton>
+            </Form>
+          )}
+        </Formik>
+      </FormBox>
+      <BottomSection>
+        <BottomText>Don't have an account?</BottomText>
+        <Link to="/register">
+          <Button type="button">Sign up for free</Button>
+        </Link>
+      </BottomSection>
+    </FormBoxWrapper>
   );
 }
