@@ -1,19 +1,15 @@
 import React from 'react';
-import styled from 'styled-components';
 import InputMask from 'react-input-mask';
 import { useField } from 'formik';
 
-interface ITextInputProps {
+interface ITextInputProps extends React.HTMLProps<HTMLInputElement> {
   name: string;
-  type?: string;
 }
-
-const StyledTextInput = styled.input``;
 
 export default function TextInput({ name, ...props }: ITextInputProps) {
   const [field] = useField(name);
 
-  return <StyledTextInput {...field} {...props} />;
+  return <input {...field} {...props} />;
 }
 
 export const TextInputMask = (props: { mask: string }) => (
