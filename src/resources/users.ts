@@ -9,6 +9,7 @@ interface IUser {
 interface IRegistration {
   fullName: string;
   email: string;
+  country: string;
   password: string;
   passwordConfirmation: string;
   username: string;
