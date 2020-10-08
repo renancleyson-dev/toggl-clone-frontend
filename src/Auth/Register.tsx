@@ -7,6 +7,7 @@ import { UserContext } from '../Contexts/UserContext';
 import { requiredField } from '../helpers/validations';
 import { createUser } from '../resources/users';
 import { colors } from '../styles';
+import CountrySelect from './CountrySelect';
 import {
   FormBox,
   Form,
@@ -79,6 +80,7 @@ interface IForm {
   email: string;
   password: string;
   passwordConfirmation: string;
+  country: string;
 }
 
 const initialValues = {
@@ -88,6 +90,7 @@ const initialValues = {
   email: '',
   password: '',
   passwordConfirmation: '',
+  country: '',
 };
 
 interface IErrors {
@@ -125,6 +128,10 @@ const RegisterForm = () => {
     <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
       {({ handleSubmit, isSubmitting }) => (
         <Form onSubmit={handleSubmit}>
+          <FormRow>
+            <Label htmlFor="country-select">Country</Label>
+            <CountrySelect />
+          </FormRow>
           <TermsAndPrivacyFormRow>
             <TermsAndPrivacyCheckBox name="termsAndPolicy" id="accept-terms-checkbox" />
             <TermsAndPrivacyLabel htmlFor="accept-terms-checkbox">
