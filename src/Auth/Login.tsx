@@ -7,7 +7,6 @@ import { USER_KEY, JWT_KEY } from '../helpers/constants';
 import { login } from '../resources/users';
 import { setJsonWebToken } from '../axios';
 import {
-  FormBoxWrapper,
   FormBox,
   Form,
   Label,
@@ -58,7 +57,7 @@ export default function Login() {
   };
 
   return (
-    <FormBoxWrapper>
+    <>
       <FormBox>
         <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
           {({ handleSubmit, isSubmitting }) => (
@@ -84,6 +83,6 @@ export default function Login() {
           <Button type="button">Sign up for free</Button>
         </Link>
       </BottomSection>
-    </FormBoxWrapper>
+    </>
   );
 }

@@ -2,22 +2,28 @@ import styled from 'styled-components';
 import TextInput from '../Components/TextInput';
 import { colors, formContainer } from '../styles';
 
-// BASE STYLES
+export const Wrapper = styled.div`
+  background-color: ${colors.backgroundMedium};
+`;
 
 export const FormBoxWrapper = styled.div`
-  background-color: ${colors.backgroundMedium};
+  position: relative;
   height: 100%;
   overflow: auto;
   font-size: 18px;
   font-family: 'Inter', sans-serif;
+
+  @media only screen and (min-width: 700px) {
+    top: -80px;
+  }
 `;
 
 export const FormBox = styled.div`
   background-color: ${colors.backgroundDark};
   margin: 0 auto;
-  height: 600px;
+  padding: 90px 0 50px;
   width: 100%;
-  max-width: 660px;
+  max-width: 680px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,6 +39,10 @@ export const Form = styled.form`
 
 export const FormRow = styled.div`
   min-width: 100%;
+
+  &:not(:first-child) {
+    margin-top: 25px;
+  }
 `;
 
 export const Label = styled.label`
@@ -42,6 +52,14 @@ export const Label = styled.label`
 export const Text = styled.p`
   color: #fff;
   font-size: 18px;
+`;
+
+export const FakeAnchor = styled.span`
+  border-bottom: 1px solid ${colors.primary};
+
+  &:hover {
+    color: ${colors.primary};
+  }
 `;
 
 export const Button = styled.button`
@@ -67,6 +85,10 @@ export const BottomSection = styled.div`
   text-align: center;
 `;
 
+export const FormSection = styled.div`
+  min-width: 100%;
+`;
+
 export const LoginTextInput = styled(TextInput)`
   ${formContainer}
 
@@ -81,7 +103,7 @@ export const LoginTextInput = styled(TextInput)`
 `;
 
 export const SubmitButton = styled(Button)`
-  margin-top: 25px;
+  margin-top: 50px;
 `;
 
 export const BottomText = styled(Text)`

@@ -2,9 +2,8 @@ import React from 'react';
 import { Route, useHistory } from 'react-router-dom';
 import NoPage from './Components/NoPage';
 import PrivateRoute from './Components/PrivateRoute';
-import TrackerPage from './Routes/TrackerRoute';
-import Login from './Auth/Login';
-import Register from './Auth/Register';
+import TrackerRoute from './Routes/TrackerRoute';
+import AuthRoute from './Routes/AuthRoute';
 import { handleUnauthorizedResponse } from './axios';
 
 export default function Routes() {
@@ -13,9 +12,8 @@ export default function Routes() {
   handleUnauthorizedResponse(history);
   return (
     <>
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-      <PrivateRoute exact path="/" component={TrackerPage} />
+      <AuthRoute />
+      <PrivateRoute exact path="/" component={TrackerRoute} />
       <Route path="/" component={NoPage} />
     </>
   );
