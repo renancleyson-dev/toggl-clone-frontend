@@ -21,7 +21,7 @@ interface ISession extends IUser {
 // Authentication
 
 export const login = (loginParams: {
-  username: string;
+  email: string;
   password: string;
 }): Promise<ISession> =>
   axios.post('/login', loginParams).then((response) => response.data);
