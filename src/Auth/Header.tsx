@@ -36,7 +36,7 @@ const LogoutButton = styled.span`
   color: #fff;
   appearance: none;
   margin-right: 30px;
-  font-family: Lato, 'sans-serif';
+  font-family: Roboto, 'sans-serif';
 
   &:hover {
     color: ${colors.primary};

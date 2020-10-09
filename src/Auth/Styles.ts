@@ -70,7 +70,7 @@ export const Button = styled.button`
   background-color: ${colors.primary};
   color: #fff;
   font-size: 16px;
-  font-family: 'Lato', sans-serif;
+  font-family: Roboto, 'sans-serif';
   cursor: pointer;
 
   &:hover {
