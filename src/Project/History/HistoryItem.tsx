@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import { updateTimeRecord } from '../resources/timeRecords';
-import formatDuration from '../helpers/formatDuration';
-import { UserContext } from '../Contexts/UserContext';
-import Categories from '../Components/Categories';
-import { TextInput } from '../formStyles';
+import { updateTimeRecord } from '../../resources/timeRecords';
+import formatDuration from '../../helpers/formatDuration';
+import { UserContext } from '../../Contexts/UserContext';
+import Categories from '../../Components/Categories';
+import { TextInput } from '../../formStyles';
 import ManualTimer from './ManualTimer';
 
 const TimeRecordWrapper = styled.div``;

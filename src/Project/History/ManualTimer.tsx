@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
-import { UserContext } from '../Contexts/UserContext';
-import { toMoment, userFormat } from '../helpers/timeFormats';
-import { MANUAL_TRACKER_ICON } from '../helpers/constants';
-import TimeRecordEditor from '../Components/TimeRecordEditor';
+import { UserContext } from '../../Contexts/UserContext';
+import { toMoment, userFormat } from '../../helpers/timeFormats';
+import { MANUAL_TRACKER_ICON } from '../../helpers/constants';
+import TimeRecordEditor from '../../Components/TimeRecordEditor';
 
 const getDuration = (startTime: string, endTime: string) => {
   const startTimeMoment = moment(startTime, toMoment);

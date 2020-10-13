@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
-import format from '../helpers/formatDuration';
-import { TrackContext } from '../Contexts/TrackContext';
+import format from '../../helpers/formatDuration';
+import { TrackContext } from '../../Contexts/TrackContext';
 
 // UI to show duration of the tracking
 export default function Timer() {

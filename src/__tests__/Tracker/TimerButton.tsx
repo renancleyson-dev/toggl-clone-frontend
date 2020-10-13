@@ -7,7 +7,7 @@ import moment from 'moment';
 import MockedTrackContext from '../../__mocks__/MockedTrackContext';
 import MockedUserContext from '../../__mocks__/MockedUserContext';
 import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../../helpers/constants';
-import TimerButton from '../../Tracker/TimerButton';
+import TimerButton from '../../Project/Tracker/TimerButton';
 
 jest.useFakeTimers();
 

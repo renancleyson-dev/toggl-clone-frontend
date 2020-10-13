@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import MockedTrackContext from '../../__mocks__/MockedTrackContext';
 import MockedUserContext from '../../__mocks__/MockedUserContext';
-import Tracker from '../../Tracker/Tracker';
+import Tracker from '../../Project/Tracker';
 
 let container: HTMLDivElement;
 beforeEach(() => {

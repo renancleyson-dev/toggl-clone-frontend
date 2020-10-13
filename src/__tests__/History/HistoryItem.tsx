@@ -3,7 +3,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import moment from 'moment';
 import MockedTrackContext from '../../__mocks__/MockedTrackContext';
-import HistoryItem from '../../History/HistoryItem';
+import HistoryItem from '../../Project/History/HistoryItem';
 
 let container: HTMLDivElement;
 beforeEach(() => {

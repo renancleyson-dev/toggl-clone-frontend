@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../helpers/constants';
-import { UserContext } from '../Contexts/UserContext';
-import { TrackContext } from '../Contexts/TrackContext';
-import { createTimeRecord } from '../resources/timeRecords';
+import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../../helpers/constants';
+import { UserContext } from '../../Contexts/UserContext';
+import { TrackContext } from '../../Contexts/TrackContext';
+import { createTimeRecord } from '../../resources/timeRecords';
 
 const Button = styled.button``;
 const Icon = styled.img``;
