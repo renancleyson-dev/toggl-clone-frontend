@@ -41,8 +41,9 @@ const LogoutButton = styled.span`
   &:hover {
     color: ${colors.primary};
   }
+
   &:hover div {
-    border-color: ${colors.primary};
+    border-left: 4px solid ${colors.primary};
   }
 `;
 

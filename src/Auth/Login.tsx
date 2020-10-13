@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { Formik } from 'formik';
 import { UserContext } from '../Contexts/UserContext';
 import { requiredField } from '../helpers/validations';
@@ -17,7 +17,7 @@ import {
   FormRow,
   BottomSection,
 } from './Styles';
-import { Link } from 'react-router-dom';
+import Layout from './Layout';
 
 interface IForm {
   email: string;
@@ -57,7 +57,7 @@ export default function Login() {
   };
 
   return (
-    <>
+    <Layout>
       <FormBox>
         <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
           {({ handleSubmit, isSubmitting }) => (
@@ -68,7 +68,12 @@ export default function Login() {
               </FormRow>
               <FormRow>
                 <Label htmlFor="password">Password</Label>
-                <LoginTextInput id="password" name="password" placeholder="Password" />
+                <LoginTextInput
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                />
               </FormRow>
               <SubmitButton type="submit" disabled={isSubmitting}>
                 Submit
@@ -83,6 +88,6 @@ export default function Login() {
           <Button type="button">Sign up for free</Button>
         </Link>
       </BottomSection>
-    </>
+    </Layout>
   );
 }

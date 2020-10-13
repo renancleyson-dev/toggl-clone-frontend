@@ -21,6 +21,7 @@ import {
   BottomSection,
   FormSection,
 } from './Styles';
+import Layout from './Layout';
 
 export const TermsAndPrivacyFormRow = styled.div`
   padding: 50px 0;
@@ -166,7 +167,7 @@ const RegisterForm = () => {
 
 export default function Register() {
   return (
-    <>
+    <Layout>
       <FormBox>
         <RegisterForm />
       </FormBox>
@@ -176,6 +177,6 @@ export default function Register() {
           <Button type="button">Login</Button>
         </Link>
       </BottomSection>
-    </>
+    </Layout>
   );
 }
