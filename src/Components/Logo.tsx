@@ -25,13 +25,7 @@ export default function Logo() {
           points="0.214938325 0.0445291139 14.5010254 0.0445291139 14.5010254 22.3842759 0.214938325 22.3842759"
         ></polygon>
       </defs>
-      <g
-        id="Desktop-Track"
-        stroke="none"
-        stroke-width="1"
-        fill="none"
-        fill-rule="evenodd"
-      >
+      <g id="Desktop-Track" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
         <g id="Toggl_Navigation_Product-1" transform="translate(-28.000000, -58.000000)">
           <g id="Menu">
             <g id="logo" transform="translate(28.000000, 58.000000)">
