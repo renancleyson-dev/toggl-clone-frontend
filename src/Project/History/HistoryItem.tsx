@@ -5,7 +5,7 @@ import { updateTimeRecord } from '../../resources/timeRecords';
 import formatDuration from '../../helpers/formatDuration';
 import { UserContext } from '../../Contexts/UserContext';
 import Categories from '../../Components/Categories';
-import { TextInput } from '../../formStyles';
+import { TextInput } from '../Styles';
 import ManualTimer from './ManualTimer';
 
 const TimeRecordWrapper = styled.div``;
