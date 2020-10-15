@@ -1,26 +1,34 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
+import { IoIosPlayCircle } from 'react-icons/io';
+import { RiStopCircleFill } from 'react-icons/ri';
 import moment from 'moment';
-import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../../helpers/constants';
 import { UserContext } from '../../Contexts/UserContext';
 import { TrackContext } from '../../Contexts/TrackContext';
 import { createTimeRecord } from '../../resources/timeRecords';
 
-const Button = styled.button``;
-const Icon = styled.img``;
+const Button = styled.button`
+  padding: 0;
+  display: flex;
+  align-items: center;
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  font-size: 45px;
+
+  &:focus {
+    outline: none;
+  }
+`;
 
 // UI to manage the start time, end time and the post request of the time record
 export default function TimerButton() {
-  const [icon, setIcon] = useState(START_BUTTON_ICON);
-  const [fallback, setFallback] = useState('Start Tracking');
   const { user } = useContext(UserContext);
   const { startTime, setStartTime, isTracking, setIsTracking } = useContext(TrackContext);
 
   useEffect(() => {
     if (isTracking && !startTime) {
       setStartTime(moment());
-      setIcon(STOP_BUTTON_ICON);
-      setFallback('Stop Tracking');
     } else if (!isTracking) {
       if (startTime && user?.id) {
         const endTime = moment();
@@ -28,8 +36,6 @@ export default function TimerButton() {
       }
 
       setStartTime(undefined);
-      setIcon(START_BUTTON_ICON);
-      setFallback('Start Tracking');
     }
   }, [isTracking, user, startTime, setStartTime]);
 
@@ -39,7 +45,7 @@ export default function TimerButton() {
       data-testid="timer-button"
       onClick={() => setIsTracking((prevState: boolean) => !prevState)}
     >
-      <Icon src={icon} alt={fallback} data-testid="timer-icon" />
+      {isTracking ? <RiStopCircleFill /> : <IoIosPlayCircle />}
     </Button>
   );
 }

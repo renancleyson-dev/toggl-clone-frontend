@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
+import styled from 'styled-components';
 import moment from 'moment';
 import format from '../../helpers/formatDuration';
 import { TrackContext } from '../../Contexts/TrackContext';
+
+const TimerWrapper = styled.div`
+  padding: 5px 7px;
+  border-radius: 7px;
+  font-weight: 600;
+  &:hover {
+    background-color: rgb(251, 229, 247);
+  }
+`;
 
 // UI to show duration of the tracking
 export default function Timer() {
@@ -19,10 +29,17 @@ export default function Timer() {
       timer = handleOnTracking();
     } else {
       setDuration(moment.duration(0));
-      if (timer > -1) clearInterval(timer);
+      if (timer > -1) {
+        clearInterval(timer);
+      }
     }
+
     return () => clearInterval(timer);
   }, [isTracking, startTime]);
 
-  return <div data-testid="timer-content">{format(duration)}</div>;
+  return (
+    <TimerWrapper data-testid="timer-content">
+      <span>{format(duration)}</span>
+    </TimerWrapper>
+  );
 }
