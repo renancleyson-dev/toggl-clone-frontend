@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { RiTimeFill, RiMenuFill, RiFolder2Fill } from 'react-icons/ri';
+import { BiDollar } from 'react-icons/bi';
 import { BsFillTagFill } from 'react-icons/bs';
 import { TextInput } from '../Styles';
 import Timer from './Timer';
@@ -8,13 +9,13 @@ import TimerButton from './TimerButton';
 
 const TrackerBar = styled.div`
   display: flex;
-  padding: 10px;
+  padding: 10px 10px 10px 20px;
   background-color: #fff;
   box-shadow: 0px 1px 8px 0px #bebebe;
 `;
 
 const TimerMenu = styled.div`
-  min-width: 250px;
+  min-width: 300px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,15 +33,10 @@ const ModeMenu = styled.div`
 
 const LabelInput = styled(TextInput)`
   flex: 1 1 100%;
-  padding-left: 10px;
   font-size: 16px;
 
   &::placeholder {
     font-size: 18px;
-  }
-
-  &:focus {
-    outline: none;
   }
 `;
 
@@ -52,6 +48,7 @@ export default function Tracker() {
       <TimerMenu>
         <RiFolder2Fill />
         <BsFillTagFill />
+        <BiDollar />
         <Timer />
         <TimerButton />
         <ModeMenu>
