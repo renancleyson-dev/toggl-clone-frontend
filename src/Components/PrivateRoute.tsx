@@ -8,7 +8,9 @@ export default function PrivateRoute({ component: Component, ...rest }: RoutePro
   const userId = localStorage.getItem(USER_KEY);
   const { user } = useContext(UserContext);
 
-  if (!Component || (userId && !user.id)) {
+  const isLoadingUser = () => userId && !user.id;
+
+  if (!Component || isLoadingUser()) {
     return <Loader />;
   }
 
