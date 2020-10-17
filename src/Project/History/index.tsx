@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import styled from 'styled-components';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroller';
 import { UserContext } from '../../Contexts/UserContext';
@@ -12,6 +13,8 @@ interface ITimeRecord {
   category: string;
   id: number;
 }
+
+const HistoryWrapper = styled.div``;
 
 const recordsMapper = ({ startTime, endTime, label, category, id }: ITimeRecord) => (
   <HistoryItem
@@ -52,7 +55,7 @@ export default function History() {
 
   return (
     <InfiniteScroll isReverse loadMore={loadMore} hasMore={hasMore} loader={loader}>
-      {records}
+      <HistoryWrapper>{records}</HistoryWrapper>
     </InfiniteScroll>
   );
 }

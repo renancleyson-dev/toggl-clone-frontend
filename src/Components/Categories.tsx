@@ -1,8 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { TrackContext } from '../Contexts/TrackContext';
+import { BsFillTagFill } from 'react-icons/bs';
 
-const Category = styled.select``;
+const CategoriesWrapper = styled.div`
+  margin-right: 30px;
+  display: inline-block;
+`;
 
 interface Props {
   category: string;
@@ -11,23 +14,9 @@ interface Props {
 
 // UI to show and edit the categories of a time record
 export default function Categories({ category, onChange }: Props) {
-  const { categories } = useContext(TrackContext);
-
-  const categoryOptions =
-    categories &&
-    categories.map((actualCategory) => (
-      <option
-        key={actualCategory}
-        value={actualCategory}
-        data-testid="time-record-categories"
-      >
-        {actualCategory}
-      </option>
-    ));
-
   return (
-    <Category data-testid="time-record-category" value={category} onChange={onChange}>
-      {categoryOptions}
-    </Category>
+    <CategoriesWrapper data-hover>
+      <BsFillTagFill />
+    </CategoriesWrapper>
   );
 }

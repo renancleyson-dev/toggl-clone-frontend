@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { UserContext } from '../../Contexts/UserContext';
 import { toMoment, userFormat } from '../../helpers/timeFormats';
 import { MANUAL_TRACKER_ICON } from '../../helpers/constants';
 import TimeRecordEditor from '../../Components/TimeRecordEditor';
@@ -35,14 +34,13 @@ export default function ManualTimer({ id, startTime, endTime }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [timeRecordStartTime, setTimeRecordStartTime] = useState<string>('');
   const [timeRecordEndTime, setTimeRecordEndTime] = useState<string>('');
-  const { user } = useContext(UserContext);
 
   useEffect(() => {
     if (!(timeRecordStartTime && timeRecordEndTime)) {
       setTimeRecordStartTime(startTime.format(userFormat));
       setTimeRecordEndTime(endTime.format(userFormat));
     }
-  }, [timeRecordStartTime, timeRecordEndTime, startTime, endTime, user, id, isOpen]);
+  }, [timeRecordStartTime, timeRecordEndTime, startTime, endTime]);
 
   if (!isOpen) return <ShowButton isOpen={isOpen} setIsOpen={setIsOpen} />;
   return (
