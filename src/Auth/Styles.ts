@@ -1,6 +1,15 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import TextInput from '../Components/TextInput';
-import { colors, formContainer } from '../styles';
+import { colors } from '../styles';
+
+export const formContainer = css`
+  margin-top: 10px;
+  padding-left: 15px;
+  border: solid 2px #aeaeae;
+  height: 50px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+`;
 
 export const Wrapper = styled.div`
   background-color: ${colors.backgroundMedium};
