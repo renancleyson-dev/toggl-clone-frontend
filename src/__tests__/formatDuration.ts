@@ -1,14 +1,14 @@
 import moment from 'moment';
 import formatDuration from '../helpers/formatDuration';
 
-it('formats a Duration with less than one hour to MM:SS', (): void => {
+it('formats a Duration with less than one hour to H:MM:SS', (): void => {
   const formattedDuration = formatDuration(
     moment.duration({
       minutes: 20,
       seconds: 10,
     })
   );
-  expect(formattedDuration).toBe('20:10');
+  expect(formattedDuration).toBe('0:20:10');
 });
 
 it('formats a Duration with greater than one hour to H:MM:SS', (): void => {
