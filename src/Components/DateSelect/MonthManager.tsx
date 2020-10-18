@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { PREVIOUS_BUTTON_ICON, NEXT_BUTTON_ICON } from '../../helpers/constants';
+import { PREVIOUS_BUTTON_ICON, NEXT_BUTTON_ICON } from 'src/helpers/constants';
 
 const CurrentMonth = styled.div``;
 const MonthManagerWrapper = styled.div``;

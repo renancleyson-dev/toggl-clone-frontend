@@ -3,10 +3,10 @@ import moment from 'moment';
 import styled from 'styled-components';
 import { RiFolder2Fill } from 'react-icons/ri';
 import { BsFillPlayFill, BsThreeDotsVertical } from 'react-icons/bs';
-import { updateTimeRecord } from '../../resources/timeRecords';
-import formatDuration from '../../helpers/formatDuration';
-import { UserContext } from '../../Contexts/UserContext';
-import Categories from '../../Components/Categories';
+import { updateTimeRecord } from 'src/resources/timeRecords';
+import formatDuration from 'src/helpers/formatDuration';
+import { UserContext } from 'src/Contexts/UserContext';
+import Categories from 'src/Components/Categories';
 import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);

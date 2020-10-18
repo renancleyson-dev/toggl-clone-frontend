@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import MockedTrackContext from '../../__mocks__/MockedTrackContext';
-import MockedUserContext from '../../__mocks__/MockedUserContext';
-import Tracker from '../../Project/Tracker';
+import MockedTrackContext from 'src/__mocks__/MockedTrackContext';
+import MockedUserContext from 'src/__mocks__/MockedUserContext';
+import Tracker from 'src/Project/Tracker';
 
 let container: HTMLDivElement;
 beforeEach(() => {
