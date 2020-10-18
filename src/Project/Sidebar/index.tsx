@@ -65,8 +65,8 @@ export default function Sidebar() {
   const [selected] = useState(0);
   const ElementOptions = sidebarOptions.map(
     ({ name, route, Icon }: ISidebarOption, index) => (
-      <Link to={route}>
-        <SidebarRow key={name} selected={selected === index}>
+      <Link to={route} key={name}>
+        <SidebarRow selected={selected === index}>
           <Icon />
           <OptionText>{name}</OptionText>
         </SidebarRow>
