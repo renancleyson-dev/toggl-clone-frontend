@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroller';
 import { UserContext } from '../../Contexts/UserContext';
-import { fetchTimeRecord } from '../../resources/timeRecords';
+import { fetchTimeRecords } from '../../resources/timeRecords';
 import HistoryItem from './HistoryItem';
 
 interface ITimeRecord {
@@ -14,7 +14,36 @@ interface ITimeRecord {
   id: number;
 }
 
-const HistoryWrapper = styled.div``;
+interface IGroupedTimeRecords {
+  date: string;
+  timeRecords: ITimeRecord[];
+}
+
+const dateGroupsReducer = (
+  groups: IGroupedTimeRecords[],
+  actualGroupedTimeRecords: IGroupedTimeRecords
+) => {
+  const { date } = actualGroupedTimeRecords;
+  const dateIndex = groups.findIndex(
+    (groupedTimeRecords) => date === groupedTimeRecords.date
+  );
+
+  if (dateIndex === -1) {
+    return [...groups, actualGroupedTimeRecords];
+  }
+
+  const newGroupedTimeRecords = groups[dateIndex].timeRecords.concat(
+    actualGroupedTimeRecords.timeRecords
+  );
+  groups[dateIndex].timeRecords = newGroupedTimeRecords;
+  return groups;
+};
+
+const HistoryWrapper = styled.div`
+  margin-top: 60px;
+`;
+
+const DayHistory = styled.div``;
 
 const recordsMapper = ({ startTime, endTime, label, category, id }: ITimeRecord) => (
   <HistoryItem
@@ -35,16 +64,20 @@ const loader = (
 
 // infinite scroll to control and inform about time records
 export default function History() {
-  const [timeRecords, setTimeRecords] = useState<ITimeRecord[]>([]);
+  const [groupedTimeRecords, setGroupedTimeRecords] = useState<IGroupedTimeRecords[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const { user } = useContext(UserContext);
-  const records = timeRecords.map(recordsMapper);
+  const groups = groupedTimeRecords.map(({ date, timeRecords }) => (
+    <DayHistory>{timeRecords.map(recordsMapper)}</DayHistory>
+  ));
 
   const loadMore = (page: number) => {
     if (user && user.id) {
-      fetchTimeRecord(page).then((response) => {
+      fetchTimeRecords(page).then((response) => {
         if (response) {
-          setTimeRecords((prevState: ITimeRecord[]) => [...prevState, ...response.data]);
+          setGroupedTimeRecords((prevState: IGroupedTimeRecords[]) =>
+            response.data.reduce(dateGroupsReducer, prevState)
+          );
           if (!response.data.length) {
             setHasMore(false);
           }
@@ -55,7 +88,7 @@ export default function History() {
 
   return (
     <InfiniteScroll isReverse loadMore={loadMore} hasMore={hasMore} loader={loader}>
-      <HistoryWrapper>{records}</HistoryWrapper>
+      <HistoryWrapper>{groups}</HistoryWrapper>
     </InfiniteScroll>
   );
 }

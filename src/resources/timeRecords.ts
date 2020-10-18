@@ -8,10 +8,15 @@ interface ITimeRecord {
   id: number;
 }
 
-export const fetchTimeRecord = async (
+interface IGroupedTimeRecords {
+  date: string;
+  timeRecords: ITimeRecord[];
+}
+
+export const fetchTimeRecords = async (
   page: number,
   perPage = 3
-): Promise<{ data: ITimeRecord[] }> =>
+): Promise<{ data: IGroupedTimeRecords[] }> =>
   axios.get('/time_records', {
     params: { page, per_page: perPage },
   });
