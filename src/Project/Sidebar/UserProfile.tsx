@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { UserContext } from 'src/Contexts/UserContext';
-import formatLongString from 'src/helpers/formatLongString';
 import { colors } from 'src/styles';
 
 const UserProfileWrapper = styled.div`
@@ -24,12 +23,19 @@ const AvatarSection = styled.div`
   border-radius: 50%;
 `;
 
-const UserFullName = styled.span`
+const TextWithEllipsis = styled.span`
+  max-width: 120px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+
+const UserFullName = styled(TextWithEllipsis)`
   color: ${colors.pinkLight};
   font-size: 13px;
 `;
 
-const UserEmail = styled.span`
+const UserEmail = styled(TextWithEllipsis)`
   font-size: 12px;
 `;
 
@@ -39,8 +45,8 @@ export default function UserProfile() {
   return (
     <UserProfileWrapper>
       <TextSection>
-        <UserFullName>{formatLongString(user.fullName)}</UserFullName>
-        <UserEmail>{formatLongString(user.email)}</UserEmail>
+        <UserFullName>{user.fullName}</UserFullName>
+        <UserEmail>{user.email}</UserEmail>
       </TextSection>
       <AvatarSection />
     </UserProfileWrapper>
