@@ -12,7 +12,8 @@ const ProjectWrapper = styled.div`
 `;
 
 const Content = styled.div`
-  flex-basis: 100%;
+  position: relative;
+  flex: 1 1 100%;
   overflow: auto;
 `;
 

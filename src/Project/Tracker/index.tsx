@@ -8,10 +8,14 @@ import Timer from './Timer';
 import TimerButton from './TimerButton';
 
 const TrackerBar = styled.div`
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
   display: flex;
   padding: 10px 10px 10px 20px;
   background-color: #fff;
-  box-shadow: 0px 1px 8px 0px #bebebe;
+  box-shadow: 0px 1px 8px 0px #ccc;
 `;
 
 const TimerMenu = styled.div`
