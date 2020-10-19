@@ -28,7 +28,7 @@ export const FormBoxWrapper = styled.div`
 `;
 
 export const FormBox = styled.div`
-  background-color: ${colors.backgroundDark};
+  background-color: ${colors.purpleDark};
   margin: 0 auto;
   padding: 90px 0 50px;
   width: 100%;

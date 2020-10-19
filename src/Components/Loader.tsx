@@ -14,7 +14,7 @@ const rotate = keyframes`
 `;
 
 const LoaderWrapper = styled.div`
-  background-color: ${colors.backgroundDark};
+  background-color: ${colors.purpleDark};
   height: 100%;
   display: flex;
   flex-direction: column;
