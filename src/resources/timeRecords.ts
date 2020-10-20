@@ -1,6 +1,7 @@
 import axios from '../axios';
 
 interface ITimeRecord {
+  duration: number;
   startTime: string;
   endTime: string;
   label: string;
@@ -8,7 +9,7 @@ interface ITimeRecord {
   id: number;
 }
 
-interface IGroupedTimeRecords {
+interface IDateGroup {
   date: string;
   timeRecords: ITimeRecord[];
 }
@@ -16,7 +17,7 @@ interface IGroupedTimeRecords {
 export const fetchTimeRecords = async (
   page: number,
   perPage = 3
-): Promise<{ data: IGroupedTimeRecords[] }> =>
+): Promise<{ data: IDateGroup[] }> =>
   axios.get('/time_records', {
     params: { page, per_page: perPage },
   });

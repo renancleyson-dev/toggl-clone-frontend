@@ -12,11 +12,10 @@ import { TextInput } from '../Styles';
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
 
 const TimeRecordWrapper = styled.div`
-  padding: 7px 10px 7px 20px;
+  padding: 10px 10px 10px 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fff;
   border-bottom: 1px solid #eee;
   font-size: 14px;
 
