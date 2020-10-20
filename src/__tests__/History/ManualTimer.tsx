@@ -3,10 +3,10 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent, queryByTestId } from '@testing-library/react';
 import moment from 'moment';
-import ManualTimer from '../../Project/History/ManualTimer';
-import { userFormat } from '../../helpers/timeFormats';
-import MockedTrackContext from '../../__mocks__/MockedTrackContext';
-import MockedUserContext from '../../__mocks__/MockedUserContext';
+import ManualTimer from 'src/Project/History/ManualTimer';
+import { userFormat } from 'src/helpers/timeFormats';
+import MockedTrackContext from 'src/__mocks__/MockedTrackContext';
+import MockedUserContext from 'src/__mocks__/MockedUserContext';
 
 jest.mock('axios');
 

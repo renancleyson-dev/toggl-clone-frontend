@@ -2,8 +2,8 @@ import React from 'react';
 import moment from 'moment';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import MockedTrackContext from '../../__mocks__/MockedTrackContext';
-import Timer from '../../Project/Tracker/Timer';
+import MockedTrackContext from 'src/__mocks__/MockedTrackContext';
+import Timer from 'src/Project/Tracker/Timer';
 
 jest.useFakeTimers();
 

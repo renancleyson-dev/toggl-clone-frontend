@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import History from '../../Project/History';
-import MockedUserContext from '../../__mocks__/MockedUserContext';
+import History from 'src/Project/History';
+import MockedUserContext from 'src/__mocks__/MockedUserContext';
 
 let container: HTMLDivElement;
 beforeEach(() => {

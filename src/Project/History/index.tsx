@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroller';
-import { UserContext } from '../../Contexts/UserContext';
-import { fetchTimeRecords } from '../../resources/timeRecords';
+import { UserContext } from 'src/Contexts/UserContext';
+import { fetchTimeRecords } from 'src/resources/timeRecords';
 import DateGroup from './DateGroup';
 
 interface ITimeRecord {

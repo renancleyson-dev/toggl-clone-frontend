@@ -1,13 +1,13 @@
 import React from 'react';
-import mockAxios from '../../../__mocks__/axios';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/react';
 import moment from 'moment';
-import MockedTrackContext from '../../__mocks__/MockedTrackContext';
-import MockedUserContext from '../../__mocks__/MockedUserContext';
-import { START_BUTTON_ICON, STOP_BUTTON_ICON } from '../../helpers/constants';
-import TimerButton from '../../Project/Tracker/TimerButton';
+import mockAxios from '../../../__mocks__/axios';
+import MockedTrackContext from 'src/__mocks__/MockedTrackContext';
+import MockedUserContext from 'src/__mocks__/MockedUserContext';
+import { START_BUTTON_ICON, STOP_BUTTON_ICON } from 'src/helpers/constants';
+import TimerButton from 'src/Project/Tracker/TimerButton';
 
 jest.useFakeTimers();
 

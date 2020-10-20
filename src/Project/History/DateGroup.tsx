@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { FaList } from 'react-icons/fa';
-import formatDuration from '../../helpers/formatDuration';
-import { colors } from '../../styles';
+import formatDuration from 'src/helpers/formatDuration';
+import { colors } from 'src/styles';
 import HistoryItem from './HistoryItem';
 
 interface ITimeRecord {

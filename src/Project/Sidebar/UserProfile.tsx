@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { UserContext } from '../../Contexts/UserContext';
-import { colors } from '../../styles';
+import { UserContext } from 'src/Contexts/UserContext';
+import { colors } from 'src/styles';
 
 const UserProfileWrapper = styled.div`
   padding: 0 15px;
