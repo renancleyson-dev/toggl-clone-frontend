@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { IconType } from 'react-icons/lib';
 import { RiTimeFill } from 'react-icons/ri';
-import Logo from 'src/Components/Logo';
-import { colors } from 'src/styles';
+import Logo from '../../Components/Logo';
+import { colors } from '../../styles';
 import UserProfile from './UserProfile';
 
 interface ISidebarOption {

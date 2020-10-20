@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { PREVIOUS_BUTTON_ICON, NEXT_BUTTON_ICON } from 'src/helpers/constants';
+import { PREVIOUS_BUTTON_ICON, NEXT_BUTTON_ICON } from '../../helpers/constants';
 import DaysGrid from './DaysGrid';
 import MonthManager from './MonthManager';
 

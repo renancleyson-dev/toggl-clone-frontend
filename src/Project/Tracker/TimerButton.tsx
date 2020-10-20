@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { IoIosPlayCircle } from 'react-icons/io';
 import { RiStopCircleFill } from 'react-icons/ri';
 import moment from 'moment';
-import { UserContext } from 'src/Contexts/UserContext';
-import { TrackContext } from 'src/Contexts/TrackContext';
-import { createTimeRecord } from 'src/resources/timeRecords';
+import { UserContext } from '../../Contexts/UserContext';
+import { TrackContext } from '../../Contexts/TrackContext';
+import { createTimeRecord } from '../../resources/timeRecords';
 
 const Button = styled.button`
   padding: 0;

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import Select from 'src/Components/Select';
-import { colors } from 'src/styles';
+import Select from '../../Components/Select';
+import { colors } from '../../styles';
 import { formContainer } from '../Styles';
 import countries from './countries';
 import SelectArrow from './SelectArrow';

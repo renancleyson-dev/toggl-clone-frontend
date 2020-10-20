@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import format from 'src/helpers/formatDuration';
-import { TrackContext } from 'src/Contexts/TrackContext';
+import format from '../../helpers/formatDuration';
+import { TrackContext } from '../../Contexts/TrackContext';
 
 const TimerWrapper = styled.div`
   padding: 5px 7px;
