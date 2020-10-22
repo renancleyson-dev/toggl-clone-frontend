@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 
-export default (ref: React.MutableRefObject<null | HTMLElement>, callback: Function) => {
+export default (ref: React.MutableRefObject<null | Node>, callback: Function) => {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const current = ref.current;
-      if (current !== null && event.target instanceof HTMLElement) {
+      if (current !== null && event.target instanceof Node) {
         !current.contains(event.target) && callback();
       }
     }
