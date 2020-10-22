@@ -5,6 +5,10 @@ import useOnClickOutside from 'src/hooks/useOutsideCallback';
 import { StackedBox, AddButtonWrapper, colors } from '../styles';
 import SearchInput, { Input } from './SearchInput';
 
+const UnshowedWrapper = styled.div`
+  cursor: pointer;
+`;
+
 const ProjectsWrapper = styled.div`
   position: relative;
   line-height: 0;
@@ -36,6 +40,7 @@ const AddButtonIcon = styled.span`
   font-size: 20px;
   color: ${colors.primary};
   margin-right: 5px;
+  cursor: pointer;
 `;
 
 export default function Projects() {
@@ -45,7 +50,7 @@ export default function Projects() {
 
   if (!showBox) {
     return (
-      <ProjectsWrapper>
+      <UnshowedWrapper>
         <div
           onClick={() => {
             setShowBox((prevState: boolean) => !prevState);
@@ -53,7 +58,7 @@ export default function Projects() {
         >
           <RiFolder2Fill />
         </div>
-      </ProjectsWrapper>
+      </UnshowedWrapper>
     );
   }
   return (

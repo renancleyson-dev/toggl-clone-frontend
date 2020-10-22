@@ -15,6 +15,7 @@ export const AddButtonWrapper = styled.div`
   padding: 10px 0;
   border-top: 1px solid rgb(251, 229, 247);
   text-align: center;
+  cursor: pointer;
 `;
 
 export const StackedBox = styled.div`
