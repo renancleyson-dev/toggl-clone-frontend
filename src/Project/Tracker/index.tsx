@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { RiTimeFill, RiMenuFill, RiFolder2Fill } from 'react-icons/ri';
+import { RiTimeFill, RiMenuFill } from 'react-icons/ri';
 import { BiDollar } from 'react-icons/bi';
 import { BsFillTagFill } from 'react-icons/bs';
+import Projects from 'src/Components/Projects';
 import { TextInput } from '../Styles';
 import Timer from './Timer';
 import TimerButton from './TimerButton';
@@ -50,7 +51,7 @@ export default function Tracker() {
     <TrackerBar>
       <LabelInput placeholder="What are you working on?" />
       <TimerMenu>
-        <RiFolder2Fill />
+        <Projects />
         <BsFillTagFill />
         <BiDollar />
         <Timer />
