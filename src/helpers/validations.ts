@@ -1,5 +1,5 @@
 const genericMessages = {
-  required: 'Este campo deve ser preenchido',
+  required: 'Required',
 };
 
 export const requiredField = (
