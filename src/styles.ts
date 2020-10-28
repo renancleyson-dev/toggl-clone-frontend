@@ -11,23 +11,26 @@ export const colors = {
   backgroundMedium: '#412a4c',
 };
 
+export const positionedModalStyles = {
+  overlay: {
+    zIndex: 101,
+    backgroundColor: 'transparent',
+  },
+  content: {
+    boxShadow: '0px 0px 5px 0px #ccc',
+    border: 'none',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+    fontSize: '14px',
+  },
+};
+
 export const AddButtonWrapper = styled.div`
   min-width: 100%;
   padding: 10px 0;
   border-top: 1px solid rgb(251, 229, 247);
   text-align: center;
   cursor: pointer;
-`;
-
-export const StackedBox = styled.div`
-  position: absolute;
-  top: 35px;
-  right: -130px;
-  padding-top: 15px;
-  box-shadow: 0px 0px 7px 1px #ccc;
-  border-radius: 8px;
-  background-color: #fff;
-  z-index: 100;
 `;
 
 export const CreateButton = styled.div`
@@ -50,7 +53,7 @@ export const InputStyles = css`
   color: #333;
   font-size: 14px;
   border-radius: 6px;
-  width: 93%;
+  width: 100%;
   padding-left: 32px;
   height: 30px;
   font-family: Roboto, Helvica, sans-serif;
