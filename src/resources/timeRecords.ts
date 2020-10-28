@@ -1,18 +1,5 @@
 import axios from '../axios';
-
-interface ITimeRecord {
-  duration: number;
-  startTime: string;
-  endTime: string;
-  label: string;
-  category: string;
-  id: number;
-}
-
-interface IDateGroup {
-  date: string;
-  timeRecords: ITimeRecord[];
-}
+import { IDateGroup, ITimeRecord } from '../types/timeRecord';
 
 export const fetchTimeRecords = async (
   page: number,

@@ -1,23 +1,5 @@
 import axios from '../axios';
-
-interface IUser {
-  id: number;
-  fullName: string;
-  email: string;
-}
-
-interface IRegistration {
-  fullName: string;
-  email: string;
-  country: string;
-  password: string;
-  passwordConfirmation: string;
-  username: string;
-}
-
-interface ISession extends IUser {
-  authToken: string;
-}
+import { IUser, IRegistration, ISession } from '../types/users';
 
 // Authentication
 

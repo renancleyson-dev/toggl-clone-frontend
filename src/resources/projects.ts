@@ -1,9 +1,5 @@
 import axios from '../axios';
-
-interface IProject {
-  name: string;
-  color: string;
-}
+import { IProject } from '../types/projects';
 
 export const fetchProjects = (): Promise<{ data: IProject[] }> => axios.get('/projects');
 

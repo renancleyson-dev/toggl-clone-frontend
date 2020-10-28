@@ -4,16 +4,8 @@ import moment from 'moment';
 import { FaList } from 'react-icons/fa';
 import formatDuration from 'src/helpers/formatDuration';
 import { colors } from 'src/styles';
+import { ITimeRecord } from 'src/types/timeRecord';
 import HistoryItem from './HistoryItem';
-
-interface ITimeRecord {
-  duration: number;
-  startTime: string;
-  endTime: string;
-  label: string;
-  category: string;
-  id: number;
-}
 
 interface Props {
   date: string;

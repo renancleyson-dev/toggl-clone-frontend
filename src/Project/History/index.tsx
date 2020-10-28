@@ -3,21 +3,8 @@ import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroller';
 import { UserContext } from 'src/Contexts/UserContext';
 import { fetchTimeRecords } from 'src/resources/timeRecords';
+import { IDateGroup } from 'src/types/timeRecord';
 import DateGroup from './DateGroup';
-
-interface ITimeRecord {
-  duration: number;
-  startTime: string;
-  endTime: string;
-  label: string;
-  category: string;
-  id: number;
-}
-
-interface IDateGroup {
-  date: string;
-  timeRecords: ITimeRecord[];
-}
 
 const dateGroupsReducer = (groups: IDateGroup[], actualDateGroup: IDateGroup) => {
   const { date, timeRecords } = actualDateGroup;

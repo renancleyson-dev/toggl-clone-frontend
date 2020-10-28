@@ -2,15 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { setJsonWebToken } from '../axios';
 import { USER_KEY, JWT_KEY } from '../helpers/constants';
 import { fetchUser } from '../resources/users';
+import { IUser } from '../types/users';
 
 interface Props {
   children: React.ReactNode;
-}
-
-interface IUser {
-  id: number;
-  fullName: string;
-  email: string;
 }
 
 interface ContextValue {
