@@ -18,22 +18,6 @@ const SearchIconWrapper = styled.div`
   align-items: center;
 `;
 
-export const Input = styled.input`
-  border: 1px solid #aaa;
-  color: #333;
-  font-size: 14px;
-  border-radius: 6px;
-  width: 100%;
-  padding-left: 32px;
-  height: 30px;
-
-  &:focus {
-    outline: none;
-    border: none;
-    background-color: #f5f5f5;
-  }
-`;
-
 interface Props {
   children: React.ReactNode;
 }
