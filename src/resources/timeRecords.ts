@@ -1,12 +1,15 @@
+import { CancelTokenSource } from 'axios';
 import axios from '../axios';
 import { IDateGroup, ITimeRecord } from '../types/timeRecord';
 
 export const fetchTimeRecords = async (
   page: number,
+  source?: CancelTokenSource,
   perPage = 3
 ): Promise<{ data: IDateGroup[] }> =>
   axios.get('/time_records', {
     params: { page, per_page: perPage },
+    cancelToken: source?.token,
   });
 
 export const createTimeRecord = async (

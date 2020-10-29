@@ -1,3 +1,4 @@
+import { CancelTokenSource } from 'axios';
 import axios from '../axios';
 import { IUser, IRegistration, ISession } from '../types/users';
 
@@ -11,9 +12,9 @@ export const login = (loginParams: {
 
 // REST API
 
-export const fetchUser = (userId: number): Promise<IUser> =>
+export const fetchUser = (userId: number, source?: CancelTokenSource): Promise<IUser> =>
   axios
-    .get(`users/${userId}`)
+    .get(`users/${userId}`, { cancelToken: source?.token })
     .then((response) => response.data)
     .catch((error) => error);
 
