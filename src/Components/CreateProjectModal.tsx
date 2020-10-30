@@ -4,7 +4,8 @@ import { FaCheck } from 'react-icons/fa';
 import { ErrorMessage, Formik, useField } from 'formik';
 import Modal from 'react-modal';
 import { projectColors } from '../helpers/constants';
-import useOutsideCallback from '../hooks/useOutsideCallback';
+import useOutsideonCreateProject from '../hooks/useOutsideCallback';
+import { IProject } from '../types/projects';
 import randomArrayValue from 'src/helpers/randomValue';
 import { createProject } from 'src/resources/projects';
 import { CreateButton, InputStyles } from '../styles';
@@ -125,7 +126,7 @@ const ColorPicker = () => {
       }}
     />
   ));
-  useOutsideCallback(pickerRef, () => setShowPicker(false));
+  useOutsideonCreateProject(pickerRef, () => setShowPicker(false));
 
   if (showPicker) {
     return <ColorPickerWrapper ref={pickerRef}>{colorChoices}</ColorPickerWrapper>;
@@ -164,17 +165,22 @@ const validate = (fields: { name: string; color: string }) => {
 
 interface CreateProjectModalProps extends Modal.Props {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onCreateProject?: (project: IProject) => any;
 }
 
 export default function CreateProjectModal({
   setIsOpen,
+  onCreateProject,
   ...props
 }: CreateProjectModalProps) {
   const handleSubmit = (
     field: IForm,
     { setSubmitting }: { setSubmitting: (boolState: boolean) => void }
   ) => {
-    createProject(field).then(() => {
+    createProject(field).then((response) => {
+      if (onCreateProject) {
+        onCreateProject(response.data);
+      }
       setIsOpen(false);
       setSubmitting(false);
     });
