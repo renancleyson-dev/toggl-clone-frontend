@@ -196,7 +196,9 @@ export default function CreateProjectModal({
             <ErrorMessageWrapper>
               <ErrorMessage name="name" />
             </ErrorMessageWrapper>
-            <CreateButton onClick={() => handleSubmit()}>Create project</CreateButton>
+            <CreateButton onClick={() => !isSubmitting && handleSubmit()}>
+              Create project
+            </CreateButton>
           </FormWrapper>
         )}
       </Formik>
