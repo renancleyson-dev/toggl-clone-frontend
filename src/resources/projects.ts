@@ -8,7 +8,7 @@ export const fetchProjects = (
   axios.get('/projects', { cancelToken: source?.token });
 
 export const createProject = (
-  project: IProject,
+  project: { name: string; color: string },
   source?: CancelTokenSource
 ): Promise<{ data: IProject }> =>
   axios.post('/projects', project, { cancelToken: source?.token });
