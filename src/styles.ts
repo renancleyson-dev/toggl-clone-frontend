@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const colors = {
   primary: '#e57cd8',
@@ -24,6 +24,16 @@ export const positionedModalStyles = {
     fontSize: '14px',
   },
 };
+
+export const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 export const AddButtonWrapper = styled.div`
   min-width: 100%;

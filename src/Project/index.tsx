@@ -6,7 +6,6 @@ import History from './History';
 import Sidebar from './Sidebar';
 
 const ProjectWrapper = styled.div`
-  background-color: rgb(254, 249, 248);
   display: flex;
   height: 100%;
 `;
@@ -15,16 +14,17 @@ const Content = styled.div`
   position: relative;
   flex: 1 1 100%;
   overflow: auto;
+  background-color: rgb(254, 249, 248);
 `;
 
 export default () => (
-  <TrackContextProvider>
-    <ProjectWrapper>
-      <Sidebar />
+  <ProjectWrapper>
+    <Sidebar />
+    <TrackContextProvider>
       <Content>
         <Tracker />
         <History />
       </Content>
-    </ProjectWrapper>
-  </TrackContextProvider>
+    </TrackContextProvider>
+  </ProjectWrapper>
 );
