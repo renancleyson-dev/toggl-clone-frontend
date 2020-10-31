@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import { RiFolder2Fill, RiAddFill } from 'react-icons/ri';
+import useDynamicModalPosition from '../hooks/useDynamicModalPosition';
 import { TrackContext } from '../Contexts/TrackContext';
 import { IProject } from '../types/projects';
 import { positionedModalStyles, AddButtonWrapper, colors, InputStyles } from '../styles';
@@ -122,7 +123,7 @@ const ProjectsBox = ({
   setIsOpen,
   ...modalProps
 }: ProjectsBoxProps) => {
-  const [position, setPosition] = useState({ top: '0', left: '0' });
+  const position = useDynamicModalPosition(iconRef, modalProps.isOpen);
   const updatedProjectModalStyles = {
     overlay: projectModalStyles.overlay,
     content: { ...projectModalStyles.content, ...position },
@@ -131,16 +132,6 @@ const ProjectsBox = ({
     setIsCreateModalOpen(true);
     setIsOpen(false);
   };
-
-  useEffect(() => {
-    if (iconRef.current instanceof Element && modalProps.isOpen) {
-      const { top, left } = iconRef.current.getBoundingClientRect();
-      setPosition({
-        top: `${top + window.scrollY + 35}px`,
-        left: `${left + window.scrollX - 100}px`,
-      });
-    }
-  }, [iconRef, modalProps.isOpen]);
 
   return (
     <Modal style={updatedProjectModalStyles} {...modalProps}>
