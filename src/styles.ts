@@ -37,10 +37,14 @@ export const rotate = keyframes`
 
 export const AddButtonWrapper = styled.div`
   min-width: 100%;
-  padding: 10px 0;
+  padding: 3px 0;
   border-top: 1px solid rgb(251, 229, 247);
   text-align: center;
   cursor: pointer;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
 `;
 
 export const CreateButton = styled.div`
