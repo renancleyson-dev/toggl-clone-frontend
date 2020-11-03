@@ -1,18 +1,22 @@
 import React, { useState, useRef, useContext } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
-import { RiFolder2Fill, RiAddFill } from 'react-icons/ri';
+import { RiFolder2Fill } from 'react-icons/ri';
 import useDynamicModalPosition from '../hooks/useDynamicModalPosition';
 import { TrackContext } from '../Contexts/TrackContext';
 import { IProject } from '../types/projects';
-import { positionedModalStyles, AddButtonWrapper, colors, InputStyles } from '../styles';
-import SearchInput from './SearchInput';
 import CreateProjectModal from './CreateProjectModal';
+import { InputStyles, IconWrapper } from '../styles';
+import SearchInput from './SearchInput';
+import { dynamicModalStyles } from '../styles';
+import AddButton from './AddButton';
+
+Modal.setAppElement('#root');
 
 const projectModalStyles = {
-  overlay: positionedModalStyles.overlay,
+  overlay: dynamicModalStyles.overlay,
   content: {
-    ...positionedModalStyles.content,
+    ...dynamicModalStyles.content,
     maxWidth: '330px',
     height: 'min-content',
     maxHeight: '600px',
@@ -25,23 +29,6 @@ const projectModalStyles = {
 
 const Input = styled.input`
   ${InputStyles}
-`;
-
-const AddButtonIcon = styled.span`
-  font-size: 20px;
-  color: ${colors.primary};
-  margin-right: 5px;
-  cursor: pointer;
-`;
-
-const FolderIconWrapper = styled.div`
-  color: ${({ showBox }: { showBox: boolean }) => (showBox ? colors.primary : '#a1a1a1')};
-  cursor: pointer;
-  line-height: 0;
-
-  &:hover {
-    color: #555;
-  }
 `;
 
 const ProjectsListWrapper = styled.ul`
@@ -111,74 +98,45 @@ const ProjectsList = () => {
   );
 };
 
-interface ProjectsBoxProps extends Modal.Props {
-  iconRef: React.MutableRefObject<any>;
-  setIsCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const ProjectsBox = ({
-  setIsCreateModalOpen,
-  iconRef,
-  setIsOpen,
-  ...modalProps
-}: ProjectsBoxProps) => {
-  const position = useDynamicModalPosition(iconRef, modalProps.isOpen);
+export default function Projects({ actualProject }: { actualProject?: IProject }) {
+  const [showBox, setShowBox] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { setProjects } = useContext(TrackContext);
+  const iconRef = useRef(null);
+  const position = useDynamicModalPosition(iconRef, showBox);
   const updatedProjectModalStyles = {
     overlay: projectModalStyles.overlay,
     content: { ...projectModalStyles.content, ...position },
   };
+
+  const handleIconClick = () => setShowBox(true);
   const handleAddButtonClick = () => {
     setIsCreateModalOpen(true);
-    setIsOpen(false);
+    setShowBox(false);
   };
 
   return (
-    <Modal style={updatedProjectModalStyles} {...modalProps}>
-      <SearchInput>
-        <Input autoFocus placeholder="Find project..." />
-      </SearchInput>
-      <ProjectsList />
-      <AddButtonWrapper onClick={handleAddButtonClick}>
-        <AddButtonIcon>
-          <RiAddFill />
-        </AddButtonIcon>
-        Create a new project
-      </AddButtonWrapper>
-    </Modal>
-  );
-};
-
-export default function Projects({ actualProject }: { actualProject?: IProject }) {
-  const [showBox, setShowBox] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const iconRef = useRef(null);
-  const { setProjects } = useContext(TrackContext);
-
-  return (
     <>
-      <FolderIconWrapper
-        ref={iconRef}
-        showBox={showBox}
-        onClick={() => {
-          setShowBox(true);
-        }}
-      >
+      <IconWrapper ref={iconRef} showBox={showBox} onClick={handleIconClick}>
         {actualProject ? <div>{actualProject.name}</div> : <RiFolder2Fill />}
-      </FolderIconWrapper>
+      </IconWrapper>
       <CreateProjectModal
         onCreateProject={(project) => setProjects((prevState) => [...prevState, project])}
         isOpen={isCreateModalOpen}
         setIsOpen={setIsCreateModalOpen}
         onRequestClose={() => setIsCreateModalOpen(false)}
       />
-      <ProjectsBox
+      <Modal
         isOpen={showBox}
-        iconRef={iconRef}
-        setIsOpen={setShowBox}
+        style={updatedProjectModalStyles}
         onRequestClose={() => setShowBox(false)}
-        setIsCreateModalOpen={setIsCreateModalOpen}
-      />
+      >
+        <SearchInput>
+          <Input autoFocus placeholder="Find project..." />
+        </SearchInput>
+        <ProjectsList />
+        <AddButton text="Create a new project" onClick={handleAddButtonClick} />
+      </Modal>
     </>
   );
 }

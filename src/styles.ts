@@ -11,7 +11,7 @@ export const colors = {
   backgroundMedium: '#412a4c',
 };
 
-export const positionedModalStyles = {
+export const dynamicModalStyles = {
   overlay: {
     zIndex: 101,
     backgroundColor: 'transparent',
@@ -47,21 +47,6 @@ export const AddButtonWrapper = styled.div`
   }
 `;
 
-export const CreateButton = styled.div`
-  min-width: 100%;
-  margin-top: 30px;
-  padding: 7px 0;
-  text-align: center;
-  border-radius: 8px;
-  background-color: ${colors.primary};
-  color: #fff;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${colors.darkPrimary};
-  }
-`;
-
 export const InputStyles = css`
   border: 1px solid #aaa;
   color: #333;
@@ -76,5 +61,15 @@ export const InputStyles = css`
     outline: none;
     border: none;
     background-color: #f5f5f5;
+  }
+`;
+
+export const IconWrapper = styled.div`
+  color: ${({ showBox }: { showBox: boolean }) => (showBox ? colors.primary : '#a1a1a1')};
+  cursor: pointer;
+  line-height: 0;
+
+  &:hover {
+    color: #555;
   }
 `;

@@ -8,7 +8,7 @@ import useOutsideonCreateProject from '../hooks/useOutsideCallback';
 import { IProject } from '../types/projects';
 import randomArrayValue from 'src/helpers/randomValue';
 import { createProject } from 'src/resources/projects';
-import { CreateButton, InputStyles } from '../styles';
+import { InputStyles, colors } from '../styles';
 import TextInput from './TextInput';
 
 if (Modal.defaultStyles.overlay) {
@@ -36,6 +36,11 @@ const FormWrapper = styled.div`
   display: flex;
   flex-flow: wrap;
   align-items: center;
+`;
+
+const ModalTitle = styled.span`
+  display: block;
+  margin-bottom: 15px;
 `;
 
 const Input = styled(TextInput)`
@@ -89,9 +94,19 @@ const ErrorMessageWrapper = styled.div`
   color: #ff0000;
 `;
 
-const ModalTitle = styled.span`
-  display: block;
-  margin-bottom: 15px;
+const CreateButton = styled.div`
+  min-width: 100%;
+  margin-top: 30px;
+  padding: 7px 0;
+  text-align: center;
+  border-radius: 8px;
+  background-color: ${colors.primary};
+  color: #fff;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${colors.darkPrimary};
+  }
 `;
 
 interface ColorChoiceProps {
