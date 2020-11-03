@@ -5,9 +5,11 @@ import { colors } from '../styles';
 
 export const AddButtonWrapper = styled.div`
   min-width: 100%;
-  padding: 3px 0;
+  padding: 8px 0;
   border-top: 1px solid rgb(251, 229, 247);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 
   &:hover {
@@ -17,9 +19,19 @@ export const AddButtonWrapper = styled.div`
 
 const AddButtonIcon = styled.span`
   font-size: 20px;
+  display: flex;
+  align-items: center;
   color: ${colors.primary};
   margin-right: 5px;
   cursor: pointer;
+`;
+
+const AddButtonText = styled.span`
+  display: block;
+  max-width: 210px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 interface Props extends React.HTMLProps<HTMLDivElement> {
@@ -33,7 +45,7 @@ export default function AddButton({ text, ...props }: Props) {
         <AddButtonIcon>
           <RiAddFill />
         </AddButtonIcon>
-        {text}
+        <AddButtonText>{text}</AddButtonText>
       </AddButtonWrapper>
     </div>
   );

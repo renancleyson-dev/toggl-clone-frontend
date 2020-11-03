@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import { IProject } from '../types/projects';
+import { ITag } from '../types/tags';
 import { fetchProjects } from '../resources/projects';
+import { fetchTags } from '../resources/tags';
 import ProjectLoader from '../Project/ProjectLoader';
 
 const source = axios.CancelToken.source();
@@ -16,8 +18,8 @@ interface ContextValue {
   setIsTracking: React.Dispatch<React.SetStateAction<boolean>>;
   startTime: moment.Moment | undefined;
   setStartTime: React.Dispatch<React.SetStateAction<moment.Moment | undefined>>;
-  categories: string[] | undefined;
-  setCategories: React.Dispatch<React.SetStateAction<string[] | undefined>>;
+  tags: ITag[] | undefined;
+  setTags: React.Dispatch<React.SetStateAction<ITag[] | undefined>>;
   projects: IProject[];
   setProjects: React.Dispatch<React.SetStateAction<IProject[]>>;
 }
@@ -30,21 +32,22 @@ export default function Provider({ children }: Props) {
   const [isTracking, setIsTracking] = useState(false);
   const [startTime, setStartTime] = useState<moment.Moment>();
   const [projects, setProjects] = useState<IProject[]>([]);
-  const [categories, setCategories] = useState<string[]>();
+  const [tags, setTags] = useState<ITag[]>();
   const contextData = {
     isTracking,
     setIsTracking,
     startTime,
     setStartTime,
-    categories,
-    setCategories,
+    tags,
+    setTags,
     projects,
     setProjects,
   };
 
   useEffect(() => {
-    fetchProjects(source).then((response) => {
-      setProjects(response.data);
+    Promise.all([fetchProjects(source), fetchTags(source)]).then((responses) => {
+      setProjects(responses[0].data);
+      setTags(responses[1].data);
       setIsReady(true);
     });
 

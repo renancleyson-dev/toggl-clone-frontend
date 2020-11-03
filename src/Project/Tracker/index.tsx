@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { RiTimeFill, RiMenuFill } from 'react-icons/ri';
 import { BiDollar } from 'react-icons/bi';
-import { BsFillTagFill } from 'react-icons/bs';
 import Projects from 'src/Components/Projects';
 import { TextInput } from '../Styles';
 import Timer from './Timer';
 import TimerButton from './TimerButton';
+import Tags from 'src/Components/Tags';
 
 const TrackerBar = styled.div`
   position: sticky;
@@ -52,7 +52,7 @@ export default function Tracker() {
       <LabelInput placeholder="What are you working on?" />
       <TimerMenu>
         <Projects />
-        <BsFillTagFill />
+        <Tags />
         <BiDollar />
         <Timer />
         <TimerButton />
