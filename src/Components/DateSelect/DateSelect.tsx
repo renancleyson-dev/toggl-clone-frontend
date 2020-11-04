@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { PREVIOUS_BUTTON_ICON, NEXT_BUTTON_ICON } from 'src/helpers/constants';
+import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md';
 import DaysGrid from './DaysGrid';
 import MonthManager from './MonthManager';
 
@@ -26,12 +26,8 @@ export default function SelectDate({ startTime, endTime }: ItimeData) {
   return (
     <DateSelectWrapper>
       <CurrentTimeWrapper>
-        <button type="button">
-          <img
-            src={isEditingStartTime ? NEXT_BUTTON_ICON : PREVIOUS_BUTTON_ICON}
-            alt={isEditingStartTime ? 'Next Button' : 'Previous Button'}
-            onClick={handleButtonOnClick}
-          />
+        <button type="button" onClick={handleButtonOnClick}>
+          {isEditingStartTime ? <MdKeyboardArrowLeft /> : <MdKeyboardArrowRight />}
         </button>
         <CurrentTime>{isEditingStartTime ? 'Start' : 'Stop'}</CurrentTime>
       </CurrentTimeWrapper>

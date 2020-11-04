@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { toMoment, userFormat } from 'src/helpers/timeFormats';
-import { MANUAL_TRACKER_ICON } from 'src/helpers/constants';
 import TimeRecordEditor from 'src/Components/TimeRecordEditor';
 
 const getDuration = (startTime: string, endTime: string) => {
@@ -17,11 +16,7 @@ const ShowButton = ({
 }: {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) => (
-  <button type="button" onClick={() => setIsOpen(true)} disabled={isOpen}>
-    <img src={MANUAL_TRACKER_ICON} alt="Editor" />
-  </button>
-);
+}) => <button type="button" onClick={() => setIsOpen(true)} disabled={isOpen}></button>;
 
 interface Props {
   id?: number;

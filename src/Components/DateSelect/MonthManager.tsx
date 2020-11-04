@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { PREVIOUS_BUTTON_ICON, NEXT_BUTTON_ICON } from 'src/helpers/constants';
+import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md';
 
 const CurrentMonth = styled.div``;
 const MonthManagerWrapper = styled.div``;
@@ -26,14 +26,10 @@ export default function MonthManager({ timeMoment }: { timeMoment: moment.Moment
   return (
     <MonthManagerWrapper>
       <button type="button" onClick={() => handlePreviousButtonOnClick()}>
-        <img
-          data-testid="month-previous-button"
-          src={PREVIOUS_BUTTON_ICON}
-          alt="Previous Button"
-        />
+        <MdKeyboardArrowLeft />
       </button>
       <button type="button" onClick={() => handleNextButtonOnClick()}>
-        <img data-testid="month-next-button" src={NEXT_BUTTON_ICON} alt="Next Button" />
+        <MdKeyboardArrowRight />
       </button>
       <CurrentMonth data-testid="month">{timeMoment.format('MMM')}</CurrentMonth>
     </MonthManagerWrapper>
