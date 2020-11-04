@@ -13,7 +13,12 @@ export const AddButtonWrapper = styled.button`
   justify-content: center;
   cursor: pointer;
 
-  &:hover {
+  &:disabled,
+  &:disabled * {
+    cursor: auto;
+  }
+
+  &:not(:disabled):hover {
     background-color: #f1f1f1;
   }
 `;
@@ -22,12 +27,14 @@ const AddButtonIcon = styled.span`
   font-size: 20px;
   display: flex;
   align-items: center;
-  color: ${colors.primary};
+  color: ${({ disabled }: { disabled: boolean | undefined }) =>
+    disabled ? '#777' : colors.primary};
   margin-right: 5px;
-  cursor: pointer;
 `;
 
 const AddButtonText = styled.span`
+  color: ${({ disabled }: { disabled: boolean | undefined }) =>
+    disabled ? '#827188' : '#000'};
   display: block;
   max-width: 210px;
   text-overflow: ellipsis;
@@ -39,14 +46,14 @@ interface Props extends React.HTMLProps<HTMLDivElement> {
   text: string;
 }
 
-export default function AddButton({ text, ...props }: Props) {
+export default function AddButton({ text, disabled, ...props }: Props) {
   return (
     <div {...props}>
-      <AddButtonWrapper>
-        <AddButtonIcon>
+      <AddButtonWrapper disabled={disabled}>
+        <AddButtonIcon disabled={disabled}>
           <RiAddFill />
         </AddButtonIcon>
-        <AddButtonText>{text}</AddButtonText>
+        <AddButtonText disabled={disabled}>{text}</AddButtonText>
       </AddButtonWrapper>
     </div>
   );
