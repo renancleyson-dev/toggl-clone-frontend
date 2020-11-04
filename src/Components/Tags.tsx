@@ -31,6 +31,7 @@ const Input = styled.input`
 const TagsListWrapper = styled.ul`
   height: 215px;
   padding: 5px;
+  overflow: auto;
 `;
 
 const TagItemWrapper = styled.li`
