@@ -5,7 +5,7 @@ import { ITag } from '../types/tags';
 
 interface Props {
   startTime?: moment.Moment;
-  tags?: ITag[];
+  tags: ITag[];
   isTracking: boolean;
   children: React.ReactNode;
 }

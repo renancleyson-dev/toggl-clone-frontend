@@ -18,8 +18,8 @@ interface ContextValue {
   setIsTracking: React.Dispatch<React.SetStateAction<boolean>>;
   startTime: moment.Moment | undefined;
   setStartTime: React.Dispatch<React.SetStateAction<moment.Moment | undefined>>;
-  tags: ITag[] | undefined;
-  setTags: React.Dispatch<React.SetStateAction<ITag[] | undefined>>;
+  tags: ITag[];
+  setTags: React.Dispatch<React.SetStateAction<ITag[]>>;
   projects: IProject[];
   setProjects: React.Dispatch<React.SetStateAction<IProject[]>>;
 }
@@ -32,7 +32,7 @@ export default function Provider({ children }: Props) {
   const [isTracking, setIsTracking] = useState(false);
   const [startTime, setStartTime] = useState<moment.Moment>();
   const [projects, setProjects] = useState<IProject[]>([]);
-  const [tags, setTags] = useState<ITag[]>();
+  const [tags, setTags] = useState<ITag[]>([]);
   const contextData = {
     isTracking,
     setIsTracking,
