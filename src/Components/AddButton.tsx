@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { RiAddFill } from 'react-icons/ri';
-import { colors } from '../styles';
+import { colors, buttonResets } from '../styles';
 
-export const AddButtonWrapper = styled.div`
+export const AddButtonWrapper = styled.button`
+  ${buttonResets}
   min-width: 100%;
   padding: 8px 0;
   border-top: 1px solid rgb(251, 229, 247);

@@ -8,7 +8,7 @@ import useOutsideonCreateProject from '../hooks/useOutsideCallback';
 import { IProject } from '../types/projects';
 import randomArrayValue from 'src/helpers/randomValue';
 import { createProject } from 'src/resources/projects';
-import { InputStyles, colors } from '../styles';
+import { InputStyles, colors, buttonResets } from '../styles';
 import TextInput from './TextInput';
 
 if (Modal.defaultStyles.overlay) {
@@ -94,7 +94,8 @@ const ErrorMessageWrapper = styled.div`
   color: #ff0000;
 `;
 
-const CreateButton = styled.div`
+const CreateButton = styled.button`
+  ${buttonResets}
   min-width: 100%;
   margin-top: 30px;
   padding: 7px 0;
@@ -217,7 +218,7 @@ export default function CreateProjectModal({
             <ErrorMessageWrapper>
               <ErrorMessage name="name" />
             </ErrorMessageWrapper>
-            <CreateButton onClick={() => !isSubmitting && handleSubmit()}>
+            <CreateButton disabled={isSubmitting} onClick={() => handleSubmit()}>
               Create project
             </CreateButton>
           </FormWrapper>

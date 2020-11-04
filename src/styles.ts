@@ -35,15 +35,26 @@ export const rotate = keyframes`
   }
 `;
 
-export const AddButtonWrapper = styled.div`
-  min-width: 100%;
-  padding: 3px 0;
-  border-top: 1px solid rgb(251, 229, 247);
-  text-align: center;
+export const buttonResets = css`
+  display: inline-block;
+  border: none;
+  margin: 0;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 14px;
   cursor: pointer;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
 
-  &:hover {
-    background-color: #f1f1f1;
+  &:focus {
+    outline: 1px solid #fff;
+    outline-offset: -4px;
+  }
+
+  &:active {
+    transform: scale(0.99);
   }
 `;
 
