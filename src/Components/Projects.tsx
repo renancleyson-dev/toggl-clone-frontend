@@ -10,6 +10,7 @@ import { InputStyles, IconWrapper } from '../styles';
 import SearchInput from './SearchInput';
 import { dynamicModalStyles } from '../styles';
 import AddButton from './AddButton';
+import NoResourceFallback from './NoResourceFallback';
 
 Modal.setAppElement('#root');
 
@@ -17,7 +18,7 @@ const projectModalStyles = {
   overlay: dynamicModalStyles.overlay,
   content: {
     ...dynamicModalStyles.content,
-    maxWidth: '330px',
+    maxWidth: '350px',
     height: 'min-content',
     maxHeight: '600px',
     padding: '15px 0 0',
@@ -29,6 +30,11 @@ const projectModalStyles = {
 
 const Input = styled.input`
   ${InputStyles}
+`;
+
+const FallbackWrapper = styled.div`
+  padding: 25px 15px 20px;
+  color: #827188;
 `;
 
 const ProjectsListWrapper = styled.ul`
@@ -83,6 +89,14 @@ const ProjectsList = ({ searchText }: { searchText: string }) => {
       <ProjectName color={color}>{name}</ProjectName>
     </ProjectItem>
   ));
+
+  if (!filteredProjects.length) {
+    return (
+      <FallbackWrapper>
+        <NoResourceFallback hasSearchText={!!searchText} resourceName="project" />
+      </FallbackWrapper>
+    );
+  }
 
   return (
     <ProjectsListWrapper>

@@ -2,12 +2,13 @@ import React, { useState, useRef, useContext } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import { BsFillTagFill } from 'react-icons/bs';
-import { InputStyles, IconWrapper, dynamicModalStyles } from '../styles';
-import SearchInput from './SearchInput';
 import useDynamicModalPosition from 'src/hooks/useDynamicModalPosition';
 import AddButton from './AddButton';
 import { TrackContext } from 'src/Contexts/TrackContext';
 import { createTag } from 'src/resources/tags';
+import { InputStyles, IconWrapper, dynamicModalStyles } from '../styles';
+import SearchInput from './SearchInput';
+import NoResourceFallback from './NoResourceFallback';
 
 Modal.setAppElement('#root');
 
@@ -29,7 +30,7 @@ const Input = styled.input`
 `;
 
 const TagsListWrapper = styled.ul`
-  height: 215px;
+  height: 250px;
   padding: 5px;
   overflow: auto;
 `;
@@ -44,6 +45,12 @@ const TagItemWrapper = styled.li`
   &:hover {
     background-color: #f1f1f1;
   }
+`;
+
+const FallbackWrapper = styled.div`
+  padding: 15px 23px;
+  height: 250px;
+  color: #827188;
 `;
 
 const HighlightedTagItemName = styled.span`
@@ -73,8 +80,12 @@ const TagsList = ({ searchText }: { searchText: string }) => {
     <TagItem key={id} name={name} searchText={searchText}></TagItem>
   ));
 
-  if (!tags.length) {
-    return <div></div>;
+  if (!filteredTags.length) {
+    return (
+      <FallbackWrapper>
+        <NoResourceFallback hasSearchText={!!searchText} resourceName="tag" />
+      </FallbackWrapper>
+    );
   }
   return <TagsListWrapper>{tagItems}</TagsListWrapper>;
 };
