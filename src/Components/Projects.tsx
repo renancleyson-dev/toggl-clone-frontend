@@ -68,11 +68,12 @@ const MiniColorCircle = styled.div`
   background-color: ${({ color }: { color: string }) => color};
 `;
 
-const ProjectsList = () => {
+const ProjectsList = ({ searchText }: { searchText: string }) => {
   const [lastHovered, setLastHovered] = useState<number>();
   const { projects } = useContext(TrackContext);
+  const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
 
-  const projectItems = projects.map(({ id, name, color }) => (
+  const projectItems = filteredProjects.map(({ id, name, color }) => (
     <ProjectItem
       key={id}
       hovered={lastHovered === id}
@@ -101,6 +102,7 @@ const ProjectsList = () => {
 export default function Projects({ actualProject }: { actualProject?: IProject }) {
   const [showBox, setShowBox] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [searchText, setSearchText] = useState('');
   const { setProjects } = useContext(TrackContext);
   const iconRef = useRef(null);
   const position = useDynamicModalPosition(iconRef, showBox);
@@ -132,9 +134,14 @@ export default function Projects({ actualProject }: { actualProject?: IProject }
         onRequestClose={() => setShowBox(false)}
       >
         <SearchInput>
-          <Input autoFocus placeholder="Find project..." />
+          <Input
+            autoFocus
+            placeholder="Find project..."
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+          />
         </SearchInput>
-        <ProjectsList />
+        <ProjectsList searchText={searchText} />
         <AddButton text="Create a new project" onClick={handleAddButtonClick} />
       </Modal>
     </>
