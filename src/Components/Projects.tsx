@@ -78,13 +78,16 @@ const ProjectsList = ({ searchText }: { searchText: string }) => {
   const [lastHovered, setLastHovered] = useState<number>();
   const { projects } = useContext(TrackContext);
   const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
+  const handleMouseOver = (id: number) => () => setLastHovered(id);
 
+  const defaultProjectItem = (
+    <ProjectItem key={0} hovered={lastHovered === 0} onMouseOver={handleMouseOver(0)}>
+      <MiniColorCircle color="#aaa" />
+      <ProjectName color="#000">No Project</ProjectName>
+    </ProjectItem>
+  );
   const projectItems = filteredProjects.map(({ id, name, color }) => (
-    <ProjectItem
-      key={id}
-      hovered={lastHovered === id}
-      onMouseOver={() => setLastHovered(id)}
-    >
+    <ProjectItem key={id} hovered={lastHovered === id} onMouseOver={handleMouseOver(id)}>
       <MiniColorCircle color={color} />
       <ProjectName color={color}>{name}</ProjectName>
     </ProjectItem>
@@ -99,17 +102,7 @@ const ProjectsList = ({ searchText }: { searchText: string }) => {
   }
 
   return (
-    <ProjectsListWrapper>
-      <ProjectItem
-        key={0}
-        hovered={lastHovered === 0}
-        onMouseOver={() => setLastHovered(0)}
-      >
-        <MiniColorCircle color="#aaa" />
-        <ProjectName color="#000">No Project</ProjectName>
-      </ProjectItem>
-      {projectItems}
-    </ProjectsListWrapper>
+    <ProjectsListWrapper>{[defaultProjectItem, ...projectItems]}</ProjectsListWrapper>
   );
 };
 
