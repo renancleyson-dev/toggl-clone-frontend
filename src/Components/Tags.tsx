@@ -79,7 +79,7 @@ const TagsList = ({ searchText }: { searchText: string }) => {
 };
 
 export default function Tags() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const { tags, setTags } = useContext(TrackContext);
   const iconRef = useRef(null);
