@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import moment from 'moment';
 import { IProject } from '../types/projects';
 import { ITag } from '../types/tags';
+import { ITrackingTimeRecord } from '../types/timeRecord';
 import { fetchProjects } from '../resources/projects';
 import { fetchTags } from '../resources/tags';
 import ProjectLoader from '../Project/ProjectLoader';
 
 const source = axios.CancelToken.source();
+
+const actualTimeRecordInitialValue = {
+  userId: 0,
+};
 
 interface Props {
   children: React.ReactNode;
@@ -16,12 +20,12 @@ interface Props {
 interface ContextValue {
   isTracking: boolean;
   setIsTracking: React.Dispatch<React.SetStateAction<boolean>>;
-  startTime: moment.Moment | undefined;
-  setStartTime: React.Dispatch<React.SetStateAction<moment.Moment | undefined>>;
   tags: ITag[];
   setTags: React.Dispatch<React.SetStateAction<ITag[]>>;
   projects: IProject[];
   setProjects: React.Dispatch<React.SetStateAction<IProject[]>>;
+  actualTimeRecord: ITrackingTimeRecord;
+  setActualTimeRecord: React.Dispatch<React.SetStateAction<ITrackingTimeRecord>>;
 }
 
 export const TrackContext = React.createContext({} as ContextValue);
@@ -30,18 +34,20 @@ export const TrackContext = React.createContext({} as ContextValue);
 export default function Provider({ children }: Props) {
   const [isReady, setIsReady] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
-  const [startTime, setStartTime] = useState<moment.Moment>();
+  const [actualTimeRecord, setActualTimeRecord] = useState<ITrackingTimeRecord>(
+    actualTimeRecordInitialValue
+  );
   const [projects, setProjects] = useState<IProject[]>([]);
   const [tags, setTags] = useState<ITag[]>([]);
   const contextData = {
     isTracking,
     setIsTracking,
-    startTime,
-    setStartTime,
     tags,
     setTags,
     projects,
     setProjects,
+    actualTimeRecord,
+    setActualTimeRecord,
   };
 
   useEffect(() => {

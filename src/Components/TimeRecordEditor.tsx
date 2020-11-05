@@ -1,13 +1,11 @@
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { updateTimeRecord } from '../resources/timeRecords';
 import { TextInput } from '../Project/Styles';
 import formatDuration from '../helpers/formatDuration';
 import { toMoment, userFormat } from '../helpers/timeFormats';
 import DateSelect from './DateSelect/DateSelect';
 import useOutsideCallback from '../hooks/useOutsideCallback';
-import { UserContext } from '../Contexts/UserContext';
 
 const EditTimeRecordWrapper = styled.div``;
 const TimeInput = styled(TextInput)``;
@@ -21,13 +19,6 @@ const handleStartTimeAdaptation = (endTime: string, duration: moment.Duration) =
 
 const isStartTimeGreaterThanEndTime = (startTime: string, endTime: string) =>
   moment(endTime, toMoment).isBefore(moment(startTime, toMoment));
-
-const setMomentTime = (timeMoment: moment.Moment, timeString: string) => {
-  return moment(timeString, toMoment)
-    .add(timeMoment.year())
-    .add(timeMoment.month())
-    .add(timeMoment.day());
-};
 
 interface Props {
   timeRecordStartTime: string;
@@ -53,13 +44,9 @@ export default function TimeRecordEditor({
   startTime,
   endTime,
 }: Props) {
-  const { user } = useContext(UserContext);
   const editorRef = useRef(null);
   useOutsideCallback(editorRef, () => {
     if (id) {
-      const newStartTime = setMomentTime(startTime, timeRecordStartTime).format();
-      const newEndTime = setMomentTime(endTime, timeRecordEndTime).format();
-      updateTimeRecord(user.id, id, { startTime: newStartTime, endTime: newEndTime });
     }
     setIsOpen(false);
   });

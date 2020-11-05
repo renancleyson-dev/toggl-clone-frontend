@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import format from 'src/helpers/formatDuration';
-import { TrackContext } from 'src/Contexts/TrackContext';
+import useTracker from 'src/hooks/useTracker';
 
 const TimerWrapper = styled.div`
   min-width: 75px;
@@ -20,7 +20,7 @@ const TimerWrapper = styled.div`
 // UI to show duration of the tracking
 export default function Timer() {
   const [duration, setDuration] = useState<moment.Duration>(moment.duration(0));
-  const { startTime, isTracking } = useContext(TrackContext);
+  const { startTime, isTracking } = useTracker();
   useEffect(() => {
     let timer = -1;
     const handleOnTracking = () => {

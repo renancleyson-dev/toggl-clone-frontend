@@ -1,6 +1,6 @@
 import { CancelTokenSource } from 'axios';
 import axios from '../axios';
-import { IDateGroup, ITimeRecord } from '../types/timeRecord';
+import { IDateGroup, ITimeRecordParams } from '../types/timeRecord';
 
 export const fetchTimeRecords = async (
   page: number,
@@ -13,37 +13,23 @@ export const fetchTimeRecords = async (
   });
 
 export const createTimeRecord = async (
-  startTime: string,
-  endTime: string,
-  userId: number,
-  label?: string,
-  category?: string
+  timeRecord: ITimeRecordParams
 ): Promise<void | Error> =>
   axios.post('/time_records', {
-    time_record: { userId, startTime, endTime, label, category },
+    ...timeRecord,
+    startTime: timeRecord.startTime?.format(),
+    endTime: timeRecord.endTime?.format(),
   });
 
 export const updateTimeRecord = async (
-  userId: number,
   timeRecordId: number,
-  data: {
-    startTime?: string;
-    endTime?: string;
-    label?: string;
-    category?: string;
-  }
+  data: ITimeRecordParams
 ): Promise<void | Error> =>
   axios.put(`/time_records/${timeRecordId}`, {
-    time_record: {
-      userId,
-      startTime: data.startTime,
-      endTime: data.endTime,
-      label: data.label,
-      category: data.category,
-    },
+    ...data,
+    startTime: data.startTime?.format(),
+    endTime: data.endTime?.format(),
   });
 
 export const deleteTimeRecord = async (timeRecordId: number): Promise<void | Error> =>
   axios.delete(`/time_records/${timeRecordId}`);
-
-export const fetchCategories = (): Promise<ITimeRecord> => axios.get('/categories');

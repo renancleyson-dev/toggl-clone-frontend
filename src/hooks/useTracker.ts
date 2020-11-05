@@ -6,22 +6,23 @@ import { createTimeRecord } from '../resources/timeRecords';
 
 export default function useTracker() {
   const { user } = useContext(UserContext);
-  const { startTime, setStartTime, isTracking, setIsTracking } = useContext(TrackContext);
-  const handleStopTracking = useCallback(() => {
-    if (startTime && user.id) {
-      const endTime = moment();
-      return createTimeRecord(startTime.format(), endTime.format(), user.id);
-    }
+  const { actualTimeRecord, setActualTimeRecord, isTracking, setIsTracking } = useContext(
+    TrackContext
+  );
 
-    setStartTime(undefined);
-  }, [setStartTime, startTime, user]);
+  const { startTime } = actualTimeRecord;
+  const handleStopTracking = useCallback(() => {
+    const endTime = moment();
+    createTimeRecord({ ...actualTimeRecord, endTime });
+    setActualTimeRecord({ userId: user.id });
+  }, [actualTimeRecord, setActualTimeRecord, user]);
 
   const handleSetIsTracking = (state: boolean | ((prevState: boolean) => any)) => {
     setIsTracking((prevState) => {
       if (typeof state === 'boolean') {
         if (prevState && state) {
           handleStopTracking();
-          setStartTime(moment());
+          setActualTimeRecord((prevState) => ({ ...prevState, startTime: moment() }));
         }
         return state;
       } else {
@@ -31,12 +32,21 @@ export default function useTracker() {
   };
 
   useEffect(() => {
+    setActualTimeRecord((prevState) => ({ ...prevState, userId: user.id }));
+  }, [user, setActualTimeRecord]);
+
+  useEffect(() => {
     if (isTracking && !startTime) {
-      setStartTime(moment());
-    } else if (!isTracking) {
+      setActualTimeRecord((prevState) => ({ ...prevState, startTime: moment() }));
+    } else if (!isTracking && startTime && user.id) {
       handleStopTracking();
     }
-  }, [isTracking, startTime, setStartTime, handleStopTracking]);
+  }, [isTracking, startTime, setActualTimeRecord, handleStopTracking, user]);
 
-  return { startTime, isTracking, setIsTracking: handleSetIsTracking };
+  return {
+    startTime,
+    setActualTimeRecord,
+    isTracking,
+    setIsTracking: handleSetIsTracking,
+  };
 }

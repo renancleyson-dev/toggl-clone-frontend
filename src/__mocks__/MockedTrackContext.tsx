@@ -1,31 +1,28 @@
 import React, { useContext, useEffect } from 'react';
-import moment from 'moment';
 import TrackProvider, { TrackContext } from '../Contexts/TrackContext';
-import { ITag } from '../types/tags';
+import { ITrackingTimeRecord } from '../types/timeRecord';
 
 interface Props {
-  startTime?: moment.Moment;
-  tags: ITag[];
+  timeRecord: ITrackingTimeRecord;
   isTracking: boolean;
   children: React.ReactNode;
 }
 
-export const SetMockTrack = ({ tags, isTracking, startTime, children }: Props) => {
-  const { setStartTime, setIsTracking, setTags } = useContext(TrackContext);
+export const SetMockTrack = ({ timeRecord, isTracking, children }: Props) => {
+  const { setActualTimeRecord, setIsTracking } = useContext(TrackContext);
   useEffect(() => {
-    setStartTime(startTime);
+    setActualTimeRecord(timeRecord);
     setIsTracking(isTracking);
-    setTags(tags);
-  }, [setStartTime, startTime, setIsTracking, isTracking, tags, setTags]);
+  }, [setActualTimeRecord, timeRecord, setIsTracking, isTracking]);
   return <>{children}</>;
 };
 SetMockTrack.defaultProps = {
   isTracking: false,
 };
 
-const MockedTrackContext = ({ isTracking, startTime, tags, children }: Props) => (
+const MockedTrackContext = ({ isTracking, timeRecord, children }: Props) => (
   <TrackProvider>
-    <SetMockTrack isTracking={isTracking} startTime={startTime} tags={tags}>
+    <SetMockTrack isTracking={isTracking} timeRecord={timeRecord}>
       {children}
     </SetMockTrack>
   </TrackProvider>

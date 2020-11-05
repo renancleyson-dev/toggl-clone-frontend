@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { RiFolder2Fill } from 'react-icons/ri';
@@ -6,7 +6,6 @@ import { BsFillPlayFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { updateTimeRecord } from 'src/resources/timeRecords';
 import formatDuration from 'src/helpers/formatDuration';
 import { UserContext } from 'src/Contexts/UserContext';
-import Categories from 'src/Components/Categories';
 import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
@@ -89,26 +88,10 @@ interface Props {
 }
 
 // UI to show a specific time record
-export default function HistoryItem({
-  startTime,
-  endTime,
-  recordLabel,
-  recordCategory,
-  id,
-}: Props) {
+export default function HistoryItem({ startTime, endTime, recordLabel, id }: Props) {
   const [label, setLabel] = useState<string>('');
-  const [category, setCategory] = useState<string>('');
   const { user } = useContext(UserContext);
   const duration = moment.duration(endTime.diff(startTime));
-  const onChangeCategories = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setCategory(event.target.value);
-    updateTimeRecord(user.id, id, { category: event.target.value });
-  };
-
-  useEffect(() => {
-    setLabel(recordLabel);
-    setCategory(recordCategory);
-  }, [recordLabel, recordCategory]);
 
   return (
     <TimeRecordWrapper>
@@ -118,14 +101,13 @@ export default function HistoryItem({
           placeholder="Add description"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          onBlur={() => updateTimeRecord(user.id, id, { label })}
+          onBlur={() => updateTimeRecord(id, { userId: user.id, label })}
         />
         <ProjectSelectWrapper data-hover>
           <RiFolder2Fill />
         </ProjectSelectWrapper>
       </NamingSection>
       <EditSection>
-        <Categories category={category} onChange={onChangeCategories} />
         <EditOptions>
           <div>
             <span>{`${startTime.format('HH:mm A')} - ${endTime.format('HH:mm A')}`}</span>
