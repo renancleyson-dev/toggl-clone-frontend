@@ -42,6 +42,10 @@ const TagItemWrapper = styled.li`
   display: flex;
   align-items: center;
 
+  &:first-child {
+    background-color: #f1f1f1;
+  }
+
   &:hover {
     background-color: #f1f1f1;
   }
