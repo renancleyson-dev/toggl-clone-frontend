@@ -54,18 +54,26 @@ const FallbackWrapper = styled.div`
 `;
 
 const HighlightedTagItemName = styled.span`
-  background-color: #eee;
+  background-color: #eaeaea;
 `;
 
 const TagItem = ({ name, searchText }: { name: string; searchText: string }) => {
+  if (!searchText) {
+    return <TagItemWrapper>{name}</TagItemWrapper>;
+  }
+
   const withoutSubStringPieces = name.split(searchText);
   const highlightedItemSearchText = withoutSubStringPieces.reduce(
-    (acc: Array<string | JSX.Element>, piece) => {
-      const highlightedPiece = (
-        <HighlightedTagItemName>{searchText}</HighlightedTagItemName>
-      );
+    (acc: Array<string | JSX.Element>, piece, index, currentArray) => {
+      if (!piece && index !== currentArray.length - 1) {
+        const highlightedPiece = (
+          <HighlightedTagItemName>{searchText}</HighlightedTagItemName>
+        );
 
-      return [...acc, piece, highlightedPiece];
+        return [...acc, highlightedPiece];
+      }
+
+      return [...acc, piece];
     },
     []
   );
