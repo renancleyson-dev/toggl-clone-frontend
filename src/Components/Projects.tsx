@@ -4,7 +4,6 @@ import Modal from 'react-modal';
 import { RiFolder2Fill } from 'react-icons/ri';
 import useDynamicModalPosition from '../hooks/useDynamicModalPosition';
 import { TrackContext } from '../Contexts/TrackContext';
-import { IProject } from '../types/projects';
 import CreateProjectModal from './CreateProjectModal';
 import { InputStyles, IconWrapper } from '../styles';
 import SearchInput from './SearchInput';
@@ -65,6 +64,16 @@ const DefaultProjectItem = styled(ProjectItem)`
   margin-bottom: 20px;
 `;
 
+const NoProjectsAddButton = styled(AddButton)`
+  border-top: none;
+  border-radius: 8px;
+  padding: 5px 12px 5px 8px;
+
+  &:not(:disabled):hover {
+    background-color: #f1f1f1;
+  }
+`;
+
 const ProjectName = styled.span`
   color: ${({ color }: { color: string }) => color};
 `;
@@ -110,11 +119,11 @@ const ProjectsList = ({ searchText }: { searchText: string }) => {
   );
 };
 
-export default function Projects({ actualProject }: { actualProject?: IProject }) {
+export default function Projects() {
   const [showBox, setShowBox] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { setProjects } = useContext(TrackContext);
+  const { projects, setProjects } = useContext(TrackContext);
   const iconRef = useRef(null);
   const position = useDynamicModalPosition(iconRef, showBox);
   const updatedProjectModalStyles = {
@@ -130,8 +139,12 @@ export default function Projects({ actualProject }: { actualProject?: IProject }
 
   return (
     <>
-      <IconWrapper ref={iconRef} showBox={showBox} onClick={handleIconClick}>
-        {actualProject ? <div>{actualProject.name}</div> : <RiFolder2Fill />}
+      <IconWrapper ref={iconRef} showBox={showBox}>
+        {projects.length ? (
+          <RiFolder2Fill onClick={handleIconClick} />
+        ) : (
+          <NoProjectsAddButton text="Create a project" onClick={handleAddButtonClick} />
+        )}
       </IconWrapper>
       <CreateProjectModal
         onCreateProject={(project) => setProjects((prevState) => [...prevState, project])}
