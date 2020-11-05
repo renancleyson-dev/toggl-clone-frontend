@@ -3,26 +3,6 @@ import styled from 'styled-components';
 import { RiAddFill } from 'react-icons/ri';
 import { colors, buttonResets } from '../styles';
 
-export const AddButtonWrapper = styled.button`
-  ${buttonResets}
-  min-width: 100%;
-  padding: 8px 0;
-  border-top: 1px solid rgb(251, 229, 247);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  &:disabled,
-  &:disabled * {
-    cursor: auto;
-  }
-
-  &:not(:disabled):hover {
-    background-color: #f1f1f1;
-  }
-`;
-
 const AddButtonIcon = styled.span`
   font-size: 20px;
   display: flex;
@@ -42,19 +22,37 @@ const AddButtonText = styled.span`
   overflow: hidden;
 `;
 
-interface Props extends React.HTMLProps<HTMLDivElement> {
+interface Props extends React.ComponentProps<'button'> {
   text: string;
 }
 
-export default function AddButton({ text, disabled, ...props }: Props) {
-  return (
-    <div {...props}>
-      <AddButtonWrapper disabled={disabled}>
-        <AddButtonIcon disabled={disabled}>
-          <RiAddFill />
-        </AddButtonIcon>
-        <AddButtonText disabled={disabled}>{text}</AddButtonText>
-      </AddButtonWrapper>
-    </div>
-  );
-}
+const AddButton = ({ text, disabled, ...props }: Props) => (
+  <button disabled={disabled} {...props}>
+    <AddButtonIcon disabled={disabled}>
+      <RiAddFill />
+    </AddButtonIcon>
+    <AddButtonText disabled={disabled}>{text}</AddButtonText>
+  </button>
+);
+
+const AddButtonWrapper = styled(AddButton)`
+  ${buttonResets}
+  min-width: 100%;
+  padding: 8px 0;
+  border-top: 1px solid rgb(251, 229, 247);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:disabled,
+  &:disabled * {
+    cursor: auto;
+  }
+
+  &:not(:disabled):hover {
+    background-color: #f1f1f1;
+  }
+`;
+
+export default AddButtonWrapper;

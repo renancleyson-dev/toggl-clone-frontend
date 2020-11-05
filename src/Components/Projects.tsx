@@ -140,7 +140,7 @@ export default function Projects() {
   return (
     <>
       <IconWrapper ref={iconRef} showBox={showBox}>
-        {projects.length ? (
+        {!projects.length ? (
           <RiFolder2Fill onClick={handleIconClick} />
         ) : (
           <NoProjectsAddButton text="Create a project" onClick={handleAddButtonClick} />

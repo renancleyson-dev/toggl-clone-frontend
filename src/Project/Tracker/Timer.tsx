@@ -5,9 +5,13 @@ import format from 'src/helpers/formatDuration';
 import { TrackContext } from 'src/Contexts/TrackContext';
 
 const TimerWrapper = styled.div`
+  min-width: 75px;
+  margin-right: 15px;
   padding: 5px 7px;
   border-radius: 7px;
   font-weight: 600;
+  text-align: center;
+
   &:hover {
     background-color: rgb(251, 229, 247);
   }
