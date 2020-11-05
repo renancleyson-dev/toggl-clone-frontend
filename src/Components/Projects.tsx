@@ -61,6 +61,10 @@ const ProjectItem = styled.li`
   }
 `;
 
+const DefaultProjectItem = styled(ProjectItem)`
+  margin-bottom: 20px;
+`;
+
 const ProjectName = styled.span`
   color: ${({ color }: { color: string }) => color};
 `;
@@ -81,10 +85,10 @@ const ProjectsList = ({ searchText }: { searchText: string }) => {
   const handleMouseOver = (id: number) => () => setLastHovered(id);
 
   const defaultProjectItem = (
-    <ProjectItem key={0} hovered={lastHovered === 0} onMouseOver={handleMouseOver(0)}>
+    <DefaultProjectItem hovered key={0} onMouseOver={handleMouseOver(0)}>
       <MiniColorCircle color="#aaa" />
       <ProjectName color="#000">No Project</ProjectName>
-    </ProjectItem>
+    </DefaultProjectItem>
   );
   const projectItems = filteredProjects.map(({ id, name, color }) => (
     <ProjectItem key={id} hovered={lastHovered === id} onMouseOver={handleMouseOver(id)}>
