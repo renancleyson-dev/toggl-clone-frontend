@@ -49,6 +49,7 @@ export default function useTracker() {
 
   return {
     startTime,
+    actualTimeRecord,
     setActualTimeRecord,
     isTracking,
     setIsTracking: handleSetIsTracking,
