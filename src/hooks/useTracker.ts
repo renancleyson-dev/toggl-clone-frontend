@@ -6,9 +6,13 @@ import { createTimeRecord } from '../resources/timeRecords';
 
 export default function useTracker() {
   const { user } = useContext(UserContext);
-  const { actualTimeRecord, setActualTimeRecord, isTracking, setIsTracking } = useContext(
-    TrackContext
-  );
+  const {
+    actualTimeRecord,
+    setActualTimeRecord,
+    isTracking,
+    setIsTracking,
+    ...contextValue
+  } = useContext(TrackContext);
 
   const { startTime } = actualTimeRecord;
   const handleStopTracking = useCallback(() => {
@@ -48,5 +52,6 @@ export default function useTracker() {
     setActualTimeRecord,
     isTracking,
     setIsTracking: handleSetIsTracking,
+    ...contextValue,
   };
 }
