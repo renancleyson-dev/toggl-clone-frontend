@@ -79,7 +79,7 @@ export const IconWrapper = styled.div`
   color: ${({ showBox }: { showBox: boolean }) => (showBox ? colors.primary : '#a1a1a1')};
   cursor: pointer;
   line-height: 0;
-  margin-right: 25px;
+  margin-right: 15px;
 
   &:hover {
     color: #555;
