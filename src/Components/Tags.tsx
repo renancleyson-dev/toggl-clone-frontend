@@ -1,12 +1,12 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import { BsFillTagFill } from 'react-icons/bs';
 import useDynamicModalPosition from 'src/hooks/useDynamicModalPosition';
-import AddButton from './AddButton';
-import { TrackContext } from 'src/Contexts/TrackContext';
+import useTracker from 'src/hooks/useTracker';
 import { createTag } from 'src/resources/tags';
 import { InputStyles, IconWrapper, dynamicModalStyles } from '../styles';
+import AddButton from './AddButton';
 import SearchInput from './SearchInput';
 import NoResourceFallback from './NoResourceFallback';
 
@@ -61,9 +61,21 @@ const HighlightedTagItemName = styled.span`
   background-color: #eaeaea;
 `;
 
-const TagItem = ({ name, searchText }: { name: string; searchText: string }) => {
+interface TagItemProps {
+  name: string;
+  searchText: string;
+  checked: boolean;
+  onClick: () => void;
+}
+
+const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
   if (!searchText) {
-    return <TagItemWrapper>{name}</TagItemWrapper>;
+    return (
+      <TagItemWrapper onClick={onClick}>
+        <input id="" type="checkbox" checked={checked} />
+        {name}
+      </TagItemWrapper>
+    );
   }
 
   const withoutSubStringPieces = name.split(searchText);
@@ -82,15 +94,41 @@ const TagItem = ({ name, searchText }: { name: string; searchText: string }) => 
     []
   );
 
-  return <TagItemWrapper>{highlightedItemSearchText}</TagItemWrapper>;
+  return (
+    <TagItemWrapper onClick={onClick}>
+      <input type="checkbox" checked={checked} />
+      {highlightedItemSearchText}
+    </TagItemWrapper>
+  );
 };
 
 const TagsList = ({ searchText }: { searchText: string }) => {
-  const { tags } = useContext(TrackContext);
+  const { tags, actualTimeRecord, setActualTimeRecord } = useTracker();
   const filteredTags = tags.filter(({ name }) => name.includes(searchText.trim()));
-  const tagItems = filteredTags.map(({ id, name }) => (
-    <TagItem key={id} name={name} searchText={searchText}></TagItem>
-  ));
+  const tagItems = filteredTags.map(({ id, name }) => {
+    const handleItemClick = () => {
+      setActualTimeRecord((prevState) => {
+        const tagIds = prevState.tagIds || [];
+        const idIndex = tagIds?.indexOf(id);
+        if (idIndex !== -1) {
+          const newTagIds = [...tagIds];
+          newTagIds.splice(idIndex, 1);
+          return { ...prevState, tagIds: [...newTagIds] };
+        }
+        return { ...prevState, tagIds: [...tagIds, id] };
+      });
+    };
+
+    return (
+      <TagItem
+        key={id}
+        name={name}
+        searchText={searchText}
+        checked={!!actualTimeRecord.tagIds?.includes(id)}
+        onClick={handleItemClick}
+      />
+    );
+  });
 
   if (!filteredTags.length) {
     return (
@@ -105,7 +143,7 @@ const TagsList = ({ searchText }: { searchText: string }) => {
 export default function Tags() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { tags, setTags } = useContext(TrackContext);
+  const { tags, setTags } = useTracker();
   const iconRef = useRef(null);
   const position = useDynamicModalPosition(iconRef, isOpen);
   const updatedTagsModalStyles = {
