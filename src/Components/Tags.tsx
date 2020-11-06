@@ -5,7 +5,7 @@ import { BsFillTagFill } from 'react-icons/bs';
 import useDynamicModalPosition from 'src/hooks/useDynamicModalPosition';
 import useTracker from 'src/hooks/useTracker';
 import { createTag } from 'src/resources/tags';
-import { InputStyles, IconWrapper, dynamicModalStyles } from '../styles';
+import { InputStyles, IconWrapper, dynamicModalStyles, colors } from '../styles';
 import AddButton from './AddButton';
 import SearchInput from './SearchInput';
 import NoResourceFallback from './NoResourceFallback';
@@ -24,6 +24,17 @@ const tagsModalStyles = {
     backgroundColor: '#fff',
   },
 };
+
+const TagIcon = styled(BsFillTagFill)`
+  padding: 5px;
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  font-size: inherit;
+  background-color: ${({ hasTags }: { hasTags: boolean }) =>
+    hasTags ? 'rgba(196, 99, 186, 0.2)' : '#fff'};
+  color: ${({ hasTags }: { hasTags: boolean }) => (hasTags ? colors.primary : 'inherit')};
+`;
 
 const Input = styled.input`
   ${InputStyles}
@@ -143,7 +154,7 @@ const TagsList = ({ searchText }: { searchText: string }) => {
 export default function Tags() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { tags, setTags } = useTracker();
+  const { actualTimeRecord, tags, setTags } = useTracker();
   const iconRef = useRef(null);
   const position = useDynamicModalPosition(iconRef, isOpen);
   const updatedTagsModalStyles = {
@@ -162,7 +173,7 @@ export default function Tags() {
   return (
     <>
       <IconWrapper ref={iconRef} showBox={isOpen} onClick={() => setIsOpen(true)}>
-        <BsFillTagFill />
+        <TagIcon hasTags={!!actualTimeRecord.tagIds?.length} />
       </IconWrapper>
       <Modal
         isOpen={isOpen}
