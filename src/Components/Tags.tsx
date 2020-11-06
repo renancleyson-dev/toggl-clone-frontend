@@ -9,6 +9,7 @@ import { InputStyles, IconWrapper, dynamicModalStyles, colors } from '../styles'
 import AddButton from './AddButton';
 import SearchInput from './SearchInput';
 import NoResourceFallback from './NoResourceFallback';
+import TagCheckBox from './TagCheckBox';
 
 Modal.setAppElement('#root');
 
@@ -83,7 +84,7 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
   if (!searchText) {
     return (
       <TagItemWrapper onClick={onClick}>
-        <input id="" type="checkbox" checked={checked} />
+        <TagCheckBox checked={checked} />
         {name}
       </TagItemWrapper>
     );
@@ -107,7 +108,7 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
 
   return (
     <TagItemWrapper onClick={onClick}>
-      <input type="checkbox" checked={checked} />
+      <TagCheckBox checked={checked} />
       {highlightedItemSearchText}
     </TagItemWrapper>
   );
