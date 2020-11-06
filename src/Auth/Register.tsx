@@ -34,7 +34,6 @@ export const TermsAndPrivacyLabel = styled(Label)`
   color: #fff;
   position: relative;
   display: block;
-  vertical-align: middle;
 
   &::before {
     content: '';
