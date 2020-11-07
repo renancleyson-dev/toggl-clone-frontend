@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { RiTimeFill, RiMenuFill } from 'react-icons/ri';
 import Projects from 'src/Components/Projects';
+import Tags from 'src/Components/Tags';
+import { colors } from 'src/styles';
 import { TextInput } from '../Styles';
 import Timer from './Timer';
 import TimerButton from './TimerButton';
-import Tags from 'src/Components/Tags';
-import { colors } from 'src/styles';
+import MenuOptions from './MenuOptions';
+import ManualMode from './ManualMode';
 
 const TrackerBar = styled.div`
   position: sticky;
@@ -28,15 +29,6 @@ const TimerMenu = styled.div`
   font-size: 18px;
 `;
 
-const ModeMenu = styled.div`
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 20px;
-`;
-
 const LabelInput = styled(TextInput)`
   font-size: 16px;
   flex: 0 1 75%;
@@ -46,20 +38,25 @@ const LabelInput = styled(TextInput)`
   }
 `;
 
+const TrackerMode = () => (
+  <>
+    <Timer />
+    <TimerButton />
+  </>
+);
+
 // UI to control and inform about current time tracking
 export default function Tracker() {
+  const [trackerMode, setTrackerMode] = useState(true);
+
   return (
     <TrackerBar>
       <LabelInput placeholder="What are you working on?" />
       <TimerMenu>
         <Projects />
         <Tags />
-        <Timer />
-        <TimerButton />
-        <ModeMenu>
-          <RiTimeFill />
-          <RiMenuFill />
-        </ModeMenu>
+        {!trackerMode ? <TrackerMode /> : <ManualMode />}
+        <MenuOptions trackerMode={trackerMode} setTrackerMode={setTrackerMode} />
       </TimerMenu>
     </TrackerBar>
   );
