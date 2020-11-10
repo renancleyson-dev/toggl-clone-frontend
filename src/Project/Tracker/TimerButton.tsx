@@ -12,7 +12,7 @@ const Button = styled.button`
   padding: 0;
   display: flex;
   font-size: 45px;
-  margin-right: 15px;
+  margin-right: 10px;
 
   &:hover {
     color: ${({ isTracking }: { isTracking: boolean }) =>
