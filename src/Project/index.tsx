@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import TrackContextProvider from '../Contexts/TrackContext';
+import DateGroupsContextProvider from '../Contexts/DateGroupsContext';
 import Tracker from './Tracker';
 import History from './History';
 import Sidebar from './Sidebar';
@@ -21,10 +22,12 @@ export default () => (
   <ProjectWrapper>
     <Sidebar />
     <TrackContextProvider>
-      <Content>
-        <Tracker />
-        <History />
-      </Content>
+      <DateGroupsContextProvider>
+        <Content>
+          <Tracker />
+          <History />
+        </Content>
+      </DateGroupsContextProvider>
     </TrackContextProvider>
   </ProjectWrapper>
 );

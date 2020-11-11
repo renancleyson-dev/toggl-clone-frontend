@@ -1,6 +1,6 @@
 import { CancelTokenSource } from 'axios';
 import axios from '../axios';
-import { IDateGroup, ITimeRecordParams } from '../types/timeRecord';
+import { IDateGroup, ITimeRecordParams, ITimeRecord } from '../types/timeRecord';
 
 export const fetchTimeRecords = async (
   page: number,
@@ -14,7 +14,7 @@ export const fetchTimeRecords = async (
 
 export const createTimeRecord = async (
   timeRecord: ITimeRecordParams
-): Promise<void | Error> =>
+): Promise<{ data: ITimeRecord }> =>
   axios.post('/time_records', {
     ...timeRecord,
     startTime: timeRecord.startTime?.format(),
@@ -24,7 +24,7 @@ export const createTimeRecord = async (
 export const updateTimeRecord = async (
   timeRecordId: number,
   data: ITimeRecordParams
-): Promise<void | Error> =>
+): Promise<{ data: ITimeRecord }> =>
   axios.put(`/time_records/${timeRecordId}`, {
     ...data,
     startTime: data.startTime?.format(),

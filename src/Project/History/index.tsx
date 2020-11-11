@@ -4,21 +4,11 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { UserContext } from 'src/Contexts/UserContext';
 import { fetchTimeRecords } from 'src/resources/timeRecords';
 import { IDateGroup } from 'src/types/timeRecord';
+import { FETCH_TYPE } from 'src/reducers/dateGroupsReducer/types';
+import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import DateGroup from './DateGroup';
 
-const dateGroupsReducer = (groups: IDateGroup[], actualDateGroup: IDateGroup) => {
-  const { date, timeRecords } = actualDateGroup;
-  const dateIndex = groups.findIndex((dateGroups) => date === dateGroups.date);
-
-  if (dateIndex === -1) {
-    return [...groups, actualDateGroup];
-  }
-
-  const newTimeRecords = groups[dateIndex].timeRecords.concat(timeRecords);
-  groups[dateIndex] = { date, timeRecords: newTimeRecords };
-
-  return [...groups];
-};
+const fetchAction = (payload: IDateGroup[]) => ({ type: FETCH_TYPE, payload });
 
 const HistoryWrapper = styled.div`
   margin-top: 60px;
@@ -33,9 +23,9 @@ const loader = (
 
 // infinite scroll to control and inform about time records
 export default function History() {
-  const [dateGroups, setDateGroups] = useState<IDateGroup[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const { user } = useContext(UserContext);
+  const { dateGroups, dispatchDateGroups } = useContext(DateGroupContext);
   const dateGroupsUI = dateGroups.map(({ date, timeRecords }) => (
     <DateGroup key={date} date={date} timeRecords={timeRecords} />
   ));
@@ -43,13 +33,11 @@ export default function History() {
   const loadMore = (page: number) => {
     if (user && user.id) {
       fetchTimeRecords(page).then((response) => {
-        if (response) {
-          setDateGroups((prevState: IDateGroup[]) =>
-            response.data.reduce(dateGroupsReducer, prevState)
-          );
-          if (!response.data.length) {
-            setHasMore(false);
-          }
+        if (dispatchDateGroups) {
+          dispatchDateGroups(fetchAction(response.data));
+        }
+        if (!response.data.length) {
+          setHasMore(false);
         }
       });
     }

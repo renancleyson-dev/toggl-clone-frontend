@@ -2,14 +2,23 @@ export interface ITimeRecord {
   duration: number;
   startTime: string;
   endTime: string;
-  label: string;
-  category: string;
+  label?: string;
+  projectId?: number;
+  tagIds?: number[];
   id: number;
 }
 
 export interface IDateGroup {
   date: string;
   timeRecords: ITimeRecord[];
+}
+
+export interface IEditedTimeRecord {
+  id: number;
+  startTime: string;
+  label?: string;
+  projectId?: number;
+  tagIds?: number[];
 }
 
 export interface ITrackingTimeRecord {

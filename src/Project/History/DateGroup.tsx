@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { FaList } from 'react-icons/fa';
@@ -6,6 +6,7 @@ import formatDuration from 'src/helpers/formatDuration';
 import { colors } from 'src/styles';
 import { ITimeRecord } from 'src/types/timeRecord';
 import HistoryItem from './HistoryItem';
+import useTracker from 'src/hooks/useTracker';
 
 interface Props {
   date: string;
@@ -61,30 +62,25 @@ const MultiSelect = styled.div`
   align-items: center;
 `;
 
-const recordsMapper = ({ startTime, endTime, label, category, id }: ITimeRecord) => (
-  <HistoryItem
-    key={id}
-    startTime={moment(startTime)}
-    endTime={moment(endTime)}
-    recordLabel={label}
-    recordCategory={category}
-    id={id}
-  />
-);
-
 export default function DateGroup({ date, timeRecords }: Props) {
-  const [totalDuration, setTotalDuration] = useState(moment.duration(0));
-  const records = timeRecords.map(recordsMapper);
-
-  useEffect(() => {
-    const newTotalDuration = timeRecords.reduce((acc, timeRecord) => {
-      const timeRecordDuration = moment.duration(timeRecord.duration, 's');
-
-      return acc.add(timeRecordDuration);
-    }, moment.duration(0));
-
-    setTotalDuration(newTotalDuration);
-  }, [timeRecords]);
+  const { projects, tags } = useTracker();
+  const records = timeRecords.map(
+    ({ startTime, endTime, label, tagIds, projectId, id }: ITimeRecord) => (
+      <HistoryItem
+        key={id}
+        startTime={moment(startTime)}
+        endTime={moment(endTime)}
+        label={label}
+        project={projects.find(({ id }) => id === projectId)}
+        tags={tagIds && tags.filter(({ id }) => tagIds.includes(id))}
+        id={id}
+      />
+    )
+  );
+  const totalDuration = timeRecords.reduce((acc, timeRecord) => {
+    const timeRecordDuration = moment.duration(timeRecord.duration, 's');
+    return acc.add(timeRecordDuration);
+  }, moment.duration(0));
 
   return (
     <DateGroupWrapper>

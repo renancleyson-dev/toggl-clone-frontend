@@ -1,14 +1,20 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { RiFolder2Fill } from 'react-icons/ri';
 import { BsFillPlayFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { updateTimeRecord } from 'src/resources/timeRecords';
+import { IProject } from 'src/types/projects';
+import { ITag } from 'src/types/tags';
 import formatDuration from 'src/helpers/formatDuration';
 import { UserContext } from 'src/Contexts/UserContext';
+import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
+import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
+import { IEditedTimeRecord } from 'src/types/timeRecord';
 import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
+const editAction = (value: IEditedTimeRecord) => ({ type: EDIT_TYPE, payload: value });
 
 const TimeRecordWrapper = styled.div`
   padding: 10px 10px 10px 0px;
@@ -82,16 +88,24 @@ const DurationDisplay = styled.div``;
 interface Props {
   startTime: moment.Moment;
   endTime: moment.Moment;
-  recordLabel: string;
-  recordCategory: string;
+  project?: IProject;
+  label?: string;
+  tags?: ITag[];
   id: number;
 }
 
 // UI to show a specific time record
-export default function HistoryItem({ startTime, endTime, recordLabel, id }: Props) {
-  const [label, setLabel] = useState<string>('');
+export default function HistoryItem({ startTime, endTime, label, id }: Props) {
+  const [labelText, setLabelText] = useState('');
   const { user } = useContext(UserContext);
+  const { dispatchDateGroups } = useContext(DateGroupContext);
   const duration = moment.duration(endTime.diff(startTime));
+
+  useEffect(() => {
+    if (label) {
+      setLabelText(label);
+    }
+  }, [label]);
 
   return (
     <TimeRecordWrapper>
@@ -99,9 +113,15 @@ export default function HistoryItem({ startTime, endTime, recordLabel, id }: Pro
         <Label
           data-testid="time-record-label"
           placeholder="Add description"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          onBlur={() => updateTimeRecord(id, { userId: user.id, label })}
+          value={labelText}
+          onChange={(e) => setLabelText(e.target.value)}
+          onBlur={() => {
+            updateTimeRecord(id, { userId: user.id, label: labelText }).then(
+              (response) => {
+                dispatchDateGroups && dispatchDateGroups(editAction(response.data));
+              }
+            );
+          }}
         />
         <ProjectSelectWrapper data-hover>
           <RiFolder2Fill />
