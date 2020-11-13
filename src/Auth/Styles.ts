@@ -12,13 +12,14 @@ export const formContainer = css`
 `;
 
 export const Wrapper = styled.div`
+  overflow: auto;
+  flex: 1;
   background-color: ${colors.backgroundMedium};
 `;
 
 export const FormBoxWrapper = styled.div`
   position: relative;
   height: 100%;
-  overflow: auto;
   font-size: 18px;
   font-family: 'Inter', sans-serif;
 

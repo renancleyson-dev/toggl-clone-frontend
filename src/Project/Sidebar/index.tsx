@@ -22,6 +22,8 @@ const sidebarOptions: ISidebarOption[] = [
 ];
 
 const SidebarWrapper = styled.div`
+  position: sticky;
+  top: 0;
   flex: 0 0 180px;
   padding: 20px 0;
   height: 100%;

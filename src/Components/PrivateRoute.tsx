@@ -11,7 +11,7 @@ export default function PrivateRoute({ component: Component, ...rest }: RoutePro
   const isLoadingUser = () => userId && !user.id;
 
   if (!Component || isLoadingUser()) {
-    return <Loader />;
+    return <Route {...rest} component={Loader} />;
   }
 
   return (
