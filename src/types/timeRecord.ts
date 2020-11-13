@@ -1,10 +1,13 @@
+import { IProject } from './projects';
+import { ITag } from './tags';
+
 export interface ITimeRecord {
   duration: number;
   startTime: string;
   endTime: string;
   label?: string;
-  projectId?: number;
-  tagIds?: number[];
+  project?: IProject;
+  tags?: ITag[];
   id: number;
 }
 
@@ -13,20 +16,12 @@ export interface IDateGroup {
   timeRecords: ITimeRecord[];
 }
 
-export interface IEditedTimeRecord {
-  id: number;
-  startTime: string;
-  label?: string;
-  projectId?: number;
-  tagIds?: number[];
-}
-
 export interface ITrackingTimeRecord {
   userId: number;
   startTime?: moment.Moment;
   label?: string;
-  projectId?: number;
-  tagIds?: number[];
+  projectId?: number | null;
+  tagIds?: number[] | null;
 }
 
 export interface ITimeRecordParams extends ITrackingTimeRecord {

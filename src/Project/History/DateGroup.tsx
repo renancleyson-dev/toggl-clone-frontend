@@ -6,7 +6,6 @@ import formatDuration from 'src/helpers/formatDuration';
 import { colors } from 'src/styles';
 import { ITimeRecord } from 'src/types/timeRecord';
 import HistoryItem from './HistoryItem';
-import useTracker from 'src/hooks/useTracker';
 
 interface Props {
   date: string;
@@ -63,16 +62,15 @@ const MultiSelect = styled.div`
 `;
 
 export default function DateGroup({ date, timeRecords }: Props) {
-  const { projects, tags } = useTracker();
   const records = timeRecords.map(
-    ({ startTime, endTime, label, tagIds, projectId, id }: ITimeRecord) => (
+    ({ startTime, endTime, label, tags, project, id }: ITimeRecord) => (
       <HistoryItem
         key={id}
         startTime={moment(startTime)}
         endTime={moment(endTime)}
         label={label}
-        project={projects.find(({ id }) => id === projectId)}
-        tags={tagIds && tags.filter(({ id }) => tagIds.includes(id))}
+        project={project}
+        tags={tags}
         id={id}
       />
     )

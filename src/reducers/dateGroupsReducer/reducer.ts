@@ -1,10 +1,10 @@
 import moment from 'moment';
-import { IDateGroup, ITimeRecord, IEditedTimeRecord } from 'src/types/timeRecord';
+import { IDateGroup, ITimeRecord } from 'src/types/timeRecord';
 import { FETCH_TYPE, EDIT_TYPE, ADD_TYPE, DELETE_TYPE } from './types';
 
 export type Action = {
   type: string;
-  payload: IDateGroup[] | ITimeRecord | IEditedTimeRecord;
+  payload: IDateGroup[] | ITimeRecord;
 };
 
 const findByDate = (date: string, groups: IDateGroup[]) =>
@@ -34,19 +34,19 @@ const dateGroupsReducer = (state: IDateGroup[], action: Action) => {
       const dateGroups = action.payload as IDateGroup[];
       return dateGroups.reduce(fetchDateGroupsReducer, state);
     case EDIT_TYPE:
-      const editedTimeRecord = action.payload as IEditedTimeRecord;
+      const editedTimeRecord = action.payload as ITimeRecord;
       const timeRecordDate = moment(editedTimeRecord.startTime).format('ddd, D MMM');
       const newState = state.map((dateGroup) => {
         if (dateGroup.date === timeRecordDate) {
           const newTimeRecords = dateGroup.timeRecords.map((actualTimeRecord) => {
             if (actualTimeRecord.id === editedTimeRecord.id) {
-              return { ...actualTimeRecord, ...editedTimeRecord };
+              return editedTimeRecord;
             }
 
             return actualTimeRecord;
           });
 
-          return { date: dateGroup.date, timeRecords: newTimeRecords }
+          return { date: dateGroup.date, timeRecords: newTimeRecords };
         }
 
         return dateGroup;
