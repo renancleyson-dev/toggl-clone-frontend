@@ -73,7 +73,17 @@ export default function Tracker() {
 
   return (
     <TrackerBar>
-      <LabelInput placeholder="What are you working on?" />
+      <LabelInput
+        placeholder="What are you working on?"
+        value={actualTimeRecord.label || ''}
+        onChange={(event) => {
+          const { target } = event;
+          setActualTimeRecord((prevState) => ({
+            ...prevState,
+            label: target.value,
+          }));
+        }}
+      />
       <TimerMenu>
         <Projects
           actualProject={actualProject}
