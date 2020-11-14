@@ -5,6 +5,7 @@ import { BsFillTagFill } from 'react-icons/bs';
 import useDynamicModalPosition from 'src/hooks/useDynamicModalPosition';
 import useTracker from 'src/hooks/useTracker';
 import { createTag } from 'src/resources/tags';
+import { ITag } from 'src/types/tags';
 import { InputStyles, IconWrapper, dynamicModalStyles, colors } from '../styles';
 import AddButton from './AddButton';
 import SearchInput from './SearchInput';
@@ -12,6 +13,8 @@ import NoResourceFallback from './NoResourceFallback';
 import TagCheckBox from './TagCheckBox';
 
 Modal.setAppElement('#root');
+
+const modalContentHeight = 360;
 
 const tagsModalStyles = {
   overlay: dynamicModalStyles.overlay,
@@ -84,7 +87,7 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
   if (!searchText) {
     return (
       <TagItemWrapper onClick={onClick}>
-        <TagCheckBox checked={checked} />
+        <TagCheckBox checked={checked} onChange={onClick} />
         {name}
       </TagItemWrapper>
     );
@@ -114,33 +117,26 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
   );
 };
 
-const TagsList = ({ searchText }: { searchText: string }) => {
-  const { tags, actualTimeRecord, setActualTimeRecord } = useTracker();
+const TagsList = ({
+  searchText,
+  actualTags,
+  handleChangeOnTags,
+}: {
+  searchText: string;
+  actualTags?: ITag[];
+  handleChangeOnTags: (tag: ITag) => unknown;
+}) => {
+  const { tags } = useTracker();
   const filteredTags = tags.filter(({ name }) => name.includes(searchText.trim()));
-  const tagItems = filteredTags.map(({ id, name }) => {
-    const handleItemClick = () => {
-      setActualTimeRecord((prevState) => {
-        const tagIds = prevState.tagIds || [];
-        const idIndex = tagIds?.indexOf(id);
-        if (idIndex !== -1) {
-          const newTagIds = [...tagIds];
-          newTagIds.splice(idIndex, 1);
-          return { ...prevState, tagIds: [...newTagIds] };
-        }
-        return { ...prevState, tagIds: [...tagIds, id] };
-      });
-    };
-
-    return (
-      <TagItem
-        key={id}
-        name={name}
-        searchText={searchText}
-        checked={!!actualTimeRecord.tagIds?.includes(id)}
-        onClick={handleItemClick}
-      />
-    );
-  });
+  const tagItems = filteredTags.map(({ id, name }) => (
+    <TagItem
+      key={id}
+      name={name}
+      searchText={searchText}
+      checked={!!actualTags?.some((tag) => tag.id === id)}
+      onClick={() => handleChangeOnTags({ id, name })}
+    />
+  ));
 
   if (!filteredTags.length) {
     return (
@@ -152,12 +148,17 @@ const TagsList = ({ searchText }: { searchText: string }) => {
   return <TagsListWrapper>{tagItems}</TagsListWrapper>;
 };
 
-export default function Tags() {
+interface Props {
+  actualTags?: ITag[];
+  handleChangeOnTags: (tag: ITag) => unknown;
+}
+
+export default function Tags({ actualTags, handleChangeOnTags }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { actualTimeRecord, tags, setTags } = useTracker();
+  const { tags, setTags } = useTracker();
   const iconRef = useRef(null);
-  const position = useDynamicModalPosition(iconRef, isOpen);
+  const position = useDynamicModalPosition(iconRef, isOpen, modalContentHeight);
   const updatedTagsModalStyles = {
     overlay: tagsModalStyles.overlay,
     content: { ...tagsModalStyles.content, ...position },
@@ -165,16 +166,17 @@ export default function Tags() {
 
   const isFinded = () => !searchText || tags.some(({ name }) => name === searchText);
   const handleClick = () => {
-    createTag({ name: searchText.trim() }).then((response) =>
-      setTags((prevState) => [...prevState, response.data])
-    );
+    createTag({ name: searchText.trim() }).then((response) => {
+      setTags((prevState) => [...prevState, response.data]);
+      handleChangeOnTags(response.data);
+    });
     setSearchText('');
   };
 
   return (
     <>
       <IconWrapper ref={iconRef} showBox={isOpen} onClick={() => setIsOpen(true)}>
-        <TagIcon hasTags={!!actualTimeRecord.tagIds?.length} />
+        <TagIcon hasTags={!!actualTags?.length} />
       </IconWrapper>
       <Modal
         isOpen={isOpen}
@@ -189,7 +191,11 @@ export default function Tags() {
             onChange={(event) => setSearchText(event.target.value)}
           />
         </SearchInput>
-        <TagsList searchText={searchText} />
+        <TagsList
+          actualTags={actualTags}
+          searchText={searchText}
+          handleChangeOnTags={handleChangeOnTags}
+        />
         <AddButton
           text={`Create a tag "${searchText.trim() || ' '}"`}
           disabled={isFinded()}

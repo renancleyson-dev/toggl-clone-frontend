@@ -12,6 +12,7 @@ import { UserContext } from 'src/Contexts/UserContext';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import Projects from 'src/Components/Projects';
+import Tags from 'src/Components/Tags';
 import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
@@ -53,6 +54,10 @@ const LabelWrapper = styled(TextInput)`
 const ProjectSelectWrapper = styled.div`
   flex: 1 1 100%;
   padding-left: 10px;
+`;
+
+const TagsWrapper = styled.div`
+  margin-right: 25px;
 `;
 
 const EditSection = styled.div`
@@ -138,6 +143,22 @@ export default function HistoryItem({
       dispatchDateGroups && dispatchDateGroups(editAction(response.data));
     });
   };
+  const handleChangeOnTags = (tag: ITag) => {
+    if (!tags) {
+      handleTimeRecordChange({ userId: user.id, tagIds: tag ? [tag.id] : null });
+      return;
+    }
+    const tagIds = tags.map(({ id }) => id);
+    const idIndex = tagIds.indexOf(tag.id);
+    if (idIndex !== -1) {
+      handleTimeRecordChange({
+        userId: user.id,
+        tagIds: [...tagIds.slice(0, idIndex), ...tagIds.slice(idIndex + 1)],
+      });
+    } else {
+      handleTimeRecordChange({ userId: user.id, tagIds: [...tagIds, tag.id] });
+    }
+  };
 
   return (
     <TimeRecordWrapper>
@@ -155,6 +176,9 @@ export default function HistoryItem({
           />
         </ProjectSelectWrapper>
       </NamingSection>
+      <TagsWrapper>
+        <Tags actualTags={tags} handleChangeOnTags={handleChangeOnTags} />
+      </TagsWrapper>
       <EditSection>
         <EditOptions>
           <div>
