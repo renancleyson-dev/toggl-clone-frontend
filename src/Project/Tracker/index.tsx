@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Projects from 'src/Components/Projects';
 import Tags from 'src/Components/Tags';
+import useTracker from 'src/hooks/useTracker';
 import { colors } from 'src/styles';
+import { IProject } from 'src/types/projects';
+import { ITag } from 'src/types/tags';
 import { TextInput } from '../Styles';
 import Timer from './Timer';
 import TimerButton from './TimerButton';
@@ -49,13 +52,34 @@ const TrackerMode = () => (
 // UI to control and inform about current time tracking
 export default function Tracker() {
   const [trackerMode, setTrackerMode] = useState(true);
+  const { actualTimeRecord, setActualTimeRecord, projects, tags } = useTracker();
+  const actualProject = projects.find(({ id }) => id === actualTimeRecord.projectId);
+  const actualTags = tags.filter(({ id }) => actualTimeRecord.tagIds?.includes(id));
+  const handleChangeOnProject = (project: IProject | null = null) => {
+    setActualTimeRecord((prevState) => ({ ...prevState, projectId: project?.id }));
+  };
+  const handleChangeOntags = (tag: ITag) => {
+    setActualTimeRecord((prevState) => {
+      const tagIds = prevState.tagIds || [];
+      const idIndex = tagIds?.indexOf(tag.id);
+      if (idIndex !== -1) {
+        const newTagIds = [...tagIds];
+        newTagIds.splice(idIndex, 1);
+        return { ...prevState, tagIds: [...newTagIds] };
+      }
+      return { ...prevState, tagIds: [...tagIds, tag.id] };
+    });
+  };
 
   return (
     <TrackerBar>
       <LabelInput placeholder="What are you working on?" />
       <TimerMenu>
-        <Projects />
-        <Tags />
+        <Projects
+          actualProject={actualProject}
+          handleChangeOnProject={handleChangeOnProject}
+        />
+        <Tags actualTags={actualTags} handleChangeOnTags={handleChangeOntags} />
         {!trackerMode ? <TrackerMode /> : <ManualMode />}
         <MenuOptions trackerMode={trackerMode} setTrackerMode={setTrackerMode} />
       </TimerMenu>
