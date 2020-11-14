@@ -1,11 +1,17 @@
-import { useContext, useEffect, useCallback } from 'react';
+import { useContext } from 'react';
 import moment from 'moment';
 import { TrackContext } from 'src/Contexts/TrackContext';
 import { UserContext } from 'src/Contexts/UserContext';
+import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
+import { ADD_TYPE } from 'src/reducers/dateGroupsReducer/types';
+import { ITimeRecord } from 'src/types/timeRecord';
 import { createTimeRecord } from '../resources/timeRecords';
+
+const addAction = (value: ITimeRecord) => ({ type: ADD_TYPE, payload: value });
 
 export default function useTracker() {
   const { user } = useContext(UserContext);
+  const { dispatchDateGroups } = useContext(DateGroupContext);
   const {
     actualTimeRecord,
     setActualTimeRecord,
@@ -15,44 +21,27 @@ export default function useTracker() {
   } = useContext(TrackContext);
 
   const { startTime } = actualTimeRecord;
-  const handleStopTracking = useCallback(() => {
+  const startTracking = () => {
+    setIsTracking(true);
+    setActualTimeRecord((prevState) => ({ ...prevState, startTime: moment() }));
+  };
+  const stopTracking = () => {
     const endTime = moment();
-    createTimeRecord({ ...actualTimeRecord, endTime });
-    setActualTimeRecord({ userId: user.id });
-  }, [actualTimeRecord, setActualTimeRecord, user]);
-
-  const handleSetIsTracking = (state: boolean | ((prevState: boolean) => any)) => {
-    setIsTracking((prevState) => {
-      if (typeof state === 'boolean') {
-        if (prevState && state) {
-          handleStopTracking();
-          setActualTimeRecord((prevState) => ({ ...prevState, startTime: moment() }));
-        }
-        return state;
-      } else {
-        return state(prevState);
-      }
+    setActualTimeRecord({ userId: user.id, label: '' });
+    setIsTracking(false);
+    createTimeRecord({ ...actualTimeRecord, endTime }).then((response) => {
+      dispatchDateGroups && dispatchDateGroups(addAction(response.data));
     });
   };
-
-  useEffect(() => {
-    setActualTimeRecord((prevState) => ({ ...prevState, userId: user.id }));
-  }, [user, setActualTimeRecord]);
-
-  useEffect(() => {
-    if (isTracking && !startTime) {
-      setActualTimeRecord((prevState) => ({ ...prevState, startTime: moment() }));
-    } else if (!isTracking && startTime && user.id) {
-      handleStopTracking();
-    }
-  }, [isTracking, startTime, setActualTimeRecord, handleStopTracking, user]);
 
   return {
     startTime,
     actualTimeRecord,
     setActualTimeRecord,
     isTracking,
-    setIsTracking: handleSetIsTracking,
+    setIsTracking,
+    startTracking,
+    stopTracking,
     ...contextValue,
   };
 }

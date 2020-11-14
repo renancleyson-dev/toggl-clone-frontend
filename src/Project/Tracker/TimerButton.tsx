@@ -26,14 +26,14 @@ const Button = styled.button`
 
 // UI to manage the start time, end time and the post request of the time record
 export default function TimerButton() {
-  const { isTracking, setIsTracking } = useTracker();
+  const { isTracking, startTracking, stopTracking } = useTracker();
 
   return (
     <Button
       type="button"
       data-testid="timer-button"
       isTracking={isTracking}
-      onClick={() => setIsTracking((prevState: boolean) => !prevState)}
+      onClick={() => (isTracking ? stopTracking() : startTracking() )}
     >
       {isTracking ? <RiStopCircleFill /> : <IoIosPlayCircle />}
     </Button>

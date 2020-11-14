@@ -54,18 +54,15 @@ const dateGroupsReducer = (state: IDateGroup[], action: Action) => {
       return newState;
     case ADD_TYPE:
       const addedTimeRecord = action.payload as ITimeRecord;
-      return state.map(({ date, timeRecords }) => {
-        const addedTimeRecordIndex = timeRecords.findIndex(({ startTime }) =>
-          moment(startTime).isAfter(moment(addedTimeRecord.startTime))
-        );
-        if (addedTimeRecordIndex !== -1) {
-          const newTimeRecords = [...timeRecords];
-          newTimeRecords.splice(addedTimeRecordIndex, 0, addedTimeRecord);
-          return { date, timeRecords: newTimeRecords };
-        }
-        return { date, timeRecords };
-      });
-
+      const momentStartTime = moment(addedTimeRecord.startTime);
+      if (moment(state[0].timeRecords[0].startTime).isSame(momentStartTime, 'date')) {
+        const newTodayGroup = {
+          ...state[0],
+          timeRecords: [addedTimeRecord, ...state[0].timeRecords],
+        };
+        return [newTodayGroup, ...state.slice(1)];
+      }
+      return [{ date: 'Today', timeRecords: [addedTimeRecord] }, ...state];
     case DELETE_TYPE:
       const deletedTimeRecord = action.payload as ITimeRecord;
       return state.map(({ date, timeRecords }) => {
