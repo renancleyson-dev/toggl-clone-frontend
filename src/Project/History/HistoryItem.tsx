@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import { RiFolder2Fill } from 'react-icons/ri';
 import { BsFillPlayFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { updateTimeRecord } from 'src/resources/timeRecords';
+import { ITimeRecord } from 'src/types/timeRecord';
+import { ITrackingTimeRecord } from 'src/types/timeRecord';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
 import formatDuration from 'src/helpers/formatDuration';
 import { UserContext } from 'src/Contexts/UserContext';
-import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
-import { IEditedTimeRecord } from 'src/types/timeRecord';
+import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
+import Projects from 'src/Components/Projects';
 import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
-const editAction = (value: IEditedTimeRecord) => ({ type: EDIT_TYPE, payload: value });
+const editAction = (value: ITimeRecord) => ({ type: EDIT_TYPE, payload: value });
 
 const TimeRecordWrapper = styled.div`
   padding: 10px 10px 10px 0px;
@@ -25,7 +26,7 @@ const TimeRecordWrapper = styled.div`
   font-size: 14px;
 
   &:hover,
-  &:hover * {
+  &:hover input {
     background-color: #f9f9f9;
   }
 
@@ -43,7 +44,7 @@ const NamingSection = styled.div`
   flex: 1 1 100%;
 `;
 
-const Label = styled(TextInput)`
+const LabelWrapper = styled(TextInput)`
   flex: 1 1;
   min-width: ${({ value }: { value: string }) =>
     value ? `${handleInputWidth((value.length + 1) * 8)}px` : '110px'};
@@ -85,6 +86,32 @@ const MoreActionsWrapper = styled.div`
 
 const DurationDisplay = styled.div``;
 
+const Label = ({ id, label }: { id: number; label?: string }) => {
+  const [labelText, setLabelText] = useState('');
+  const { user } = useContext(UserContext);
+  const { dispatchDateGroups } = useContext(DateGroupContext);
+
+  useEffect(() => {
+    if (label) {
+      setLabelText(label);
+    }
+  }, [label]);
+
+  return (
+    <LabelWrapper
+      data-testid="time-record-label"
+      placeholder="Add description"
+      value={labelText}
+      onChange={(e) => setLabelText(e.target.value)}
+      onBlur={() => {
+        updateTimeRecord(id, { userId: user.id, label: labelText }).then((response) => {
+          dispatchDateGroups && dispatchDateGroups(editAction(response.data));
+        });
+      }}
+    />
+  );
+};
+
 interface Props {
   startTime: moment.Moment;
   endTime: moment.Moment;
@@ -95,36 +122,37 @@ interface Props {
 }
 
 // UI to show a specific time record
-export default function HistoryItem({ startTime, endTime, label, id }: Props) {
-  const [labelText, setLabelText] = useState('');
+export default function HistoryItem({
+  startTime,
+  endTime,
+  label,
+  id,
+  project,
+  tags,
+}: Props) {
   const { user } = useContext(UserContext);
   const { dispatchDateGroups } = useContext(DateGroupContext);
   const duration = moment.duration(endTime.diff(startTime));
-
-  useEffect(() => {
-    if (label) {
-      setLabelText(label);
-    }
-  }, [label]);
+  const handleTimeRecordChange = (value: ITrackingTimeRecord) => {
+    updateTimeRecord(id, value).then((response) => {
+      dispatchDateGroups && dispatchDateGroups(editAction(response.data));
+    });
+  };
 
   return (
     <TimeRecordWrapper>
       <NamingSection>
-        <Label
-          data-testid="time-record-label"
-          placeholder="Add description"
-          value={labelText}
-          onChange={(e) => setLabelText(e.target.value)}
-          onBlur={() => {
-            updateTimeRecord(id, { userId: user.id, label: labelText }).then(
-              (response) => {
-                dispatchDateGroups && dispatchDateGroups(editAction(response.data));
-              }
-            );
-          }}
-        />
+        <Label id={id} label={label} />
         <ProjectSelectWrapper data-hover>
-          <RiFolder2Fill />
+          <Projects
+            actualProject={project}
+            handleChangeOnProject={(project: IProject | null) =>
+              handleTimeRecordChange({
+                userId: user.id,
+                projectId: project && project.id,
+              })
+            }
+          />
         </ProjectSelectWrapper>
       </NamingSection>
       <EditSection>
