@@ -14,6 +14,7 @@ import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import Projects from 'src/Components/Projects';
 import Tags from 'src/Components/Tags';
 import { TextInput } from '../Styles';
+import useTracker from 'src/hooks/useTracker';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
 const editAction = (value: ITimeRecord) => ({ type: EDIT_TYPE, payload: value });
@@ -81,12 +82,14 @@ const PlayWrapper = styled.div`
   font-size: 29px;
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
 
 const MoreActionsWrapper = styled.div`
   font-size: 20px;
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
 
 const DurationDisplay = styled.div``;
@@ -136,19 +139,20 @@ export default function HistoryItem({
   tags,
 }: Props) {
   const { user } = useContext(UserContext);
+  const tracker = useTracker();
   const { dispatchDateGroups } = useContext(DateGroupContext);
   const duration = moment.duration(endTime.diff(startTime));
+  const tagIds = tags?.map(({ id }) => id);
   const handleTimeRecordChange = (value: ITrackingTimeRecord) => {
     updateTimeRecord(id, value).then((response) => {
       dispatchDateGroups && dispatchDateGroups(editAction(response.data));
     });
   };
   const handleChangeOnTags = (tag: ITag) => {
-    if (!tags) {
+    if (!tags || !tagIds) {
       handleTimeRecordChange({ userId: user.id, tagIds: tag ? [tag.id] : null });
       return;
     }
-    const tagIds = tags.map(({ id }) => id);
     const idIndex = tagIds.indexOf(tag.id);
     if (idIndex !== -1) {
       handleTimeRecordChange({
@@ -188,7 +192,22 @@ export default function HistoryItem({
             {formatDuration(duration)}
           </DurationDisplay>
           <Actions>
-            <PlayWrapper data-hover>
+            <PlayWrapper
+              data-hover
+              onClick={() => {
+                if (tracker.isTracking) {
+                  tracker.stopTracking();
+                }
+                tracker.setIsTracking(true);
+                tracker.startTracking();
+                tracker.setActualTimeRecord({
+                  userId: user.id,
+                  label,
+                  projectId: project?.id,
+                  tagIds,
+                });
+              }}
+            >
               <BsFillPlayFill />
             </PlayWrapper>
             <MoreActionsWrapper data-hover>
@@ -200,6 +219,3 @@ export default function HistoryItem({
     </TimeRecordWrapper>
   );
 }
-HistoryItem.defaultProps = {
-  recordCategory: '',
-};
