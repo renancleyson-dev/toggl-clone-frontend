@@ -35,9 +35,9 @@ const dateGroupsReducer = (state: IDateGroup[], action: Action) => {
       return dateGroups.reduce(fetchDateGroupsReducer, state);
     case EDIT_TYPE:
       const editedTimeRecord = action.payload as ITimeRecord;
-      const timeRecordDate = moment(editedTimeRecord.startTime).format('ddd, D MMM');
+      const startTimeMoment = moment(editedTimeRecord.startTime).format();
       const newState = state.map((dateGroup) => {
-        if (dateGroup.date === timeRecordDate) {
+        if (moment(dateGroup.timeRecords[0].startTime).isSame(startTimeMoment, 'date')) {
           const newTimeRecords = dateGroup.timeRecords.map((actualTimeRecord) => {
             if (actualTimeRecord.id === editedTimeRecord.id) {
               return editedTimeRecord;
