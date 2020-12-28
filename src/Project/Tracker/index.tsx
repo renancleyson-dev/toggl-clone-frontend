@@ -90,7 +90,7 @@ export default function Tracker() {
           handleChangeOnProject={handleChangeOnProject}
         />
         <Tags actualTags={actualTags} handleChangeOnTags={handleChangeOntags} />
-        {!trackerMode ? <TrackerMode /> : <ManualMode />}
+        {trackerMode ? <TrackerMode /> : <ManualMode />}
         <MenuOptions trackerMode={trackerMode} setTrackerMode={setTrackerMode} />
       </TimerMenu>
     </TrackerBar>
