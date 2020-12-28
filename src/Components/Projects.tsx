@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import Modal from 'react-modal';
 import { RiFolder2Fill } from 'react-icons/ri';
-import useDynamicModalPosition from '../hooks/useDynamicModalPosition';
+import useDynamicPositionModal from '../hooks/useDynamicPositionModal';
 import useTracker from '../hooks/useTracker';
 import { IProject } from '../types/projects';
 import CreateProjectModal from './CreateProjectModal';
@@ -203,12 +203,11 @@ interface Props {
 }
 
 export default function Projects({ actualProject, handleChangeOnProject }: Props) {
-  const [showBox, setShowBox] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const { setProjects } = useTracker();
   const iconRef = useRef(null);
-  const position = useDynamicModalPosition(iconRef, showBox, modalContentHeight);
+  const { position, isOpen, setIsOpen, handleOpen } = useDynamicPositionModal(iconRef);
   const updatedProjectModalStyles = {
     overlay: projectModalStyles.overlay,
     content: { ...projectModalStyles.content, ...position },
@@ -218,18 +217,17 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
     setProjects((prevState) => [...prevState, project]);
     handleChangeOnProject(project);
   };
-  const handleIconClick = () => setShowBox(true);
   const handleAddButtonClick = () => {
     setIsCreateModalOpen(true);
-    setShowBox(false);
+    setIsOpen(false);
   };
 
   return (
     <>
-      <IconWrapper ref={iconRef} showBox={showBox}>
+      <IconWrapper ref={iconRef} showBox={isOpen}>
         <ActualProject
           actualProject={actualProject}
-          handleIconClick={handleIconClick}
+          handleIconClick={handleOpen}
           handleAddButtonClick={handleAddButtonClick}
         />
       </IconWrapper>
@@ -240,9 +238,9 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
         onRequestClose={() => setIsCreateModalOpen(false)}
       />
       <Modal
-        isOpen={showBox}
+        isOpen={isOpen}
         style={updatedProjectModalStyles}
-        onRequestClose={() => setShowBox(false)}
+        onRequestClose={() => setIsOpen(false)}
       >
         <SearchInput>
           <Input
@@ -255,7 +253,7 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
         <ProjectsList
           searchText={searchText}
           handleChangeOnProject={handleChangeOnProject}
-          setShowBox={setShowBox}
+          setShowBox={setIsOpen}
         />
         <AddButton text="Create a new project" onClick={handleAddButtonClick} />
       </Modal>

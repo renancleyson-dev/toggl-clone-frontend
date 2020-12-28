@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import { BsFillTagFill } from 'react-icons/bs';
-import useDynamicModalPosition from 'src/hooks/useDynamicModalPosition';
+import useDynamicPositionModal from 'src/hooks/useDynamicPositionModal';
 import useTracker from 'src/hooks/useTracker';
 import { createTag } from 'src/resources/tags';
 import { ITag } from 'src/types/tags';
@@ -154,11 +154,13 @@ interface Props {
 }
 
 export default function Tags({ actualTags, handleChangeOnTags }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const { tags, setTags } = useTracker();
   const iconRef = useRef(null);
-  const position = useDynamicModalPosition(iconRef, isOpen, modalContentHeight);
+  const { position, isOpen, setIsOpen, handleOpen } = useDynamicPositionModal(
+    iconRef,
+    modalContentHeight
+  );
   const updatedTagsModalStyles = {
     overlay: tagsModalStyles.overlay,
     content: { ...tagsModalStyles.content, ...position },
@@ -175,7 +177,7 @@ export default function Tags({ actualTags, handleChangeOnTags }: Props) {
 
   return (
     <>
-      <IconWrapper ref={iconRef} showBox={isOpen} onClick={() => setIsOpen(true)}>
+      <IconWrapper ref={iconRef} showBox={isOpen} onClick={handleOpen}>
         <TagIcon hasTags={!!actualTags?.length} />
       </IconWrapper>
       <Modal
