@@ -5,7 +5,7 @@ import format from 'src/helpers/formatDuration';
 import useTracker from 'src/hooks/useTracker';
 
 const TimerWrapper = styled.div`
-  min-width: 75px;
+  min-width: 80px;
   margin-right: 10px;
   padding: 5px 7px;
   border-radius: 7px;
