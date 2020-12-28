@@ -36,11 +36,7 @@ const Loader = ({ isLoading, onClick }: LoaderProps) => {
     return null;
   }
 
-  return (
-    <LoadMoreButton key={0} onClick={onClick}>
-      Load more
-    </LoadMoreButton>
-  );
+  return <LoadMoreButton onClick={onClick}>Load more</LoadMoreButton>;
 };
 
 // infinite scroll to control and inform about time records
@@ -82,7 +78,7 @@ export default function History() {
         useWindow={false}
         loadMore={loadMore}
         hasMore={hasMore}
-        loader={<ProjectLoader />}
+        loader={<ProjectLoader key={0} />}
       >
         {dateGroupsUI}
         <Loader isLoading={isLoading} onClick={() => !isEnd && setHasMore(true)} />
