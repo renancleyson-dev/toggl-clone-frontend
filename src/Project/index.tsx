@@ -10,6 +10,7 @@ const Content = styled.div`
   position: relative;
   flex: 1 1 100%;
   background-color: rgb(254, 249, 248);
+  overflow: auto;
 `;
 
 export default () => (

@@ -15,7 +15,7 @@ const HistoryWrapper = styled.div`
   height: 100%;
 `;
 
-const loader = (
+const Loader = () => (
   <div className="loader" key={0}>
     Loading ...
   </div>
@@ -44,10 +44,13 @@ export default function History() {
   };
 
   return (
-    <HistoryWrapper>
-      <InfiniteScroll isReverse loadMore={loadMore} hasMore={hasMore} loader={loader}>
-        {dateGroupsUI}
-      </InfiniteScroll>
-    </HistoryWrapper>
+    <InfiniteScroll
+      useWindow={false}
+      loadMore={loadMore}
+      hasMore={hasMore}
+      loader={<Loader />}
+    >
+      <HistoryWrapper>{dateGroupsUI}</HistoryWrapper>
+    </InfiniteScroll>
   );
 }
