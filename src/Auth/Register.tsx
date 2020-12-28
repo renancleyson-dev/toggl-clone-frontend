@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { Formik } from 'formik';
+import { Formik, ErrorMessage } from 'formik';
 import { Link } from 'react-router-dom';
 import CheckBox from '../Components/CheckBox';
 import { UserContext } from '../Contexts/UserContext';
-import { requiredField } from '../helpers/validations';
 import { createUser } from '../resources/users';
 import { colors } from '../styles';
 import CountrySelect from './CountrySelect';
@@ -20,20 +19,21 @@ import {
   FormRow,
   BottomSection,
   FormSection,
+  AuthErrorMessage,
 } from './Styles';
 import Layout from './Layout';
 
-export const TermsAndPrivacyFormRow = styled.div`
-  padding: 50px 0;
+const TermsAndPrivacyFormRow = styled.div`
+  margin: 50px 0 0;
   min-width: 100%;
   display: flex;
   align-items: center;
 `;
 
-export const TermsAndPrivacyLabel = styled(Label)`
+const TermsAndPrivacyLabel = styled(Label)`
   color: #fff;
   position: relative;
-  display: block;
+  display: flex;
 
   &::before {
     content: '';
@@ -70,26 +70,21 @@ export const TermsAndPrivacyLabel = styled(Label)`
   }
 `;
 
-export const TermsAndPrivacyCheckBox = styled(CheckBox)`
+const TermsAndPrivacyCheckBox = styled(CheckBox)`
   display: none;
 `;
 
 interface IForm {
-  username: string;
-  fullName: string;
+  termsAndPolicy: boolean;
   email: string;
   password: string;
-  passwordConfirmation: string;
   country: string;
 }
 
 const initialValues = {
-  username: '',
-  fullName: '',
   termsAndPolicy: false,
   email: '',
   password: '',
-  passwordConfirmation: '',
   country: '',
 };
 
@@ -98,16 +93,13 @@ interface IErrors {
 }
 
 const validate = (fields: IForm) => {
-  const errors = {} as IErrors;
+  const errors: IErrors = {};
 
-  requiredField(fields.username, 'username', errors);
-  requiredField(fields.fullName, 'fullName', errors);
-  requiredField(fields.email, 'email', errors);
-  requiredField(fields.password, 'password', errors);
-
-  if (fields.password !== fields.passwordConfirmation) {
-    errors.passwordConfirmation = "passwords don't match";
-  }
+  Object.keys(fields)
+    .filter((field) => !fields[field as keyof IForm])
+    .forEach((field) => {
+      errors[field] = 'Required';
+    });
 
   return errors;
 };
@@ -116,10 +108,10 @@ const RegisterForm = () => {
   const { setUser } = useContext(UserContext);
 
   const handleSubmit = async (
-    userParams: IForm,
+    { email, password, country }: IForm,
     { setSubmitting }: { setSubmitting: (boolState: boolean) => void }
   ) => {
-    const userData = await createUser(userParams);
+    const userData = await createUser({ email, password, country });
     setUser(userData);
     setSubmitting(false);
   };
@@ -131,6 +123,9 @@ const RegisterForm = () => {
           <FormRow>
             <Label htmlFor="country-select">Country</Label>
             <CountrySelect />
+            <AuthErrorMessage>
+              <ErrorMessage name="country" />
+            </AuthErrorMessage>
           </FormRow>
           <TermsAndPrivacyFormRow>
             <TermsAndPrivacyCheckBox name="termsAndPolicy" id="accept-terms-checkbox" />
@@ -141,9 +136,15 @@ const RegisterForm = () => {
             </TermsAndPrivacyLabel>
           </TermsAndPrivacyFormRow>
           <FormSection>
+            <AuthErrorMessage>
+              <ErrorMessage name="termsAndPolicy" />
+            </AuthErrorMessage>
             <FormRow>
               <Label htmlFor="email">Email</Label>
               <LoginTextInput id="email" name="email" placeholder="Email" />
+              <AuthErrorMessage>
+                <ErrorMessage name="email" />
+              </AuthErrorMessage>
             </FormRow>
             <FormRow>
               <Label htmlFor="password">Password</Label>
@@ -153,6 +154,9 @@ const RegisterForm = () => {
                 type="password"
                 placeholder="Password"
               />
+              <AuthErrorMessage>
+                <ErrorMessage name="password" />
+              </AuthErrorMessage>
             </FormRow>
           </FormSection>
           <SubmitButton type="submit" disabled={isSubmitting}>

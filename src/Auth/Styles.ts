@@ -119,3 +119,7 @@ export const SubmitButton = styled(Button)`
 export const BottomText = styled(Text)`
   margin-bottom: 30px;
 `;
+
+export const AuthErrorMessage = styled.div`
+  color: #f00;
+`;
