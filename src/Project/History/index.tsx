@@ -13,7 +13,7 @@ import DateGroup from './DateGroup';
 const fetchAction = (payload: IDateGroup[]) => ({ type: FETCH_TYPE, payload });
 
 const HistoryWrapper = styled.div`
-  margin: 60px 0 100px;
+  margin: 60px 0 360px;
 `;
 
 const LoadMoreButton = styled.button`

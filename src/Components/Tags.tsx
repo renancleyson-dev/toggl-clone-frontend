@@ -21,7 +21,7 @@ const tagsModalStyles = {
   content: {
     ...dynamicModalStyles.content,
     maxWidth: '240px',
-    height: 'min-content',
+    height: `${modalContentHeight}px`,
     padding: '15px 0 0',
     overflow: 'auto',
     fontSize: '14px',

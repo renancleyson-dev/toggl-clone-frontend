@@ -23,7 +23,7 @@ const customModalStyles = {
   },
   content: {
     width: '360px',
-    height: 'min-content',
+    height: '180px',
     margin: 'auto',
     paddingTop: '15px',
     borderRadius: '8px',
