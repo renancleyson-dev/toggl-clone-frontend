@@ -33,11 +33,12 @@ const LoadMoreButton = styled.button`
 
 type LoaderProps = {
   isLoading: boolean;
+  isEnd: boolean;
   onClick: () => void;
 };
 
-const Loader = ({ isLoading, onClick }: LoaderProps) => {
-  if (isLoading) {
+const Loader = ({ isLoading, isEnd, onClick }: LoaderProps) => {
+  if (isLoading || isEnd) {
     return null;
   }
 
@@ -91,7 +92,7 @@ export default function History() {
             <span>Get ready to track time and boost your productivity!</span>
           </NoHistoryFallback>
         ) : (
-          <Loader isLoading={isLoading} onClick={() => setHasMore(true)} />
+          <Loader isLoading={isLoading} isEnd={isEnd} onClick={() => setHasMore(true)} />
         )}
       </InfiniteScroll>
     </HistoryWrapper>
