@@ -29,7 +29,7 @@ const tagsModalStyles = {
   },
 };
 
-const TagIcon = styled(BsFillTagFill)`
+const TagIcon = styled.div`
   padding: 5px;
   width: 27px;
   height: 27px;
@@ -179,7 +179,9 @@ export default function Tags({ actualTags, handleChangeOnTags }: Props) {
   return (
     <>
       <IconWrapper ref={iconRef} showBox={isOpen} onClick={handleOpen}>
-        <TagIcon hasTags={!!actualTags?.length} />
+        <TagIcon hasTags={!!actualTags?.length}>
+          <BsFillTagFill />
+        </TagIcon>
       </IconWrapper>
       <Modal
         isOpen={isOpen}
