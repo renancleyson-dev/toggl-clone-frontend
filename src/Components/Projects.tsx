@@ -21,8 +21,7 @@ const projectModalStyles = {
   content: {
     ...dynamicModalStyles.content,
     maxWidth: '350px',
-    height: 'min-content',
-    maxHeight: `${modalContentHeight}px`,
+    height: `${modalContentHeight}px`,
     padding: '15px 0 0',
     overflow: 'auto',
     fontSize: '14px',
@@ -35,15 +34,16 @@ const Input = styled.input`
 `;
 
 const FallbackWrapper = styled.div`
-  padding: 25px 15px 20px;
+  padding: 15px 15px 20px;
+  margin: 14px 0;
+  height: 340px;
   color: #827188;
 `;
 
 const ProjectsListWrapper = styled.ul`
   list-style-type: none;
   flex: 1 1 100%;
-  min-height: 100px;
-  max-height: 340px;
+  height: 340px;
   margin: 20px 0 10px;
   padding: 0 5px;
   overflow: auto;

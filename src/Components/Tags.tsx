@@ -67,7 +67,8 @@ const TagItemWrapper = styled.li`
 `;
 
 const FallbackWrapper = styled.div`
-  padding: 15px 23px;
+  padding: 0px 23px;
+  margin: 14px 0;
   height: 250px;
   color: #827188;
 `;
