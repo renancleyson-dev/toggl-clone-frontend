@@ -55,7 +55,10 @@ const dateGroupsReducer = (state: IDateGroup[], action: Action) => {
     case ADD_TYPE:
       const addedTimeRecord = action.payload as ITimeRecord;
       const momentStartTime = moment(addedTimeRecord.startTime);
-      if (moment(state[0].timeRecords[0].startTime).isSame(momentStartTime, 'date')) {
+      if (
+        state.length &&
+        moment(state[0].timeRecords[0].startTime).isSame(momentStartTime, 'date')
+      ) {
         const newTodayGroup = {
           ...state[0],
           timeRecords: [addedTimeRecord, ...state[0].timeRecords],
