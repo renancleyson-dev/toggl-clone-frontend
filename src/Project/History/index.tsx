@@ -16,6 +16,11 @@ const HistoryWrapper = styled.div`
   margin: 60px 0 360px;
 `;
 
+const NoHistoryFallback = styled.div`
+  text-align: center;
+  color: #666;
+`;
+
 const LoadMoreButton = styled.button`
   ${buttonResets}
   display: block;
@@ -81,7 +86,13 @@ export default function History() {
         loader={<ProjectLoader key={0} />}
       >
         {dateGroupsUI}
-        <Loader isLoading={isLoading} onClick={() => !isEnd && setHasMore(true)} />
+        {isEnd && !dateGroups.length ? (
+          <NoHistoryFallback>
+            <span>Get ready to track time and boost your productivity!</span>
+          </NoHistoryFallback>
+        ) : (
+          <Loader isLoading={isLoading} onClick={() => setHasMore(true)} />
+        )}
       </InfiniteScroll>
     </HistoryWrapper>
   );
