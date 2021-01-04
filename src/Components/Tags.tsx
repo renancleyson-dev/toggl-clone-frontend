@@ -31,12 +31,10 @@ const tagsModalStyles = {
 
 const TagIcon = styled.div`
   padding: 5px;
-  width: 27px;
-  height: 27px;
   border-radius: 8px;
   font-size: inherit;
   background-color: ${({ hasTags }: { hasTags: boolean }) =>
-    hasTags ? 'rgba(196, 99, 186, 0.2)' : '#fff'};
+    hasTags ? 'rgba(196, 99, 186, 0.2)' : 'transparent'};
   color: ${({ hasTags }: { hasTags: boolean }) => (hasTags ? colors.primary : 'inherit')};
 `;
 

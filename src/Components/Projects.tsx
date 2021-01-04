@@ -51,7 +51,7 @@ const ProjectsListWrapper = styled.ul`
 
 const projectNameStyles = css`
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 5px 0;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -65,6 +65,7 @@ const projectNameStyles = css`
 
 const ProjectItem = styled.li`
   ${projectNameStyles}
+  padding: 5px 10px;
 `;
 
 const DefaultProjectItem = styled(ProjectItem)`
