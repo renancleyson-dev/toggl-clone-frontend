@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { UserContext } from 'src/Contexts/UserContext';
-import { colors } from 'src/styles';
 
 const UserProfileWrapper = styled.div`
   padding: 0 15px;
@@ -30,11 +29,6 @@ const TextWithEllipsis = styled.span`
   overflow: hidden;
 `;
 
-const UserFullName = styled(TextWithEllipsis)`
-  color: ${colors.pinkLight};
-  font-size: 13px;
-`;
-
 const UserEmail = styled(TextWithEllipsis)`
   font-size: 12px;
 `;
@@ -45,7 +39,6 @@ export default function UserProfile() {
   return (
     <UserProfileWrapper>
       <TextSection>
-        <UserFullName>{user.fullName}</UserFullName>
         <UserEmail>{user.email}</UserEmail>
       </TextSection>
       <AvatarSection />

@@ -18,7 +18,6 @@ export const UserContext = React.createContext({} as ContextValue);
 export default function Provider({ children }: Props) {
   const [user, setUser] = useState<IUser>({
     id: 0,
-    fullName: '',
     email: '',
   });
 
