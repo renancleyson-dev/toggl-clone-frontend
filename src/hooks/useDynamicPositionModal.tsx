@@ -3,7 +3,7 @@ import getScrollParent from 'src/helpers/getScrollParent';
 
 export default function useDynamicPositionModal(
   ref: React.MutableRefObject<null | Element>,
-  contentHeight: number = 440
+  contentHeight: number = 460
 ) {
   const [position, setPosition] = useState({ top: '0', left: '0' });
   const [isOpen, setIsOpen] = useState(false);
