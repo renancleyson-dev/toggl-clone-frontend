@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { useHistory, Link } from 'react-router-dom';
-import { Formik } from 'formik';
+import { Formik, ErrorMessage } from 'formik';
 import { UserContext } from '../Contexts/UserContext';
-import { requiredField } from '../helpers/validations';
 import { USER_KEY, JWT_KEY } from '../helpers/constants';
 import { login } from '../resources/users';
 import { setJsonWebToken } from '../axios';
@@ -16,6 +15,7 @@ import {
   Button,
   FormRow,
   BottomSection,
+  AuthErrorMessage,
 } from './Styles';
 import Layout from './Layout';
 
@@ -24,16 +24,23 @@ interface IForm {
   password: string;
 }
 
+interface IErrors {
+  [key: string]: string;
+}
+
 const initialValues = {
   email: '',
   password: '',
 };
 
 const validate = (fields: IForm) => {
-  const errors = {};
+  const errors: IErrors = {};
 
-  requiredField(fields.email, 'email', errors);
-  requiredField(fields.password, 'password', errors);
+  Object.keys(fields)
+    .filter((field) => !fields[field as keyof IForm])
+    .forEach((field) => {
+      errors[field] = 'Required';
+    });
 
   return errors;
 };
@@ -65,6 +72,9 @@ export default function Login() {
               <FormRow>
                 <Label htmlFor="email">Email</Label>
                 <LoginTextInput id="email" name="email" placeholder="Email" />
+                <AuthErrorMessage>
+                  <ErrorMessage name="email" />
+                </AuthErrorMessage>
               </FormRow>
               <FormRow>
                 <Label htmlFor="password">Password</Label>
@@ -74,6 +84,9 @@ export default function Login() {
                   type="password"
                   placeholder="Password"
                 />
+                <AuthErrorMessage>
+                  <ErrorMessage name="password" />
+                </AuthErrorMessage>
               </FormRow>
               <SubmitButton type="submit" disabled={isSubmitting}>
                 Submit
