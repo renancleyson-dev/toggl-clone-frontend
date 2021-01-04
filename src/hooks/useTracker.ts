@@ -4,7 +4,7 @@ import { TrackContext } from 'src/Contexts/TrackContext';
 import { UserContext } from 'src/Contexts/UserContext';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import { ADD_TYPE } from 'src/reducers/dateGroupsReducer/types';
-import { ITimeRecord } from 'src/types/timeRecord';
+import { ITimeRecord, ITrackingTimeRecord } from 'src/types/timeRecord';
 import { createTimeRecord } from '../resources/timeRecords';
 
 const addAction = (value: ITimeRecord) => ({ type: ADD_TYPE, payload: value });
@@ -21,9 +21,13 @@ export default function useTracker() {
   } = useContext(TrackContext);
 
   const { startTime } = actualTimeRecord;
-  const startTracking = () => {
+  const startTracking = (timeRecord?: ITrackingTimeRecord) => {
     setIsTracking(true);
-    setActualTimeRecord((prevState) => ({ ...prevState, startTime: moment() }));
+    setActualTimeRecord((prevState) => ({
+      ...prevState,
+      ...timeRecord,
+      startTime: moment(),
+    }));
   };
   const stopTracking = () => {
     const endTime = moment();

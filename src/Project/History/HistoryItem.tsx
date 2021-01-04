@@ -43,7 +43,6 @@ const TimeRecordWrapper = styled.div`
 
 const NamingSection = styled.div`
   display: flex;
-  flex: 1 1 100%;
 `;
 
 const LabelWrapper = styled(TextInput)`
@@ -53,12 +52,13 @@ const LabelWrapper = styled(TextInput)`
 `;
 
 const ProjectSelectWrapper = styled.div`
-  flex: 1 1 100%;
-  padding-left: 10px;
+  margin-left: auto;
+  font-size: 18px;
 `;
 
 const TagsWrapper = styled.div`
-  margin-right: 25px;
+  margin: 0 25px 0 auto;
+  font-size: 20px;
 `;
 
 const EditSection = styled.div`
@@ -180,7 +180,7 @@ export default function HistoryItem({
           />
         </ProjectSelectWrapper>
       </NamingSection>
-      <TagsWrapper>
+      <TagsWrapper data-hover>
         <Tags actualTags={tags} handleChangeOnTags={handleChangeOnTags} />
       </TagsWrapper>
       <EditSection>
@@ -198,9 +198,7 @@ export default function HistoryItem({
                 if (tracker.isTracking) {
                   tracker.stopTracking();
                 }
-                tracker.setIsTracking(true);
-                tracker.startTracking();
-                tracker.setActualTimeRecord({
+                tracker.startTracking({
                   userId: user.id,
                   label,
                   projectId: project?.id,
