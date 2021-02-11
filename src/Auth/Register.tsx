@@ -109,11 +109,26 @@ const RegisterForm = () => {
 
   const handleSubmit = async (
     { email, password, country }: IForm,
-    { setSubmitting }: { setSubmitting: (boolState: boolean) => void }
+    {
+      setFieldError,
+      setSubmitting,
+    }: {
+      setFieldError: (field: string, errorMsg: string) => void;
+      setSubmitting: (boolState: boolean) => void;
+    }
   ) => {
-    const userData = await createUser({ email, password, country });
-    setUser(userData);
-    setSubmitting(false);
+    try {
+      const userData = await createUser({ email, password, country });
+      setUser(userData);
+    } catch (error) {
+      const messages: { [key: string]: string } = error.response.data;
+      Object.entries(messages).forEach((value) => {
+        const [field, fieldError] = value;
+        setFieldError(field, fieldError);
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

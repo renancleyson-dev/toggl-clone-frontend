@@ -19,10 +19,7 @@ export const fetchUser = (userId: number, source?: CancelTokenSource): Promise<I
     .catch((error) => error);
 
 export const createUser = (userParams: IRegistration): Promise<IUser> =>
-  axios
-    .post('users', { user: userParams })
-    .then((response) => response.data)
-    .catch((error) => error);
+  axios.post('users', { user: userParams }).then((response) => response.data);
 
 export const updateUser = (userId: number): Promise<void | Error> =>
   axios

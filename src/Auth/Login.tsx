@@ -51,16 +51,35 @@ export default function Login() {
 
   const handleSubmit = async (
     loginParams: IForm,
-    { setSubmitting }: { setSubmitting: (boolState: boolean) => void }
+    {
+      setFieldError,
+      setSubmitting,
+    }: {
+      setFieldError: (field: string, errorMsg: string) => void;
+      setSubmitting: (boolState: boolean) => void;
+    }
   ) => {
-    const { authToken, ...sessionResponse } = await login(loginParams);
-    setJsonWebToken(authToken);
-    setUser(sessionResponse);
-    localStorage.setItem(JWT_KEY, `${authToken}`);
-    localStorage.setItem(USER_KEY, `${sessionResponse.id}`);
+    try {
+      const { authToken, ...sessionResponse } = await login(loginParams);
+      setJsonWebToken(authToken);
+      setUser(sessionResponse);
+      localStorage.setItem(JWT_KEY, `${authToken}`);
+      localStorage.setItem(USER_KEY, `${sessionResponse.id}`);
 
-    history.push('/');
-    setSubmitting(false);
+      history.push('/');
+    } catch (error) {
+      if (error.response.data.message) {
+        setFieldError('password', error.response.data.message);
+      } else {
+        const messages: { [key: string]: string } = error.response.data;
+        Object.entries(messages).forEach((value) => {
+          const [field, fieldError] = value;
+          setFieldError(field, fieldError);
+        });
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
