@@ -11,10 +11,6 @@ const EntrySection = styled.div`
     url(laptops.jpg);
   background-repeat: no-repeat;
   background-size: 1300px;
-
-  @media (max-width: 700px) {
-    background-size: 700px;
-  }
 `;
 
 const HeaderWrapper = styled.div`
@@ -22,10 +18,6 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  @media (max-width: 700px) {
-    background-color: ${colors.pinkLight};
-  }
 `;
 
 const LogoWrapper = styled.div`
@@ -66,21 +58,13 @@ const TimerButton = styled(Button)`
 
 const TitleWrapper = styled.div`
   color: ${colors.pinkLight};
-  padding: 30px 0;
-
-  @media only screen and (min-width: 700px) {
-    padding: 90px 0 100px;
-  }
+  padding: 90px 0 100px;
 `;
 
 const Title = styled.span`
   display: block;
-  font-size: 40px;
   text-align: center;
-
-  @media only screen and (min-width: 700px) {
-    font-size: 72px;
-  }
+  font-size: 72px;
 `;
 
 const Description = styled.span`
@@ -88,10 +72,7 @@ const Description = styled.span`
   font-size: 14px;
   text-align: center;
   font-family: Inter, 'sans-serif';
-
-  @media only screen and (min-width: 700px) {
-    font-size: 18px;
-  }
+  font-size: 18px;
 `;
 
 export default function Header() {

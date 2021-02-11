@@ -22,10 +22,7 @@ export const FormBoxWrapper = styled.div`
   height: 100%;
   font-size: 18px;
   font-family: 'Inter', sans-serif;
-
-  @media only screen and (min-width: 700px) {
-    top: -80px;
-  }
+  top: -80px;
 `;
 
 export const FormBox = styled.div`
