@@ -1,8 +1,32 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
-import { USER_KEY } from '../helpers/constants';
+import { setJsonWebToken } from '../axios';
+import { fetchUser } from '../resources/users';
+import { USER_KEY, JWT_KEY } from '../helpers/constants';
 import { UserContext } from '../Contexts/UserContext';
 import Loader from './Loader';
+
+const UserRoute = ({ children }: { children: React.ReactNode }) => {
+  const { setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    const userId = localStorage.getItem(USER_KEY);
+    const jsonWebToken = localStorage.getItem(JWT_KEY);
+
+    if (userId && jsonWebToken) {
+      setJsonWebToken(jsonWebToken);
+      fetchUser(parseInt(userId, 10))
+        .then((response) => {
+          setUser(response.data);
+        })
+        .catch((error) => {
+          console.warn(error?.message);
+        });
+    }
+  }, [setUser]);
+
+  return <>{children}</>;
+};
 
 export default function PrivateRoute({ component: Component, ...rest }: RouteProps) {
   const userId = localStorage.getItem(USER_KEY);
@@ -11,7 +35,12 @@ export default function PrivateRoute({ component: Component, ...rest }: RoutePro
   const isLoadingUser = () => userId && !user.id;
 
   if (!Component || isLoadingUser()) {
-    return <Route {...rest} component={Loader} />;
+    const component = () => (
+      <UserRoute>
+        <Loader />
+      </UserRoute>
+    );
+    return <Route {...rest} component={component} />;
   }
 
   return (
@@ -19,7 +48,9 @@ export default function PrivateRoute({ component: Component, ...rest }: RoutePro
       {...rest}
       render={(props) =>
         userId && parseInt(userId, 10) === user.id ? (
-          <Component {...props} />
+          <UserRoute>
+            <Component {...props} />
+          </UserRoute>
         ) : (
           <Redirect to="/login" />
         )

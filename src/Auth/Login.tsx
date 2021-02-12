@@ -60,7 +60,9 @@ export default function Login() {
     }
   ) => {
     try {
-      const { authToken, ...sessionResponse } = await login(loginParams);
+      const {
+        data: { authToken, ...sessionResponse },
+      } = await login(loginParams);
       setJsonWebToken(authToken);
       setUser(sessionResponse);
       localStorage.setItem(JWT_KEY, `${authToken}`);
@@ -68,10 +70,13 @@ export default function Login() {
 
       history.push('/');
     } catch (error) {
-      if (error.response.data.message) {
-        setFieldError('password', error.response.data.message);
+      const data = error.response?.data;
+      if (!data) {
+        console.warn(error.message);
+      } else if (data.message) {
+        setFieldError('password', data.message);
       } else {
-        const messages: { [key: string]: string } = error.response.data;
+        const messages: { [key: string]: string } = data;
         Object.entries(messages).forEach((value) => {
           const [field, fieldError] = value;
           setFieldError(field, fieldError);

@@ -17,8 +17,10 @@ export const handleUnauthorizedResponse = (history: History) => {
   newConfigAxios.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         history.push('/login');
+      } else if (error.isAxiosError && !error.response) {
+        window.alert('An error occurred in the connection with the server');
       }
 
       return Promise.reject(error);

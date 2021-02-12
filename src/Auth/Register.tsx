@@ -118,14 +118,18 @@ const RegisterForm = () => {
     }
   ) => {
     try {
-      const userData = await createUser({ email, password, country });
-      setUser(userData);
+      const { data } = await createUser({ email, password, country });
+      setUser(data);
     } catch (error) {
-      const messages: { [key: string]: string } = error.response.data;
-      Object.entries(messages).forEach((value) => {
-        const [field, fieldError] = value;
-        setFieldError(field, fieldError);
-      });
+      if (!error.response?.data) {
+        console.warn(error.message);
+      } else {
+        const messages: { [key: string]: string } = error.response.data;
+        Object.entries(messages).forEach((value) => {
+          const [field, fieldError] = value;
+          setFieldError(field, fieldError);
+        });
+      }
     } finally {
       setSubmitting(false);
     }
