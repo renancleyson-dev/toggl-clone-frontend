@@ -32,11 +32,11 @@ const TimeRecordWrapper = styled.div`
     background-color: #f9f9f9;
   }
 
-  & div[data-hover] {
+  & div[data-hover='true'] {
     opacity: 0;
   }
 
-  &:hover div[data-hover] {
+  &:hover div[data-hover='true'] {
     opacity: 1;
   }
 `;
@@ -170,7 +170,7 @@ export default function HistoryItem({
     <TimeRecordWrapper>
       <NamingSection>
         <Label id={id} label={label} />
-        <ProjectSelectWrapper data-hover>
+        <ProjectSelectWrapper data-hover={!project}>
           <Projects
             actualProject={project}
             handleChangeOnProject={(project: IProject | null) =>
@@ -182,7 +182,7 @@ export default function HistoryItem({
           />
         </ProjectSelectWrapper>
       </NamingSection>
-      <TagsWrapper data-hover>
+      <TagsWrapper data-hover={!tags?.length}>
         <Tags actualTags={tags} handleChangeOnTags={handleChangeOnTags} />
       </TagsWrapper>
       <EditSection>
@@ -195,7 +195,7 @@ export default function HistoryItem({
           </DurationDisplay>
           <Actions>
             <PlayWrapper
-              data-hover
+              data-hover={true}
               onClick={() => {
                 if (tracker.isTracking) {
                   tracker.stopTracking();
@@ -210,7 +210,7 @@ export default function HistoryItem({
             >
               <BsFillPlayFill />
             </PlayWrapper>
-            <MoreActionsWrapper data-hover>
+            <MoreActionsWrapper data-hover={true}>
               <BsThreeDotsVertical />
             </MoreActionsWrapper>
           </Actions>
