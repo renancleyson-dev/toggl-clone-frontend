@@ -23,7 +23,7 @@ const tagsModalStyles = {
     maxWidth: '240px',
     height: `${modalContentHeight}px`,
     padding: '15px 0 0',
-    overflow: 'auto',
+    overflow: 'hidden',
     fontSize: '14px',
     backgroundColor: '#fff',
   },
@@ -119,15 +119,15 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
 const TagsList = ({
   searchText,
   actualTags,
+  tags,
   handleChangeOnTags,
 }: {
   searchText: string;
   actualTags?: ITag[];
+  tags: ITag[];
   handleChangeOnTags: (tag: ITag) => unknown;
 }) => {
-  const { tags } = useTracker();
-  const filteredTags = tags.filter(({ name }) => name.includes(searchText.trim()));
-  const tagItems = filteredTags.map(({ id, name }) => (
+  const tagItems = tags.map(({ id, name }) => (
     <TagItem
       key={id}
       name={name}
@@ -137,7 +137,7 @@ const TagsList = ({
     />
   ));
 
-  if (!filteredTags.length) {
+  if (!tags.length) {
     return (
       <FallbackWrapper>
         <NoResourceFallback hasSearchText={!!searchText} resourceName="tag" />
@@ -165,13 +165,19 @@ export default function Tags({ actualTags, handleChangeOnTags }: Props) {
     content: { ...tagsModalStyles.content, ...position },
   };
 
-  const isFinded = () => !searchText || tags.some(({ name }) => name === searchText);
-  const handleClick = () => {
+  const filteredTags = tags.filter(({ name }) => name.includes(searchText.trim()));
+  const handleCreateTag = () => {
     createTag({ name: searchText.trim() }).then((response) => {
       setTags((prevState) => [...prevState, response.data]);
       handleChangeOnTags(response.data);
     });
     setSearchText('');
+  };
+
+  const handleKeyboardCreateTags = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && event.ctrlKey && !filteredTags.length && !!searchText) {
+      handleCreateTag();
+    }
   };
 
   return (
@@ -186,24 +192,27 @@ export default function Tags({ actualTags, handleChangeOnTags }: Props) {
         style={updatedTagsModalStyles}
         onRequestClose={() => setIsOpen(false)}
       >
-        <SearchInput>
-          <Input
-            autoFocus
-            placeholder="Add/filter tags"
-            value={searchText}
-            onChange={(event) => setSearchText(event.target.value)}
+        <div onKeyDown={handleKeyboardCreateTags}>
+          <SearchInput>
+            <Input
+              autoFocus
+              placeholder="Add/filter tags"
+              value={searchText}
+              onChange={(event) => setSearchText(event.target.value)}
+            />
+          </SearchInput>
+          <TagsList
+            actualTags={actualTags}
+            tags={filteredTags}
+            searchText={searchText}
+            handleChangeOnTags={handleChangeOnTags}
           />
-        </SearchInput>
-        <TagsList
-          actualTags={actualTags}
-          searchText={searchText}
-          handleChangeOnTags={handleChangeOnTags}
-        />
-        <AddButton
-          text={`Create a tag "${searchText.trim() || ' '}"`}
-          disabled={isFinded()}
-          onClick={handleClick}
-        />
+          <AddButton
+            text={`Create a tag "${searchText.trim() || ' '}"`}
+            disabled={!!filteredTags.length}
+            onClick={handleCreateTag}
+          />
+        </div>
       </Modal>
     </>
   );

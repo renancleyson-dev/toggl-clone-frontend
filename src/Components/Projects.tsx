@@ -142,6 +142,7 @@ interface ProjectsListProps {
   searchText: string;
   setShowBox: React.Dispatch<React.SetStateAction<boolean>>;
   actualProject?: IProject;
+  projects: IProject[];
   handleChangeOnProject: (project: IProject | null) => void;
 }
 
@@ -149,11 +150,10 @@ const ProjectsList = ({
   searchText,
   setShowBox,
   actualProject,
+  projects,
   handleChangeOnProject,
 }: ProjectsListProps) => {
   const [lastHovered, setLastHovered] = useState<number>(0);
-  const { projects } = useTracker();
-  const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
   const handleMouseOver = (id: number) => () => setLastHovered(id);
 
   const defaultProjectItem = (
@@ -170,7 +170,7 @@ const ProjectsList = ({
       <ProjectName color="#000">No Project</ProjectName>
     </DefaultProjectItem>
   );
-  const projectItems = filteredProjects.map(({ id, name, color }) => (
+  const projectItems = projects.map(({ id, name, color }) => (
     <ProjectItem
       key={id}
       onClick={() => {
@@ -185,7 +185,7 @@ const ProjectsList = ({
     </ProjectItem>
   ));
 
-  if (!filteredProjects.length) {
+  if (!projects.length) {
     return (
       <FallbackWrapper>
         <NoResourceFallback hasSearchText={!!searchText} resourceName="project" />
@@ -206,9 +206,11 @@ interface Props {
 export default function Projects({ actualProject, handleChangeOnProject }: Props) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { setProjects } = useTracker();
+  const [initialName, setInitialName] = useState('');
+  const { projects, setProjects } = useTracker();
   const iconRef = useRef(null);
   const { position, isOpen, setIsOpen, handleOpen } = useDynamicPositionModal(iconRef);
+  const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
   const updatedProjectModalStyles = {
     overlay: projectModalStyles.overlay,
     content: { ...projectModalStyles.content, ...position },
@@ -218,9 +220,23 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
     setProjects((prevState) => [...prevState, project]);
     handleChangeOnProject(project);
   };
+
   const handleAddButtonClick = () => {
     setIsCreateModalOpen(true);
     setIsOpen(false);
+  };
+
+  const handleKeyboardCreateProject = (event: React.KeyboardEvent) => {
+    if (
+      event.key === 'Enter' &&
+      event.ctrlKey &&
+      !filteredProjects.length &&
+      !!searchText
+    ) {
+      setIsCreateModalOpen(true);
+      setIsOpen(false);
+      setInitialName(searchText);
+    }
   };
 
   return (
@@ -236,6 +252,7 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
         onCreateProject={handleCreateProject}
         isOpen={isCreateModalOpen}
         setIsOpen={setIsCreateModalOpen}
+        initialName={initialName}
         onRequestClose={() => setIsCreateModalOpen(false)}
       />
       <Modal
@@ -243,20 +260,23 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
         style={updatedProjectModalStyles}
         onRequestClose={() => setIsOpen(false)}
       >
-        <SearchInput>
-          <Input
-            autoFocus
-            placeholder="Find project..."
-            value={searchText}
-            onChange={(event) => setSearchText(event.target.value)}
+        <div onKeyDown={handleKeyboardCreateProject}>
+          <SearchInput>
+            <Input
+              autoFocus
+              placeholder="Find project..."
+              value={searchText}
+              onChange={(event) => setSearchText(event.target.value)}
+            />
+          </SearchInput>
+          <ProjectsList
+            searchText={searchText}
+            projects={filteredProjects}
+            handleChangeOnProject={handleChangeOnProject}
+            setShowBox={setIsOpen}
           />
-        </SearchInput>
-        <ProjectsList
-          searchText={searchText}
-          handleChangeOnProject={handleChangeOnProject}
-          setShowBox={setIsOpen}
-        />
-        <AddButton text="Create a new project" onClick={handleAddButtonClick} />
+          <AddButton text="Create a new project" onClick={handleAddButtonClick} />
+        </div>
       </Modal>
     </>
   );
