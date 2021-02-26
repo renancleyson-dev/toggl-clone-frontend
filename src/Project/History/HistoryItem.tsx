@@ -83,6 +83,7 @@ const PlayWrapper = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  color: #a1a1a1;
 `;
 
 const MoreActionsWrapper = styled.div`
@@ -90,6 +91,7 @@ const MoreActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  color: #a1a1a1;
 `;
 
 const DurationDisplay = styled.div``;
