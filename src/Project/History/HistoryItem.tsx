@@ -47,13 +47,13 @@ const NamingSection = styled.div`
 
 const LabelWrapper = styled(TextInput)`
   flex: 1 1;
-  min-width: ${({ value }: { value: string }) =>
-    value ? `${handleInputWidth((value.length + 1) * 8)}px` : '110px'};
+  width: ${({ value }: { value: string }) =>
+    value ? `${handleInputWidth((value.length + 1) * 8)}px` : '105px'};
 `;
 
 const ProjectSelectWrapper = styled.div`
-  margin-left: auto;
   font-size: 18px;
+  margin-left: 10px;
 `;
 
 const TagsWrapper = styled.div`
