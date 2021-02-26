@@ -5,6 +5,8 @@ import InputMask from 'react-input-mask';
 import { IoIosCheckmark } from 'react-icons/io';
 import { FaLongArrowAltRight } from 'react-icons/fa';
 import { UserContext } from 'src/Contexts/UserContext';
+import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
+import { ADD_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import { createTimeRecord } from 'src/resources/timeRecords';
 import useTracker from 'src/hooks/useTracker';
 import { colors, buttonResets } from 'src/styles';
@@ -112,13 +114,18 @@ export default function ManualMode() {
   const [endTime, setEndTime] = useState('');
   const { actualTimeRecord, setActualTimeRecord } = useTracker();
   const { user } = useContext(UserContext);
+  const { dispatchDateGroups } = useContext(DateGroupContext);
 
   const handleClickOnButton = () => {
     createTimeRecord({
       ...actualTimeRecord,
       startTime: moment(startTime, 'HH:mm A'),
       endTime: moment(endTime, 'HH:mm A'),
+    }).then((response) => {
+      dispatchDateGroups &&
+        dispatchDateGroups({ type: ADD_TYPE, payload: response.data });
     });
+
     setActualTimeRecord({ userId: user.id });
   };
 
