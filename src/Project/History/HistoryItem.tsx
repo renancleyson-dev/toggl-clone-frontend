@@ -78,20 +78,23 @@ const Actions = styled.div`
   flex-basis: 60px;
 `;
 
-const PlayWrapper = styled.div`
-  font-size: 29px;
+const ActionsIconWrapper = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
   color: #a1a1a1;
+
+  &:hover {
+    color: #555;
+  }
 `;
 
-const MoreActionsWrapper = styled.div`
+const PlayWrapper = styled(ActionsIconWrapper)`
+  font-size: 29px;
+`;
+
+const MoreActionsWrapper = styled(ActionsIconWrapper)`
   font-size: 20px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: #a1a1a1;
 `;
 
 const DurationDisplay = styled.div``;
