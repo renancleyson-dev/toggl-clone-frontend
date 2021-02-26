@@ -29,6 +29,7 @@ const DateRow = styled.div`
   align-items: center;
   font-size: 14px;
   color: ${colors.purpleDark};
+  font-weight: 600;
 `;
 
 const Date = styled.span`
