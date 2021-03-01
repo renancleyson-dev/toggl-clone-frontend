@@ -8,6 +8,7 @@ const checkboxStyles = {
 };
 
 const CheckBoxWrapper = styled.div`
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
