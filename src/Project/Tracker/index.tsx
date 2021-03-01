@@ -46,6 +46,10 @@ const LabelInput = styled(TextInput)`
   }
 `;
 
+const TrackerIconWrapper = styled(IconWrapper)`
+  margin-right: 15px;
+`;
+
 const TrackerMode = () => (
   <>
     <Timer />
@@ -90,18 +94,18 @@ export default function Tracker() {
         }}
       />
       <TimerMenu>
-        <IconWrapper ref={projectRef} showBox={isProjectModalOpen}>
+        <TrackerIconWrapper ref={projectRef} showBox={isProjectModalOpen}>
           <ActualProject
             actualProject={project}
             handleIconClick={openProjects}
             handleAddButtonClick={openCreateModal}
           />
-        </IconWrapper>
-        <IconWrapper ref={tagRef} showBox={isTagsModalOpen} onClick={openTags}>
+        </TrackerIconWrapper>
+        <TrackerIconWrapper ref={tagRef} showBox={isTagsModalOpen} onClick={openTags}>
           <TagIcon hasTags={!!actualTags?.length}>
             <BsFillTagFill />
           </TagIcon>
-        </IconWrapper>
+        </TrackerIconWrapper>
         {trackerMode ? <TrackerMode /> : <ManualMode />}
         <MenuOptions trackerMode={trackerMode} setTrackerMode={setTrackerMode} />
       </TimerMenu>

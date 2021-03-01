@@ -76,10 +76,10 @@ export const InputStyles = css`
 `;
 
 export const IconWrapper = styled.div`
-  color: ${({ showBox }: { showBox: boolean }) => (showBox ? colors.primary : '#a1a1a1')};
+  color: ${({ showBox }: { showBox?: boolean }) =>
+    showBox ? colors.primary : '#a1a1a1'};
   cursor: pointer;
   line-height: 0;
-  margin-right: 15px;
 
   &:hover {
     color: #555;
@@ -119,10 +119,10 @@ export const ProjectName = styled.span`
 `;
 
 export const TagIcon = styled.div`
-  padding: 5px;
   border-radius: 8px;
   font-size: inherit;
-  background-color: ${({ hasTags }: { hasTags: boolean }) =>
+  background-color: ${({ hasTags }: { hasTags?: boolean }) =>
     hasTags ? 'rgba(196, 99, 186, 0.2)' : 'transparent'};
-  color: ${({ hasTags }: { hasTags: boolean }) => (hasTags ? colors.primary : 'inherit')};
+  color: ${({ hasTags }: { hasTags?: boolean }) =>
+    hasTags ? colors.primary : 'inherit'};
 `;

@@ -12,7 +12,6 @@ import { UserContext } from 'src/Contexts/UserContext';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import useTracker from 'src/hooks/useTracker';
-import useTags from 'src/hooks/useTags';
 import useTagsOpen from 'src/hooks/useTagsOpen';
 import useProjectsOpen from 'src/hooks/useProjectsOpen';
 import useProjects from 'src/hooks/useProjects';
@@ -61,8 +60,15 @@ const ProjectSelectWrapper = styled.div`
 `;
 
 const TagsWrapper = styled.div`
-  margin: 0 25px 0 auto;
   font-size: 20px;
+  height: 100%;
+  margin: 0 35px 0 auto;
+`;
+
+const TagNamesWrapper = styled.p`
+  cursor: pointer;
+  font-size: 14px;
+  margin: 0;
 `;
 
 const EditSection = styled.div`
@@ -102,6 +108,20 @@ const MoreActionsWrapper = styled(ActionsIconWrapper)`
 `;
 
 const DurationDisplay = styled.div``;
+
+const TagNames = ({ names }: { names?: string[] }) => {
+  if (!names?.length) {
+    return (
+      <IconWrapper>
+        <TagIcon>
+          <BsFillTagFill />
+        </TagIcon>
+      </IconWrapper>
+    );
+  }
+
+  return <TagNamesWrapper>{names.join(', ')}</TagNamesWrapper>;
+};
 
 const Label = ({ id, label }: { id: number; label?: string }) => {
   const [labelText, setLabelText] = useState('');
@@ -154,6 +174,7 @@ export default function HistoryItem({
   const { dispatchDateGroups } = useContext(DateGroupContext);
   const duration = moment.duration(endTime.diff(startTime));
   const tagIds = tags?.map(({ id }) => id);
+  const tagNames = tags?.map(({ name }) => name);
   const handleTimeRecordChange = (value: ITrackingTimeRecord) => {
     updateTimeRecord(id, value).then((response) => {
       dispatchDateGroups && dispatchDateGroups(editAction(response.data));
@@ -170,7 +191,6 @@ export default function HistoryItem({
       projectId: project ? project.id : null,
     });
 
-  const { isOpen: isTagsOpen } = useTags(id);
   const { isOpen: isProjectOpen, openCreateModal } = useProjects(id);
 
   const openTags = useTagsOpen(handleChangeOnTags, tagRef, id, tags);
@@ -191,12 +211,8 @@ export default function HistoryItem({
           </IconWrapper>
         </ProjectSelectWrapper>
       </NamingSection>
-      <TagsWrapper data-hover={!tags?.length}>
-        <IconWrapper ref={tagRef} showBox={isTagsOpen} onClick={openTags}>
-          <TagIcon hasTags={!!tags?.length}>
-            <BsFillTagFill />
-          </TagIcon>
-        </IconWrapper>
+      <TagsWrapper ref={tagRef} data-hover={!tags?.length} onClick={openTags}>
+        <TagNames names={tagNames} />
       </TagsWrapper>
       <EditSection>
         <EditOptions>
