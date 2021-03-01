@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { ITag } from 'src/types/tags';
 
 type Position = {
@@ -13,7 +13,7 @@ interface contextValue {
   openModal: () => void;
   closeModal: () => void;
   tags: ITag[];
-  setTags: (tags: ITag[]) => void;
+  setTags: React.Dispatch<React.SetStateAction<ITag[]>>;
   setPosition: (position: Position) => void;
 }
 
@@ -28,10 +28,6 @@ export default function TagsModalProvider({ children }: Props) {
   const [position, setPosition] = useState({ top: '0', left: '0' });
   const [tags, setTags] = useState<ITag[]>([]);
   const openId = useRef<number>();
-
-  const handleSetTags = useCallback((newTags: ITag[]) => {
-    setTags(newTags);
-  }, []);
 
   const handleSetPosition = (position: Position) => {
     setPosition(position);
@@ -48,10 +44,10 @@ export default function TagsModalProvider({ children }: Props) {
       openModal,
       closeModal,
       tags,
-      setTags: handleSetTags,
+      setTags,
       setPosition: handleSetPosition,
     }),
-    [isOpen, handleSetTags, tags, position]
+    [isOpen, tags, position]
   );
 
   return (

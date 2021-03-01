@@ -146,7 +146,7 @@ const TagsList = ({ searchText, tags }: { searchText: string; tags: ITag[] }) =>
 export default function Tags() {
   const [searchText, setSearchText] = useState('');
   const { tags, setTags } = useTracker();
-  const { isOpen, closeModal, position } = useTags();
+  const { isOpen, closeModal, position, setTags: setActualTags } = useTags();
   const updatedTagsModalStyles = {
     overlay: tagsModalStyles.overlay,
     content: { ...tagsModalStyles.content, ...position },
@@ -156,6 +156,7 @@ export default function Tags() {
   const handleCreateTag = () => {
     createTag({ name: searchText.trim() }).then((response) => {
       setTags((prevState) => [...prevState, response.data]);
+      setActualTags((prevState) => [...prevState, response.data]);
     });
     setSearchText('');
   };

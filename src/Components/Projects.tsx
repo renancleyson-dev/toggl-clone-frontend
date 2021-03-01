@@ -127,6 +127,7 @@ export default function Projects() {
     closeModal,
     openCreateModal,
     closeCreateModal,
+    setProject,
   } = useProjects();
 
   const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
@@ -137,6 +138,7 @@ export default function Projects() {
 
   const handleCreateProject = (project: IProject) => {
     setProjects((prevState) => [...prevState, project]);
+    setProject(project);
   };
 
   const handleAddButtonClick = () => {
