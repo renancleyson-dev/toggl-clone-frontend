@@ -167,7 +167,7 @@ export default function HistoryItem({
   const handleChangeOnProject = (project?: IProject) =>
     handleTimeRecordChange({
       userId: user.id,
-      projectId: project && project.id,
+      projectId: project ? project.id : null,
     });
 
   const { isOpen: isTagsOpen } = useTags(id);
