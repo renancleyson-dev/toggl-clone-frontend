@@ -17,6 +17,7 @@ export default function useTagsOpen(
 
   useEffect(() => {
     const isOpenWithActualId = openId.current === timeRecordId;
+
     if (isOpenWithActualId && !isOpen) {
       handleOnTagsChange(tags);
       openId.current = undefined;
@@ -31,7 +32,7 @@ export default function useTagsOpen(
     openId.current = timeRecordId;
     openModal();
 
-    const newPosition = handleDynamicPosition(ref.current);
+    const newPosition = handleDynamicPosition(ref.current, 360);
     if (newPosition) {
       setPosition(newPosition);
     }
