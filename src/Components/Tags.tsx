@@ -1,16 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
-import { BsFillTagFill } from 'react-icons/bs';
-import useDynamicPositionModal from 'src/hooks/useDynamicPositionModal';
 import useTracker from 'src/hooks/useTracker';
 import { createTag } from 'src/resources/tags';
 import { ITag } from 'src/types/tags';
-import { InputStyles, IconWrapper, dynamicModalStyles, colors } from '../styles';
+import { InputStyles, dynamicModalStyles } from '../styles';
 import AddButton from './AddButton';
 import SearchInput from './SearchInput';
 import NoResourceFallback from './NoResourceFallback';
 import TagCheckBox from './TagCheckBox';
+import useTags from 'src/hooks/useTags';
 
 Modal.setAppElement('#root');
 
@@ -28,15 +27,6 @@ const tagsModalStyles = {
     backgroundColor: '#fff',
   },
 };
-
-const TagIcon = styled.div`
-  padding: 5px;
-  border-radius: 8px;
-  font-size: inherit;
-  background-color: ${({ hasTags }: { hasTags: boolean }) =>
-    hasTags ? 'rgba(196, 99, 186, 0.2)' : 'transparent'};
-  color: ${({ hasTags }: { hasTags: boolean }) => (hasTags ? colors.primary : 'inherit')};
-`;
 
 const Input = styled.input`
   ${InputStyles}
@@ -116,26 +106,32 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
   );
 };
 
-const TagsList = ({
-  searchText,
-  actualTags,
-  tags,
-  handleChangeOnTags,
-}: {
-  searchText: string;
-  actualTags?: ITag[];
-  tags: ITag[];
-  handleChangeOnTags: (tag: ITag) => unknown;
-}) => {
-  const tagItems = tags.map(({ id, name }) => (
-    <TagItem
-      key={id}
-      name={name}
-      searchText={searchText}
-      checked={!!actualTags?.some((tag) => tag.id === id)}
-      onClick={() => handleChangeOnTags({ id, name })}
-    />
-  ));
+const TagsList = ({ searchText, tags }: { searchText: string; tags: ITag[] }) => {
+  const { tags: actualTags, setTags } = useTags();
+
+  const tagItems = tags.map(({ id, name }) => {
+    const actualIndex = actualTags?.findIndex((tag: ITag) => tag.id === id);
+    const handleClick = () => {
+      if (actualIndex === -1) {
+        setTags([...actualTags, { id, name }]);
+      } else {
+        setTags([
+          ...actualTags.slice(0, actualIndex),
+          ...actualTags.slice(actualIndex + 1),
+        ]);
+      }
+    };
+
+    return (
+      <TagItem
+        key={id}
+        name={name}
+        searchText={searchText}
+        checked={actualIndex !== -1}
+        onClick={handleClick}
+      />
+    );
+  });
 
   if (!tags.length) {
     return (
@@ -147,19 +143,10 @@ const TagsList = ({
   return <TagsListWrapper>{tagItems}</TagsListWrapper>;
 };
 
-interface Props {
-  actualTags?: ITag[];
-  handleChangeOnTags: (tag: ITag) => unknown;
-}
-
-export default function Tags({ actualTags, handleChangeOnTags }: Props) {
+export default function Tags() {
   const [searchText, setSearchText] = useState('');
   const { tags, setTags } = useTracker();
-  const iconRef = useRef(null);
-  const { position, isOpen, setIsOpen, handleOpen } = useDynamicPositionModal(
-    iconRef,
-    modalContentHeight
-  );
+  const { isOpen, closeModal, position } = useTags();
   const updatedTagsModalStyles = {
     overlay: tagsModalStyles.overlay,
     content: { ...tagsModalStyles.content, ...position },
@@ -169,7 +156,6 @@ export default function Tags({ actualTags, handleChangeOnTags }: Props) {
   const handleCreateTag = () => {
     createTag({ name: searchText.trim() }).then((response) => {
       setTags((prevState) => [...prevState, response.data]);
-      handleChangeOnTags(response.data);
     });
     setSearchText('');
   };
@@ -181,39 +167,23 @@ export default function Tags({ actualTags, handleChangeOnTags }: Props) {
   };
 
   return (
-    <>
-      <IconWrapper ref={iconRef} showBox={isOpen} onClick={handleOpen}>
-        <TagIcon hasTags={!!actualTags?.length}>
-          <BsFillTagFill />
-        </TagIcon>
-      </IconWrapper>
-      <Modal
-        isOpen={isOpen}
-        style={updatedTagsModalStyles}
-        onRequestClose={() => setIsOpen(false)}
-      >
-        <div onKeyDown={handleKeyboardCreateTags}>
-          <SearchInput>
-            <Input
-              autoFocus
-              placeholder="Add/filter tags"
-              value={searchText}
-              onChange={(event) => setSearchText(event.target.value)}
-            />
-          </SearchInput>
-          <TagsList
-            actualTags={actualTags}
-            tags={filteredTags}
-            searchText={searchText}
-            handleChangeOnTags={handleChangeOnTags}
+    <Modal isOpen={isOpen} style={updatedTagsModalStyles} onRequestClose={closeModal}>
+      <div onKeyDown={handleKeyboardCreateTags}>
+        <SearchInput>
+          <Input
+            autoFocus
+            placeholder="Add/filter tags"
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
           />
-          <AddButton
-            text={`Create a tag "${searchText.trim() || ' '}"`}
-            disabled={!!filteredTags.length}
-            onClick={handleCreateTag}
-          />
-        </div>
-      </Modal>
-    </>
+        </SearchInput>
+        <TagsList tags={filteredTags} searchText={searchText} />
+        <AddButton
+          text={`Create a tag "${searchText.trim() || ' '}"`}
+          disabled={!!filteredTags.length}
+          onClick={handleCreateTag}
+        />
+      </div>
+    </Modal>
   );
 }

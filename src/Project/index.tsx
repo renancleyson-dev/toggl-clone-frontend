@@ -7,6 +7,8 @@ import History from './History';
 import Sidebar from './Sidebar';
 import ProjectsModalProvider from 'src/Contexts/ProjectsModalContext';
 import TagsModalProvider from 'src/Contexts/TagsModalContext';
+import Projects from 'src/Components/Projects';
+import Tags from 'src/Components/Tags';
 
 const Content = styled.div`
   position: relative;
@@ -26,6 +28,8 @@ export default () => (
               <Tracker />
               <History />
             </Content>
+            <Projects />
+            <Tags />
           </TagsModalProvider>
         </ProjectsModalProvider>
       </DateGroupsContextProvider>

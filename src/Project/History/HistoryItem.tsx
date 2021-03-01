@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
-import { BsFillPlayFill, BsThreeDotsVertical } from 'react-icons/bs';
+import { BsFillPlayFill, BsThreeDotsVertical, BsFillTagFill } from 'react-icons/bs';
 import { updateTimeRecord } from 'src/resources/timeRecords';
 import { ITimeRecord } from 'src/types/timeRecord';
 import { ITrackingTimeRecord } from 'src/types/timeRecord';
@@ -11,10 +11,14 @@ import formatDuration from 'src/helpers/formatDuration';
 import { UserContext } from 'src/Contexts/UserContext';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
-import Projects from 'src/Components/Projects';
-import Tags from 'src/Components/Tags';
-import { TextInput } from '../Styles';
 import useTracker from 'src/hooks/useTracker';
+import useTags from 'src/hooks/useTags';
+import useTagsOpen from 'src/hooks/useTagsOpen';
+import useProjectsOpen from 'src/hooks/useProjectsOpen';
+import useProjects from 'src/hooks/useProjects';
+import { IconWrapper, TagIcon } from 'src/styles';
+import ActualProject from 'src/Components/ActualProject';
+import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
 const editAction = (value: ITimeRecord) => ({ type: EDIT_TYPE, payload: value });
@@ -143,6 +147,8 @@ export default function HistoryItem({
   project,
   tags,
 }: Props) {
+  const projectRef = useRef(null);
+  const tagRef = useRef(null);
   const { user } = useContext(UserContext);
   const tracker = useTracker();
   const { dispatchDateGroups } = useContext(DateGroupContext);
@@ -153,40 +159,44 @@ export default function HistoryItem({
       dispatchDateGroups && dispatchDateGroups(editAction(response.data));
     });
   };
-  const handleChangeOnTags = (tag: ITag) => {
-    if (!tags || !tagIds) {
-      handleTimeRecordChange({ userId: user.id, tagIds: tag ? [tag.id] : null });
-      return;
-    }
-    const idIndex = tagIds.indexOf(tag.id);
-    if (idIndex !== -1) {
-      handleTimeRecordChange({
-        userId: user.id,
-        tagIds: [...tagIds.slice(0, idIndex), ...tagIds.slice(idIndex + 1)],
-      });
-    } else {
-      handleTimeRecordChange({ userId: user.id, tagIds: [...tagIds, tag.id] });
-    }
+  const handleChangeOnTags = (tags: ITag[]) => {
+    const newTagIds = tags.map(({ id }) => id);
+
+    handleTimeRecordChange({ userId: user.id, tagIds: newTagIds });
   };
+  const handleChangeOnProject = (project?: IProject) =>
+    handleTimeRecordChange({
+      userId: user.id,
+      projectId: project && project.id,
+    });
+
+  const { isOpen: isTagsOpen } = useTags(id);
+  const { isOpen: isProjectOpen, openCreateModal } = useProjects(id);
+
+  const openTags = useTagsOpen(handleChangeOnTags, tagRef, id, tags);
+
+  const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, id, project);
 
   return (
     <TimeRecordWrapper>
       <NamingSection>
         <Label id={id} label={label} />
         <ProjectSelectWrapper data-hover={!project}>
-          <Projects
-            actualProject={project}
-            handleChangeOnProject={(project: IProject | null) =>
-              handleTimeRecordChange({
-                userId: user.id,
-                projectId: project && project.id,
-              })
-            }
-          />
+          <IconWrapper ref={projectRef} showBox={isProjectOpen}>
+            <ActualProject
+              actualProject={project}
+              handleIconClick={openProjects}
+              handleAddButtonClick={openCreateModal}
+            />
+          </IconWrapper>
         </ProjectSelectWrapper>
       </NamingSection>
       <TagsWrapper data-hover={!tags?.length}>
-        <Tags actualTags={tags} handleChangeOnTags={handleChangeOnTags} />
+        <IconWrapper ref={tagRef} showBox={isTagsOpen} onClick={openTags}>
+          <TagIcon hasTags={!!tags?.length}>
+            <BsFillTagFill />
+          </TagIcon>
+        </IconWrapper>
       </TagsWrapper>
       <EditSection>
         <EditOptions>

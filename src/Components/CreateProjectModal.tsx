@@ -180,13 +180,13 @@ const validate = (fields: { name: string; color: string }) => {
 };
 
 interface CreateProjectModalProps extends Modal.Props {
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  closeModal: () => void;
   initialName?: string;
   onCreateProject?: (project: IProject) => any;
 }
 
 export default function CreateProjectModal({
-  setIsOpen,
+  closeModal,
   onCreateProject,
   initialName,
   ...props
@@ -199,7 +199,7 @@ export default function CreateProjectModal({
       if (onCreateProject) {
         onCreateProject(response.data);
       }
-      setIsOpen(false);
+      closeModal();
       setSubmitting(false);
     });
   };
@@ -207,7 +207,7 @@ export default function CreateProjectModal({
   const initialValuesWithProps = { ...initialValues, name: initialName || '' };
 
   return (
-    <Modal style={customModalStyles} {...props}>
+    <Modal style={customModalStyles} onRequestClose={closeModal} {...props}>
       <ModalTitle>Create new project</ModalTitle>
       <Formik
         initialValues={initialValuesWithProps}

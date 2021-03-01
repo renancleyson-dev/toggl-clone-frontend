@@ -1,16 +1,20 @@
-import React, { useState, useRef } from 'react';
-import styled, { css } from 'styled-components';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import Modal from 'react-modal';
-import { RiFolder2Fill } from 'react-icons/ri';
-import useDynamicPositionModal from '../hooks/useDynamicPositionModal';
 import useTracker from '../hooks/useTracker';
 import { IProject } from '../types/projects';
 import CreateProjectModal from './CreateProjectModal';
-import { InputStyles, IconWrapper } from '../styles';
+import { InputStyles } from '../styles';
 import SearchInput from './SearchInput';
-import { dynamicModalStyles } from '../styles';
+import {
+  dynamicModalStyles,
+  projectNameStyles,
+  ProjectName,
+  MiniColorCircle,
+} from '../styles';
 import AddButton from './AddButton';
 import NoResourceFallback from './NoResourceFallback';
+import useProjects from 'src/hooks/useProjects';
 
 Modal.setAppElement('#root');
 
@@ -49,20 +53,6 @@ const ProjectsListWrapper = styled.ul`
   overflow: auto;
 `;
 
-const projectNameStyles = css`
-  cursor: pointer;
-  padding: 5px 0;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  background-color: ${({ hovered }: { hovered?: boolean }) =>
-    hovered ? ' #f1f1f1' : '#transparent'};
-
-  &:hover {
-    background-color: #f1f1f1;
-  }
-`;
-
 const ProjectItem = styled.li`
   ${projectNameStyles}
   padding: 5px 10px;
@@ -72,98 +62,24 @@ const DefaultProjectItem = styled(ProjectItem)`
   margin-bottom: 20px;
 `;
 
-const NoProjectsAddButton = styled(AddButton)`
-  border: none;
-  border-radius: 8px;
-  padding: 5px 12px 5px 8px;
-
-  &:not(:disabled):hover {
-    background-color: #f1f1f1;
-  }
-`;
-
-const ProjectName = styled.span`
-  color: ${({ color }: { color: string }) => color};
-  white-space: nowrap;
-`;
-
-const MiniColorCircle = styled.div`
-  width: 8px;
-  height: 8px;
-  line-height: 0;
-  margin-right: 5px;
-  border-radius: 50%;
-  background-color: ${({ color }: { color: string }) => color};
-
-  &:hover {
-    background-color: ${({ color }: { color: string }) => color};
-  }
-`;
-
-const ActualProjectWrapper = styled.div`
-  ${projectNameStyles}
-  font-size: 14px;
-
-  &:hover {
-    background-color: initial;
-  }
-`;
-
-interface ActualProjectProps {
-  actualProject?: IProject;
-  handleIconClick: () => void;
-  handleAddButtonClick: () => void;
-}
-
-const ActualProject = ({
-  actualProject,
-  handleIconClick,
-  handleAddButtonClick,
-}: ActualProjectProps) => {
-  const { projects } = useTracker();
-
-  if (!projects.length) {
-    return <NoProjectsAddButton text="Create a project" onClick={handleAddButtonClick} />;
-  }
-
-  if (!actualProject) {
-    return <RiFolder2Fill onClick={handleIconClick} />;
-  }
-
-  return (
-    <ActualProjectWrapper onClick={handleIconClick}>
-      <MiniColorCircle color={actualProject.color} />
-      <ProjectName color={actualProject.color}>{actualProject.name}</ProjectName>
-    </ActualProjectWrapper>
-  );
-};
-
 interface ProjectsListProps {
   searchText: string;
-  setShowBox: React.Dispatch<React.SetStateAction<boolean>>;
-  actualProject?: IProject;
   projects: IProject[];
-  handleChangeOnProject: (project: IProject | null) => void;
 }
 
-const ProjectsList = ({
-  searchText,
-  setShowBox,
-  actualProject,
-  projects,
-  handleChangeOnProject,
-}: ProjectsListProps) => {
+const ProjectsList = ({ searchText, projects }: ProjectsListProps) => {
   const [lastHovered, setLastHovered] = useState<number>(0);
+  const { closeModal, project, setProject } = useProjects();
   const handleMouseOver = (id: number) => () => setLastHovered(id);
 
   const defaultProjectItem = (
     <DefaultProjectItem
-      hovered={lastHovered === 0 || !actualProject?.id}
+      hovered={lastHovered === 0 || !project?.id}
       key={0}
       onMouseOver={handleMouseOver(0)}
       onClick={() => {
-        handleChangeOnProject(null);
-        setShowBox(false);
+        closeModal();
+        setProject();
       }}
     >
       <MiniColorCircle color="#aaa" />
@@ -174,10 +90,10 @@ const ProjectsList = ({
     <ProjectItem
       key={id}
       onClick={() => {
-        handleChangeOnProject({ id, name, color });
-        setShowBox(false);
+        closeModal();
+        setProject({ id, name, color });
       }}
-      hovered={lastHovered === id || actualProject?.id === id}
+      hovered={lastHovered === id || project?.id === id}
       onMouseOver={handleMouseOver(id)}
     >
       <MiniColorCircle color={color} />
@@ -198,18 +114,21 @@ const ProjectsList = ({
   );
 };
 
-interface Props {
-  actualProject?: IProject;
-  handleChangeOnProject: (project: IProject | null) => unknown;
-}
-
-export default function Projects({ actualProject, handleChangeOnProject }: Props) {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+export default function Projects() {
   const [searchText, setSearchText] = useState('');
   const [initialName, setInitialName] = useState('');
+
   const { projects, setProjects } = useTracker();
-  const iconRef = useRef(null);
-  const { position, isOpen, setIsOpen, handleOpen } = useDynamicPositionModal(iconRef);
+
+  const {
+    position,
+    isOpen,
+    isCreateModalOpen,
+    closeModal,
+    openCreateModal,
+    closeCreateModal,
+  } = useProjects();
+
   const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
   const updatedProjectModalStyles = {
     overlay: projectModalStyles.overlay,
@@ -218,47 +137,32 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
 
   const handleCreateProject = (project: IProject) => {
     setProjects((prevState) => [...prevState, project]);
-    handleChangeOnProject(project);
   };
 
   const handleAddButtonClick = () => {
-    setIsCreateModalOpen(true);
-    setIsOpen(false);
+    openCreateModal();
   };
 
   const handleKeyboardCreateProject = (event: React.KeyboardEvent) => {
-    if (
-      event.key === 'Enter' &&
-      event.ctrlKey &&
-      !filteredProjects.length &&
-      !!searchText
-    ) {
-      setIsCreateModalOpen(true);
-      setIsOpen(false);
+    const { key, ctrlKey } = event;
+    if (key === 'Enter' && ctrlKey && !filteredProjects.length && !!searchText) {
+      openCreateModal();
       setInitialName(searchText);
     }
   };
 
   return (
     <>
-      <IconWrapper ref={iconRef} showBox={isOpen}>
-        <ActualProject
-          actualProject={actualProject}
-          handleIconClick={handleOpen}
-          handleAddButtonClick={handleAddButtonClick}
-        />
-      </IconWrapper>
       <CreateProjectModal
         onCreateProject={handleCreateProject}
         isOpen={isCreateModalOpen}
-        setIsOpen={setIsCreateModalOpen}
+        closeModal={closeCreateModal}
         initialName={initialName}
-        onRequestClose={() => setIsCreateModalOpen(false)}
       />
       <Modal
         isOpen={isOpen}
         style={updatedProjectModalStyles}
-        onRequestClose={() => setIsOpen(false)}
+        onRequestClose={closeModal}
       >
         <div onKeyDown={handleKeyboardCreateProject}>
           <SearchInput>
@@ -269,12 +173,7 @@ export default function Projects({ actualProject, handleChangeOnProject }: Props
               onChange={(event) => setSearchText(event.target.value)}
             />
           </SearchInput>
-          <ProjectsList
-            searchText={searchText}
-            projects={filteredProjects}
-            handleChangeOnProject={handleChangeOnProject}
-            setShowBox={setIsOpen}
-          />
+          <ProjectsList searchText={searchText} projects={filteredProjects} />
           <AddButton text="Create a new project" onClick={handleAddButtonClick} />
         </div>
       </Modal>

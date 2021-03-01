@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import Projects from 'src/Components/Projects';
-import Tags from 'src/Components/Tags';
+import { BsFillTagFill } from 'react-icons/bs';
 import useTracker from 'src/hooks/useTracker';
-import { colors } from 'src/styles';
+import useTags from 'src/hooks/useTags';
+import useTagsOpen from 'src/hooks/useTagsOpen';
+import useProjectsOpen from 'src/hooks/useProjectsOpen';
+import useProjects from 'src/hooks/useProjects';
+import { colors, IconWrapper, TagIcon } from 'src/styles';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
 import { TextInput } from '../Styles';
@@ -11,6 +14,7 @@ import Timer from './Timer';
 import TimerButton from './TimerButton';
 import MenuOptions from './MenuOptions';
 import ManualMode from './ManualMode';
+import ActualProject from 'src/Components/ActualProject';
 
 const TrackerBar = styled.div`
   position: sticky;
@@ -52,24 +56,25 @@ const TrackerMode = () => (
 // UI to control and inform about current time tracking
 export default function Tracker() {
   const [trackerMode, setTrackerMode] = useState(true);
+  const projectRef = useRef(null);
+  const tagRef = useRef(null);
   const { actualTimeRecord, setActualTimeRecord, projects, tags } = useTracker();
-  const actualProject = projects.find(({ id }) => id === actualTimeRecord.projectId);
+  const project = projects.find(({ id }) => id === actualTimeRecord.projectId);
   const actualTags = tags.filter(({ id }) => actualTimeRecord.tagIds?.includes(id));
   const handleChangeOnProject = (project: IProject | null = null) => {
     setActualTimeRecord((prevState) => ({ ...prevState, projectId: project?.id }));
   };
-  const handleChangeOntags = (tag: ITag) => {
+  const handleChangeOntags = (tags: ITag[]) => {
     setActualTimeRecord((prevState) => {
-      const tagIds = prevState.tagIds || [];
-      const idIndex = tagIds?.indexOf(tag.id);
-      if (idIndex !== -1) {
-        const newTagIds = [...tagIds];
-        newTagIds.splice(idIndex, 1);
-        return { ...prevState, tagIds: [...newTagIds] };
-      }
-      return { ...prevState, tagIds: [...tagIds, tag.id] };
+      return { ...prevState, tagIds: [...tags.map(({ id }) => id)] };
     });
   };
+
+  const { isOpen: isProjectModalOpen, openCreateModal } = useProjects(0);
+  const { isOpen: isTagsModalOpen } = useTags(0);
+
+  const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, 0, project);
+  const openTags = useTagsOpen(handleChangeOntags, tagRef, 0, actualTags);
 
   return (
     <TrackerBar>
@@ -85,11 +90,18 @@ export default function Tracker() {
         }}
       />
       <TimerMenu>
-        <Projects
-          actualProject={actualProject}
-          handleChangeOnProject={handleChangeOnProject}
-        />
-        <Tags actualTags={actualTags} handleChangeOnTags={handleChangeOntags} />
+        <IconWrapper ref={projectRef} showBox={isProjectModalOpen}>
+          <ActualProject
+            actualProject={project}
+            handleIconClick={openProjects}
+            handleAddButtonClick={openCreateModal}
+          />
+        </IconWrapper>
+        <IconWrapper ref={tagRef} showBox={isTagsModalOpen} onClick={openTags}>
+          <TagIcon hasTags={!!actualTags?.length}>
+            <BsFillTagFill />
+          </TagIcon>
+        </IconWrapper>
         {trackerMode ? <TrackerMode /> : <ManualMode />}
         <MenuOptions trackerMode={trackerMode} setTrackerMode={setTrackerMode} />
       </TimerMenu>

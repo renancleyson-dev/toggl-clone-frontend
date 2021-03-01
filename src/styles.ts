@@ -85,3 +85,44 @@ export const IconWrapper = styled.div`
     color: #555;
   }
 `;
+
+export const projectNameStyles = css`
+  cursor: pointer;
+  padding: 5px 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  background-color: ${({ hovered }: { hovered?: boolean }) =>
+    hovered ? ' #f1f1f1' : '#transparent'};
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
+`;
+
+export const MiniColorCircle = styled.div`
+  width: 8px;
+  height: 8px;
+  line-height: 0;
+  margin-right: 5px;
+  border-radius: 50%;
+  background-color: ${({ color }: { color: string }) => color};
+
+  &:hover {
+    background-color: ${({ color }: { color: string }) => color};
+  }
+`;
+
+export const ProjectName = styled.span`
+  color: ${({ color }: { color: string }) => color};
+  white-space: nowrap;
+`;
+
+export const TagIcon = styled.div`
+  padding: 5px;
+  border-radius: 8px;
+  font-size: inherit;
+  background-color: ${({ hasTags }: { hasTags: boolean }) =>
+    hasTags ? 'rgba(196, 99, 186, 0.2)' : 'transparent'};
+  color: ${({ hasTags }: { hasTags: boolean }) => (hasTags ? colors.primary : 'inherit')};
+`;
