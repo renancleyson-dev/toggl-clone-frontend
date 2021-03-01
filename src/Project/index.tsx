@@ -5,6 +5,8 @@ import DateGroupsContextProvider from '../Contexts/DateGroupsContext';
 import Tracker from './Tracker';
 import History from './History';
 import Sidebar from './Sidebar';
+import ProjectsModalProvider from 'src/Contexts/ProjectsModalContext';
+import TagsModalProvider from 'src/Contexts/TagsModalContext';
 
 const Content = styled.div`
   position: relative;
@@ -18,10 +20,14 @@ export default () => (
     <Sidebar />
     <TrackContextProvider>
       <DateGroupsContextProvider>
-        <Content>
-          <Tracker />
-          <History />
-        </Content>
+        <ProjectsModalProvider>
+          <TagsModalProvider>
+            <Content>
+              <Tracker />
+              <History />
+            </Content>
+          </TagsModalProvider>
+        </ProjectsModalProvider>
       </DateGroupsContextProvider>
     </TrackContextProvider>
   </>
