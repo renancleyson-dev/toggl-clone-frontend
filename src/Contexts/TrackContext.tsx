@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { IProject } from '../types/projects';
 import { ITag } from '../types/tags';
@@ -39,16 +39,19 @@ export default function Provider({ children }: Props) {
   );
   const [projects, setProjects] = useState<IProject[]>([]);
   const [tags, setTags] = useState<ITag[]>([]);
-  const contextData = {
-    isTracking,
-    setIsTracking,
-    tags,
-    setTags,
-    projects,
-    setProjects,
-    actualTimeRecord,
-    setActualTimeRecord,
-  };
+  const contextData = useMemo(
+    () => ({
+      isTracking,
+      setIsTracking,
+      tags,
+      setTags,
+      projects,
+      setProjects,
+      actualTimeRecord,
+      setActualTimeRecord,
+    }),
+    [actualTimeRecord, projects, tags, isTracking]
+  );
 
   useEffect(() => {
     Promise.all([fetchProjects(source), fetchTags(source)]).then((responses) => {
