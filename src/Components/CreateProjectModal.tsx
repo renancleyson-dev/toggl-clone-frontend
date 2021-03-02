@@ -43,9 +43,12 @@ const ModalTitle = styled.span`
   margin-bottom: 15px;
 `;
 
-const Input = styled(TextInput)`
+const Input = styled(TextInput).withConfig({
+  shouldForwardProp: (prop) => prop !== 'hasError',
+})`
   ${InputStyles}
-  border-color: ${({ error }: { error: boolean }) => (error ? '#ff0000' : '#000')};
+  border-color: ${({ hasError }: { hasError: boolean }) =>
+    hasError ? '#ff0000' : '#000'};
   border-radius: 8px;
   flex: 0 0 89%;
   padding-left: 15px;
@@ -219,7 +222,7 @@ export default function CreateProjectModal({
             <Input
               name="name"
               placeholder="Project name"
-              error={!!errors.name}
+              hasError={!!errors.name}
               autoFocus
             />
             <ColorPicker />
