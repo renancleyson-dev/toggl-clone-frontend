@@ -121,6 +121,7 @@ export const ProjectName = styled.span`
 export const TagIcon = styled.div`
   border-radius: 8px;
   font-size: inherit;
+  padding: ${({ hasTags }: { hasTags?: boolean }) => (hasTags ? '5px' : '0')};
   background-color: ${({ hasTags }: { hasTags?: boolean }) =>
     hasTags ? 'rgba(196, 99, 186, 0.2)' : 'transparent'};
   color: ${({ hasTags }: { hasTags?: boolean }) =>

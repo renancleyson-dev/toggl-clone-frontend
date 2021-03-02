@@ -48,6 +48,8 @@ const LabelInput = styled(TextInput)`
 
 const TrackerIconWrapper = styled(IconWrapper)`
   margin-right: 15px;
+  padding: 5px;
+  font-size: 20px;
 `;
 
 const TrackerMode = () => (
