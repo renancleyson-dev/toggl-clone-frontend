@@ -46,7 +46,7 @@ export const buttonResets = css`
   text-align: center;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-color: #fff;
+  background-color: transparent;
 
   &:focus {
     outline: 1px solid #fff;

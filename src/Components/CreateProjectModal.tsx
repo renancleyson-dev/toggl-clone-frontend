@@ -44,6 +44,7 @@ const ModalTitle = styled.span`
 `;
 
 const Input = styled(TextInput).withConfig({
+  // @ts-ignore
   shouldForwardProp: (prop) => prop !== 'hasError',
 })`
   ${InputStyles}

@@ -13,6 +13,10 @@ export const setJsonWebToken = (token: string): void => {
   newConfigAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
 
+export const clearJsonWebToken = () => {
+  newConfigAxios.defaults.headers.common['Authorization'] = '';
+};
+
 export const handleUnauthorizedResponse = (history: History) => {
   newConfigAxios.interceptors.response.use(
     (response) => response,

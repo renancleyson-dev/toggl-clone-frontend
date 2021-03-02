@@ -1,6 +1,21 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import { UserContext } from 'src/Contexts/UserContext';
+import UserOptions from './UserOptions';
+import { buttonResets } from 'src/styles';
+
+const Button = styled.button`
+  ${buttonResets}
+  color: inherit;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    transform: none;
+  }
+`;
 
 const UserProfileWrapper = styled.div`
   padding: 0 15px;
@@ -34,14 +49,28 @@ const UserEmail = styled(TextWithEllipsis)`
 `;
 
 export default function UserProfile() {
+  const [isOpen, setIsOpen] = useState(false);
   const { user } = useContext(UserContext);
 
+  const openOptionsModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeOptionsModal = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <UserProfileWrapper>
-      <TextSection>
-        <UserEmail>{user.email}</UserEmail>
-      </TextSection>
-      <AvatarSection />
-    </UserProfileWrapper>
+    <>
+      <Button onClick={openOptionsModal}>
+        <UserProfileWrapper>
+          <TextSection>
+            <UserEmail>{user.email}</UserEmail>
+          </TextSection>
+          <AvatarSection />
+        </UserProfileWrapper>
+      </Button>
+      <UserOptions isOpen={isOpen} onRequestClose={closeOptionsModal} />
+    </>
   );
 }
