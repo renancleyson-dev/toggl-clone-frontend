@@ -1,5 +1,5 @@
 import moment from 'moment';
-import formatDuration from '../helpers/formatDuration';
+import formatDuration from '../../helpers/formatDuration';
 
 it('formats a Duration with less than one hour to H:MM:SS', (): void => {
   const formattedDuration = formatDuration(
