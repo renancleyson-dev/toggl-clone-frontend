@@ -15,7 +15,9 @@ if (Modal.defaultStyles.overlay) {
   Modal.defaultStyles.overlay.backgroundColor = 'rgba(0, 0, 0, 0.6)';
 }
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const customModalStyles = {
   overlay: {

@@ -11,7 +11,9 @@ import NoResourceFallback from './NoResourceFallback';
 import TagCheckBox from './TagCheckBox';
 import useTags from 'src/hooks/useTags';
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const modalContentHeight = 360;
 
