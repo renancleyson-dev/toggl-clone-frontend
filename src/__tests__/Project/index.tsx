@@ -21,20 +21,21 @@ describe('when tracking', () => {
   it('adds item to history after stop tracking', async () => {
     render(<Project />);
     await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
+
     const trackerInput = screen.getByRole('textbox', {
       name: /time record description/i,
     });
 
     fireEvent.change(trackerInput, createInput('time record test'));
-    fireEvent.click(screen.getByRole('button', { name: /start button/i }));
-    fireEvent.click(screen.getByRole('button', { name: /stop button/i }));
+    fireEvent.click(screen.getByRole('button', { name: /start tracking/i }));
+    fireEvent.click(screen.getByRole('button', { name: /stop tracking/i }));
 
     const { body } = await waitForResponse('POST', '/time_records', () =>
-      waitFor(() => screen.getByRole('button', { name: /start button/i }))
+      waitFor(() => screen.getByRole('button', { name: /start tracking/i }))
     );
 
     const timeRecord = within(await screen.findByTestId(`time-record-${body.id}`));
-    expect(timeRecord.getByText(/0:00:00/i)).toBeInTheDocument();
+    expect(timeRecord.getByText(`0:00:0${body.duration}`)).toBeInTheDocument();
     expect(timeRecord.getByDisplayValue(/time record test/i)).toBeInTheDocument();
   });
   it('Adds item to history on manual mode on submit', () => {});
@@ -53,7 +54,7 @@ describe('when start tracking by history item', () => {
     fireEvent.click(await item.findByRole('button', { name: /start time record/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /stop button/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /stop tracking/i })).toBeInTheDocument();
     });
   });
   it('auto select tags/project from history item to tracker bar', async () => {

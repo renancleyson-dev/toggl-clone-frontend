@@ -13,7 +13,7 @@ export const createInput = (value: string) => ({ target: { value } });
 const getResponse = (method: string, url: string) => {
   let requestId = '';
   return new Promise<{ body?: any }>((resolve, reject) => {
-    server.events.on('request:start', (req) => {
+    server.events.on('request:match', (req) => {
       const matchesMethod = req.method.toLowerCase() === method.toLowerCase();
       const matchesUrl = req.url.pathname === url;
       if (matchesMethod && matchesUrl) {

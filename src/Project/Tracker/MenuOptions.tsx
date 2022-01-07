@@ -57,7 +57,7 @@ export default function MenuOptions({ trackerMode, setTrackerMode }: Props) {
 
   if (isTracking) {
     return (
-      <TrashButton onClick={handleTrashClick} aria-label="remove time record">
+      <TrashButton onClick={handleTrashClick} aria-label="pass current tracking">
         <TrashIcon />
       </TrashButton>
     );

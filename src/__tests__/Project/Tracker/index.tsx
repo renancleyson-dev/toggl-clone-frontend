@@ -5,7 +5,6 @@ import {
   fireEvent,
   screen,
   createInput,
-  waitForResponse,
   waitFor,
   waitForElementToBeRemoved,
 } from 'src/test-utils';
@@ -22,6 +21,7 @@ it('renders without crashing', async () => {
 
 describe('on tracker mode', () => {
   it('creates a time record when stopped', async () => {
+    const axiosSpy = jest.spyOn(axios, 'post');
     projectRender(<Tracker />);
     await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
 
@@ -30,15 +30,15 @@ describe('on tracker mode', () => {
     });
 
     fireEvent.change(trackerInput, createInput('time record test'));
-    fireEvent.click(screen.getByRole('button', { name: /start button/i }));
-    fireEvent.click(screen.getByRole('button', { name: /stop button/i }));
+    fireEvent.click(screen.getByRole('button', { name: /start tracking/i }));
+    fireEvent.click(screen.getByRole('button', { name: /stop tracking/i }));
 
-    const { body } = await waitForResponse('POST', '/time_records', () =>
-      waitFor(() => screen.getByRole('button', { name: /start button/i }))
-    );
-
-    expect(body.label).toBe('time record test');
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /start tracking/i })).toBeInTheDocument();
+    });
     expect(trackerInput).not.toHaveValue();
+    expect(axiosSpy).toHaveBeenCalled();
+    axiosSpy.mockRestore();
   });
   it('ignores current time record on remove button click', async () => {
     const axiosSpy = jest.spyOn(axios, 'post');
@@ -49,13 +49,14 @@ describe('on tracker mode', () => {
       name: /time record description/i,
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /start button/i }));
-    fireEvent.click(screen.getByRole('button', { name: /remove time record/i }));
+    fireEvent.click(screen.getByRole('button', { name: /start tracking/i }));
+    fireEvent.click(screen.getByRole('button', { name: /pass current tracking/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /start button/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /start tracking/i })).toBeInTheDocument();
     });
-    expect(axiosSpy).not.toHaveBeenCalled();
     expect(trackerInput).not.toHaveValue();
+    expect(axiosSpy).not.toHaveBeenCalled();
+    axiosSpy.mockRestore();
   });
 });

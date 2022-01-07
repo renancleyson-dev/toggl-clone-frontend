@@ -32,7 +32,7 @@ export default function TimerButton() {
 
   return (
     <Button
-      aria-label={isTracking ? 'stop button' : 'start button'}
+      aria-label={isTracking ? 'stop tracking' : 'start tracking'}
       type="button"
       isTracking={isTracking}
       onClick={handleClick}
