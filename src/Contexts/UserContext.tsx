@@ -12,7 +12,7 @@ interface ContextValue {
 
 export const UserContext = React.createContext({} as ContextValue);
 
-export default function Provider({ children }: Props) {
+export default function UserProvider({ children }: Props) {
   const [user, setUser] = useState<IUser>({
     id: 0,
     email: '',

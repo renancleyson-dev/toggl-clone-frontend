@@ -13,7 +13,7 @@ export const DateGroupContext = React.createContext<IContextValue>({
   dateGroups: [],
 });
 
-export default function Provider({ children }: { children: React.ReactNode }) {
+export default function DateGroupsProvider({ children }: { children: React.ReactNode }) {
   const [dateGroups, dispatchDateGroups] = useReducer(
     dateGroupsReducer,
     initialDateGroupsState
