@@ -6,7 +6,7 @@
   "repository": "https://github.com/Renan-Cleyson/time-tracker-frontend",
   "description": "App to manage time tasks",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "formik": "^2.1.5",
     "moment": "^2.27.0",
     "react": "^16.13.1",
@@ -24,7 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --env=jest-environment-jsdom-sixteen",
     "eject": "react-scripts eject"
   },
   "browserslist": {
@@ -62,8 +62,13 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^2.5.1",
+    "jest-environment-jsdom-sixteen": "^2.0.0",
     "msw": "^0.35.0",
-    "prettier": "2.0.5"
+    "prettier": "2.0.5",
+    "ts-jest": "^27.1.2"
   },
-  "proxy": "http://127.0.0.1:5000"
+  "proxy": "http://127.0.0.1:5000",
+  "msw": {
+    "workerDirectory": "public"
+  }
 }

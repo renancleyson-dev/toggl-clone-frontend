@@ -1,13 +1,19 @@
 import axios from 'axios';
 import { History } from 'history';
 
-const newConfigAxios = axios.create({
+const config = {
   baseURL: 'http://localhost:5000',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-});
+};
+
+if (process.env.NODE_ENV === 'test') {
+  delete config.baseURL;
+}
+
+const newConfigAxios = axios.create(config);
 
 export const setJsonWebToken = (token: string): void => {
   newConfigAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
