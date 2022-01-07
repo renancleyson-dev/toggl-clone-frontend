@@ -15,7 +15,7 @@ import useTracker from 'src/hooks/useTracker';
 import useTagsOpen from 'src/hooks/useTagsOpen';
 import useProjectsOpen from 'src/hooks/useProjectsOpen';
 import useProjects from 'src/hooks/useProjects';
-import { IconWrapper, TagIcon } from 'src/styles';
+import { buttonResets, IconWrapper, TagIcon } from 'src/styles';
 import ActualProject from 'src/Components/ActualProject';
 import { TextInput } from '../Styles';
 
@@ -88,7 +88,8 @@ const Actions = styled.div`
   flex-basis: 60px;
 `;
 
-const ActionsIconWrapper = styled.div`
+const ActionsIconWrapper = styled.button`
+  ${buttonResets}
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -99,7 +100,9 @@ const ActionsIconWrapper = styled.div`
   }
 `;
 
-const PlayWrapper = styled(ActionsIconWrapper)`
+const PlayWrapper = styled(ActionsIconWrapper).attrs({
+  type: 'button',
+})`
   font-size: 29px;
 `;
 
@@ -198,7 +201,7 @@ export default function HistoryItem({
   const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, id, project);
 
   return (
-    <TimeRecordWrapper>
+    <TimeRecordWrapper data-testid={`time-record-${id}`}>
       <NamingSection>
         <Label id={id} label={label} />
         <ProjectSelectWrapper data-hover={!project}>
@@ -219,11 +222,10 @@ export default function HistoryItem({
           <div>
             <span>{`${startTime.format('HH:mm A')} - ${endTime.format('HH:mm A')}`}</span>
           </div>
-          <DurationDisplay data-testid="time-record-duration">
-            {formatDuration(duration)}
-          </DurationDisplay>
+          <DurationDisplay>{formatDuration(duration)}</DurationDisplay>
           <Actions>
             <PlayWrapper
+              aria-label="start time record"
               data-hover={true}
               onClick={() => {
                 if (tracker.isTracking) {

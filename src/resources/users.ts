@@ -8,6 +8,7 @@ export const login = (loginParams: {
   email: string;
   password: string;
 }): Promise<{ data: ISession }> => axios.post('/login', loginParams);
+
 // REST API
 
 export const fetchUser = (

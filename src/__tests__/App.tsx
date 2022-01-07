@@ -1,8 +1,17 @@
 import React from 'react';
-import { render } from 'react-dom';
+import {
+  render,
+  cleanup,
+  waitForElementToBeRemoved,
+  screen,
+} from '@testing-library/react';
 import App from '../App';
 
-it('renders without crashing', (): void => {
-  const div = document.createElement('div');
-  render(<App />, div);
+afterEach(() => {
+  cleanup();
+});
+
+it('renders without crashing', async () => {
+  render(<App />);
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
 });

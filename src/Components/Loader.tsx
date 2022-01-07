@@ -40,7 +40,7 @@ const Spinner = styled.div`
 
 export default function Loader() {
   return (
-    <LoaderWrapper>
+    <LoaderWrapper role="alert" aria-label="Loading App">
       <LogoWrapper>
         <Logo />
       </LogoWrapper>

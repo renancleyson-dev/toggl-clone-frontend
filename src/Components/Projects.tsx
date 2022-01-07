@@ -16,7 +16,9 @@ import AddButton from './AddButton';
 import NoResourceFallback from './NoResourceFallback';
 import useProjects from 'src/hooks/useProjects';
 
-Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const modalContentHeight = 455;
 

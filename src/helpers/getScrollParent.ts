@@ -6,9 +6,7 @@ function getScrollParent(node: Element | null): Element | null {
   const overflowY = window.getComputedStyle(node).overflowY;
   const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
 
-  if (!node) {
-    return null;
-  } else if (isScrollable && node.scrollHeight >= node.clientHeight) {
+  if (isScrollable && node.scrollHeight >= node.clientHeight) {
     return node;
   }
 

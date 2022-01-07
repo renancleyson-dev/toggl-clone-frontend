@@ -28,12 +28,14 @@ const Button = styled.button`
 export default function TimerButton() {
   const { isTracking, startTracking, stopTracking } = useTracker();
 
+  const handleClick = isTracking ? stopTracking : () => startTracking();
+
   return (
     <Button
+      aria-label={isTracking ? 'stop button' : 'start button'}
       type="button"
-      data-testid="timer-button"
       isTracking={isTracking}
-      onClick={() => (isTracking ? stopTracking() : startTracking() )}
+      onClick={handleClick}
     >
       {isTracking ? <RiStopCircleFill /> : <IoIosPlayCircle />}
     </Button>

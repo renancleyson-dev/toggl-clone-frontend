@@ -82,13 +82,18 @@ export default function Tracker() {
   const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, 0, project);
   const openTags = useTagsOpen(handleChangeOntags, tagRef, 0, actualTags);
 
+  const { label = '' } = actualTimeRecord;
+  const hasTags = !!actualTags?.length;
+
   return (
-    <TrackerBar>
+    <TrackerBar data-testid="tracker-bar">
       <LabelInput
+        aria-label="time record description"
         placeholder="What are you working on?"
-        value={actualTimeRecord.label || ''}
+        value={label}
         onChange={(event) => {
           const { target } = event;
+
           setActualTimeRecord((prevState) => ({
             ...prevState,
             label: target.value,
@@ -104,7 +109,7 @@ export default function Tracker() {
           />
         </TrackerIconWrapper>
         <TrackerIconWrapper ref={tagRef} showBox={isTagsModalOpen} onClick={openTags}>
-          <TagIcon hasTags={!!actualTags?.length}>
+          <TagIcon hasTags={hasTags}>
             <BsFillTagFill />
           </TagIcon>
         </TrackerIconWrapper>

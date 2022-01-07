@@ -7,8 +7,6 @@ import { fetchProjects } from '../resources/projects';
 import { fetchTags } from '../resources/tags';
 import ProjectLoader from '../Project/ProjectLoader';
 
-const source = axios.CancelToken.source();
-
 const actualTimeRecordInitialValue = {
   userId: 0,
 };
@@ -31,7 +29,7 @@ interface ContextValue {
 export const TrackContext = React.createContext({} as ContextValue);
 
 // Provider to set and get states for time tracking
-export default function Provider({ children }: Props) {
+export default function TrackProvider({ children }: Props) {
   const [isReady, setIsReady] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
   const [actualTimeRecord, setActualTimeRecord] = useState<ITrackingTimeRecord>(
@@ -54,11 +52,19 @@ export default function Provider({ children }: Props) {
   );
 
   useEffect(() => {
-    Promise.all([fetchProjects(source), fetchTags(source)]).then((responses) => {
-      setProjects(responses[0].data);
-      setTags(responses[1].data);
-      setIsReady(true);
-    });
+    const source = axios.CancelToken.source();
+    Promise.all([fetchProjects(source), fetchTags(source)])
+      .then(([projects, tags]) => {
+        setProjects(projects.data);
+        setTags(tags.data);
+        setIsReady(true);
+      })
+      .catch((e) => {
+        if (!axios.isCancel(e)) {
+          setIsReady(true);
+        }
+        console.log(e);
+      });
 
     return () => source.cancel();
   }, []);
@@ -66,5 +72,6 @@ export default function Provider({ children }: Props) {
   if (!isReady) {
     return <ProjectLoader />;
   }
+
   return <TrackContext.Provider value={contextData}>{children}</TrackContext.Provider>;
 }
