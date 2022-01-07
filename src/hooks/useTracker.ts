@@ -31,10 +31,10 @@ export default function useTracker() {
   };
   const stopTracking = () => {
     const endTime = moment();
-    setActualTimeRecord({ userId: user.id, label: '' });
-    setIsTracking(false);
     createTimeRecord({ ...actualTimeRecord, endTime }).then((response) => {
       dispatchDateGroups && dispatchDateGroups(addAction(response.data));
+      setActualTimeRecord({ userId: user.id, label: '' });
+      setIsTracking(false);
     });
   };
 

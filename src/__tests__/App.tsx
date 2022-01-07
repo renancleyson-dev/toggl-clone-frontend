@@ -1,7 +1,17 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import {
+  render,
+  cleanup,
+  waitForElementToBeRemoved,
+  screen,
+} from '@testing-library/react';
 import App from '../App';
 
-it('renders without crashing', (): void => {
+afterEach(() => {
+  cleanup();
+});
+
+it('renders without crashing', async () => {
   render(<App />);
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
 });

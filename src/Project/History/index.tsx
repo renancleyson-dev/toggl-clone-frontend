@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroller';
 import { buttonResets } from 'src/styles';
-import { UserContext } from 'src/Contexts/UserContext';
 import { fetchTimeRecords } from 'src/resources/timeRecords';
 import { IDateGroup } from 'src/types/timeRecord';
 import { FETCH_TYPE } from 'src/reducers/dateGroupsReducer/types';
@@ -50,7 +49,6 @@ export default function History() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
-  const { user } = useContext(UserContext);
   const { dateGroups, dispatchDateGroups } = useContext(DateGroupContext);
   const dateGroupsUI = dateGroups.map(({ date, timeRecords }) => (
     <DateGroup key={date} date={date} timeRecords={timeRecords} />
@@ -59,20 +57,18 @@ export default function History() {
   const loadMore = useCallback(
     (page: number) => {
       setIsLoading(true);
-      if (user && user.id) {
-        fetchTimeRecords(page).then((response) => {
-          if (dispatchDateGroups) {
-            dispatchDateGroups(fetchAction(response.data));
-          }
-          if (!response.data.length) {
-            setIsEnd(true);
-          }
-        });
-      }
+      fetchTimeRecords(page).then((response) => {
+        if (dispatchDateGroups) {
+          dispatchDateGroups(fetchAction(response.data));
+        }
+        if (!response.data.length) {
+          setIsEnd(true);
+        }
+      });
       setIsLoading(false);
       setHasMore(false);
     },
-    [dispatchDateGroups, user]
+    [dispatchDateGroups]
   );
 
   useEffect(() => loadMore(0), [loadMore]);
