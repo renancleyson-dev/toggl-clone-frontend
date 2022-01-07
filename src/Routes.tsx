@@ -9,8 +9,8 @@ import { handleUnauthorizedResponse } from './axios';
 
 export default function Routes() {
   const history = useHistory();
-
   handleUnauthorizedResponse(history);
+
   return (
     <>
       <Route path="/register" component={Register} />
