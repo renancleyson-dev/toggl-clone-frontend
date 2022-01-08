@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Formik, ErrorMessage } from 'formik';
 import { Link } from 'react-router-dom';
+import useUser from 'src/hooks/useUser';
 import CheckBox from '../Components/CheckBox';
-import { UserContext } from '../Contexts/UserContext';
 import { createUser } from '../resources/users';
 import { colors } from '../styles';
 import CountrySelect from './CountrySelect';
@@ -105,7 +105,7 @@ const validate = (fields: IForm) => {
 };
 
 const RegisterForm = () => {
-  const { setUser } = useContext(UserContext);
+  const { setUser } = useUser();
 
   const handleSubmit = async (
     { email, password, country }: IForm,

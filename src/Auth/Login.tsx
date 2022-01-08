@@ -1,10 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { Formik, ErrorMessage } from 'formik';
-import { UserContext } from '../Contexts/UserContext';
-import { USER_KEY, JWT_KEY } from '../helpers/constants';
-import { login } from '../resources/users';
-import { setJsonWebToken } from '../axios';
+import useUser from 'src/hooks/useUser';
 import {
   FormBox,
   Form,
@@ -46,7 +43,7 @@ const validate = (fields: IForm) => {
 };
 
 export default function Login() {
-  const { setUser } = useContext(UserContext);
+  const { login } = useUser();
   const history = useHistory();
 
   const handleSubmit = async (
@@ -60,14 +57,7 @@ export default function Login() {
     }
   ) => {
     try {
-      const {
-        data: { authToken, ...sessionResponse },
-      } = await login(loginParams);
-      setJsonWebToken(authToken);
-      setUser(sessionResponse);
-      localStorage.setItem(JWT_KEY, `${authToken}`);
-      localStorage.setItem(USER_KEY, `${sessionResponse.id}`);
-
+      await login(loginParams);
       history.push('/');
     } catch (error) {
       const data = error.response?.data;
