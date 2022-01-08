@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { BsFillPlayFill, BsThreeDotsVertical, BsFillTagFill } from 'react-icons/bs';
+import useUser from 'src/hooks/useUser';
 import { updateTimeRecord } from 'src/resources/timeRecords';
 import { ITimeRecord } from 'src/types/timeRecord';
 import { ITrackingTimeRecord } from 'src/types/timeRecord';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
 import formatDuration from 'src/helpers/formatDuration';
-import { UserContext } from 'src/Contexts/UserContext';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import useTracker from 'src/hooks/useTracker';
@@ -128,7 +128,7 @@ const TagNames = ({ names }: { names?: string[] }) => {
 
 const Label = ({ id, label }: { id: number; label?: string }) => {
   const [labelText, setLabelText] = useState('');
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const { dispatchDateGroups } = useContext(DateGroupContext);
 
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function HistoryItem({
 }: Props) {
   const projectRef = useRef(null);
   const tagRef = useRef(null);
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const tracker = useTracker();
   const { dispatchDateGroups } = useContext(DateGroupContext);
   const duration = moment.duration(endTime.diff(startTime));

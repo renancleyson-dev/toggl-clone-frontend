@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import useUser from 'src/hooks/useUser';
 import Logo from '../Components/Logo';
 import { colors } from '../styles';
 import { Button } from './Styles';
-import { UserContext } from '../Contexts/UserContext';
 
 const EntrySection = styled.div`
   background: linear-gradient(rgba(0, 0, 0, 0.5) 100%, rgba(0, 0, 0, 0.5) 100%),
@@ -76,7 +76,7 @@ const Description = styled.span`
 `;
 
 export default function Header() {
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
 
   return (
     <EntrySection>

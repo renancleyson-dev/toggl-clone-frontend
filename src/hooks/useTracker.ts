@@ -1,16 +1,16 @@
 import { useContext } from 'react';
 import moment from 'moment';
 import { TrackContext } from 'src/Contexts/TrackContext';
-import { UserContext } from 'src/Contexts/UserContext';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import { ADD_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import { ITimeRecord, ITrackingTimeRecord } from 'src/types/timeRecord';
 import { createTimeRecord } from '../resources/timeRecords';
+import useUser from './useUser';
 
 const addAction = (value: ITimeRecord) => ({ type: ADD_TYPE, payload: value });
 
 export default function useTracker() {
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const { dispatchDateGroups } = useContext(DateGroupContext);
   const {
     actualTimeRecord,
