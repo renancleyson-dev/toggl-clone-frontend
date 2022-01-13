@@ -10,9 +10,20 @@ import DateGroupsContextProvider from '../Contexts/DateGroupsContext';
 
 export const createInput = (value: string) => ({ target: { value } });
 
-const getResponse = (method: string, url: string) => {
-  let requestId = '';
+const getResponse = (method: string, url: string, timeout = 4000) => {
   return new Promise<{ body?: any }>((resolve, reject) => {
+    let requestId = '';
+
+    setTimeout(() => {
+      if (requestId === '') {
+        reject(
+          new Error(
+            `The ${method} ${url} request was not invoked within the ${timeout}ms timeout.`
+          )
+        );
+      }
+    }, timeout);
+
     server.events.on('request:match', (req) => {
       const matchesMethod = req.method.toLowerCase() === method.toLowerCase();
       const matchesUrl = req.url.pathname === url;
@@ -39,9 +50,10 @@ const getResponse = (method: string, url: string) => {
 export const waitForResponse = async (
   method: string,
   url: string,
-  UIEffect: () => void
+  UIEffect: () => void,
+  timeout?: number
 ) => {
-  const response = getResponse(method, url);
+  const response = getResponse(method, url, timeout);
   await UIEffect();
   return await response;
 };
