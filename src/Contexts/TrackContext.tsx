@@ -6,65 +6,91 @@ import { ITrackingTimeRecord } from '../types/timeRecord';
 import { fetchProjects } from '../resources/projects';
 import { fetchTags } from '../resources/tags';
 import ProjectLoader from '../Project/ProjectLoader';
+import useObjectState, { ObjectControl } from 'src/hooks/shared/useObjectState';
 
-const actualTimeRecordInitialValue = {
-  userId: 0,
+const initialTimeRecord: ITrackingTimeRecord = {
+  startTime: undefined,
+  label: '',
+  projectId: null,
+  tagIds: null,
 };
 
 interface Props {
   children: React.ReactNode;
 }
 
-interface ContextValue {
+type KeyOfITracking = keyof ITrackingTimeRecord;
+
+export interface ContextValue {
   isTracking: boolean;
   setIsTracking: React.Dispatch<React.SetStateAction<boolean>>;
   tags: ITag[];
   setTags: React.Dispatch<React.SetStateAction<ITag[]>>;
   projects: IProject[];
   setProjects: React.Dispatch<React.SetStateAction<IProject[]>>;
-  actualTimeRecord: ITrackingTimeRecord;
-  setActualTimeRecord: React.Dispatch<React.SetStateAction<ITrackingTimeRecord>>;
+  getTimeRecord: () => ITrackingTimeRecord;
+  getTimeRecordValue: <T extends keyof ITrackingTimeRecord>(
+    key: T
+  ) => ITrackingTimeRecord[T];
+  setTimeRecord: (newValue: ITrackingTimeRecord) => void;
+  resetTimeRecord: () => void;
+  timeRecordControl: ObjectControl<ITrackingTimeRecord>;
 }
 
-export const TrackContext = React.createContext({} as ContextValue);
+export const TrackContext = React.createContext<ContextValue | null>(null);
 
 // Provider to set and get states for time tracking
 export default function TrackProvider({ children }: Props) {
   const [isReady, setIsReady] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
-  const [actualTimeRecord, setActualTimeRecord] = useState<ITrackingTimeRecord>(
-    actualTimeRecordInitialValue
-  );
   const [projects, setProjects] = useState<IProject[]>([]);
   const [tags, setTags] = useState<ITag[]>([]);
-  const contextData = useMemo(
-    () => ({
+  const [_getTimeRecord, setTimeRecord, timeRecordControl] = useObjectState(
+    initialTimeRecord
+  );
+
+  const context = useMemo(() => {
+    const getTimeRecord = () => _getTimeRecord();
+    const getTimeRecordValue = <T extends KeyOfITracking>(key: T) => _getTimeRecord(key);
+    const resetTimeRecord = () => {
+      setTimeRecord(initialTimeRecord);
+    };
+
+    return {
       isTracking,
       setIsTracking,
       tags,
       setTags,
       projects,
       setProjects,
-      actualTimeRecord,
-      setActualTimeRecord,
-    }),
-    [actualTimeRecord, projects, tags, isTracking]
-  );
+      getTimeRecord,
+      getTimeRecordValue,
+      setTimeRecord,
+      resetTimeRecord,
+      timeRecordControl,
+    };
+  }, [_getTimeRecord, setTimeRecord, projects, tags, isTracking, timeRecordControl]);
 
   useEffect(() => {
     const source = axios.CancelToken.source();
-    Promise.all([fetchProjects(source), fetchTags(source)])
-      .then(([projects, tags]) => {
+
+    (async function fetchResources() {
+      try {
+        const [projects, tags] = await Promise.all([
+          fetchProjects(source),
+          fetchTags(source),
+        ]);
+
         setProjects(projects.data);
         setTags(tags.data);
         setIsReady(true);
-      })
-      .catch((e) => {
+      } catch (e) {
         if (!axios.isCancel(e)) {
           setIsReady(true);
         }
         console.log(e);
-      });
+      }
+    })();
 
     return () => source.cancel();
   }, []);
@@ -73,5 +99,5 @@ export default function TrackProvider({ children }: Props) {
     return <ProjectLoader />;
   }
 
-  return <TrackContext.Provider value={contextData}>{children}</TrackContext.Provider>;
+  return <TrackContext.Provider value={context}>{children}</TrackContext.Provider>;
 }

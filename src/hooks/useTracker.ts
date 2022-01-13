@@ -1,51 +1,62 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import moment from 'moment';
-import { TrackContext } from 'src/Contexts/TrackContext';
+import { TrackContext, ContextValue } from 'src/Contexts/TrackContext';
 import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
 import { ADD_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import { ITimeRecord, ITrackingTimeRecord } from 'src/types/timeRecord';
 import { createTimeRecord } from '../resources/timeRecords';
 import useUser from './useUser';
+import { useObjectSelector } from './shared/useObjectState';
 
 const addAction = (value: ITimeRecord) => ({ type: ADD_TYPE, payload: value });
 
 export default function useTracker() {
   const { user } = useUser();
   const { dispatchDateGroups } = useContext(DateGroupContext);
-  const {
-    actualTimeRecord,
-    setActualTimeRecord,
-    isTracking,
-    setIsTracking,
-    ...contextValue
-  } = useContext(TrackContext);
+  const contextNullable = useContext(TrackContext);
 
-  const { startTime } = actualTimeRecord;
-  const startTracking = (timeRecord?: ITrackingTimeRecord) => {
-    setIsTracking(true);
-    setActualTimeRecord((prevState) => ({
-      ...prevState,
-      ...timeRecord,
-      startTime: moment(),
-    }));
-  };
-  const stopTracking = () => {
-    const endTime = moment();
-    createTimeRecord({ ...actualTimeRecord, endTime }).then((response) => {
-      dispatchDateGroups && dispatchDateGroups(addAction(response.data));
-      setActualTimeRecord({ userId: user.id, label: '' });
+  if (contextNullable === null) {
+    throw new Error('useTracker must be within a TrackProvider');
+  }
+
+  const context = contextNullable as ContextValue;
+  const { getTimeRecord, setTimeRecord, resetTimeRecord, setIsTracking } = context;
+
+  const startTracking = useCallback(
+    (_timeRecord?: ITrackingTimeRecord) => {
+      setIsTracking(true);
+      setTimeRecord({ ..._timeRecord, startTime: moment() });
+    },
+    [setIsTracking, setTimeRecord]
+  );
+
+  const stopTracking = useCallback(
+    async (pass = false) => {
+      if (!pass) {
+        const payload = { ...getTimeRecord(), endTime: moment(), userId: user.id };
+        const response = await createTimeRecord(payload);
+        dispatchDateGroups && dispatchDateGroups(addAction(response.data));
+      }
+
+      resetTimeRecord();
       setIsTracking(false);
-    });
-  };
+    },
+    [resetTimeRecord, setIsTracking, dispatchDateGroups, getTimeRecord, user.id]
+  );
 
-  return {
-    startTime,
-    actualTimeRecord,
-    setActualTimeRecord,
-    isTracking,
-    setIsTracking,
-    startTracking,
-    stopTracking,
-    ...contextValue,
-  };
+  return { startTracking, stopTracking, ...context };
+}
+
+export function useTrackerSelector<T>(
+  selector: (obj: ITrackingTimeRecord) => T,
+  compareFunction?: (prevValue: T, value: T) => boolean
+) {
+  const contextNullable = useContext(TrackContext);
+
+  if (contextNullable === null) {
+    throw new Error('useTrackerSelector must be within a TrackProvider');
+  }
+  const { timeRecordControl } = contextNullable as ContextValue;
+
+  return useObjectSelector(timeRecordControl, selector, compareFunction);
 }

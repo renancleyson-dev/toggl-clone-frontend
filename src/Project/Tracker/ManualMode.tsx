@@ -112,13 +112,14 @@ const ManualTimer = ({ startTime, setStartTime, endTime, setEndTime }: Props) =>
 export default function ManualMode() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const { actualTimeRecord, setActualTimeRecord } = useTracker();
+  const { getTimeRecord, resetTimeRecord } = useTracker();
   const { user } = useUser();
   const { dispatchDateGroups } = useContext(DateGroupContext);
 
   const handleClickOnButton = () => {
     createTimeRecord({
-      ...actualTimeRecord,
+      ...getTimeRecord(),
+      userId: user.id,
       startTime: moment(startTime, 'HH:mm A'),
       endTime: moment(endTime, 'HH:mm A'),
     }).then((response) => {
@@ -126,7 +127,7 @@ export default function ManualMode() {
         dispatchDateGroups({ type: ADD_TYPE, payload: response.data });
     });
 
-    setActualTimeRecord({ userId: user.id });
+    resetTimeRecord();
   };
 
   useEffect(() => {

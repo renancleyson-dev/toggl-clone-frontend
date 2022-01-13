@@ -28,7 +28,7 @@ const Button = styled.button`
 export default function TimerButton() {
   const { isTracking, startTracking, stopTracking } = useTracker();
 
-  const handleClick = isTracking ? stopTracking : () => startTracking();
+  const handleClick = isTracking ? () => stopTracking() : () => startTracking();
 
   return (
     <Button

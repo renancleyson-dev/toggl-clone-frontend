@@ -4,7 +4,6 @@ import { RiTimeFill, RiMenuFill } from 'react-icons/ri';
 import { FaTrash } from 'react-icons/fa';
 import useTracker from 'src/hooks/useTracker';
 import { buttonResets, colors } from 'src/styles';
-import useUser from 'src/hooks/useUser';
 
 const ModeMenuWrapper = styled.div`
   min-height: 100%;
@@ -41,12 +40,10 @@ interface Props {
 }
 
 export default function MenuOptions({ trackerMode, setTrackerMode }: Props) {
-  const { isTracking, setIsTracking, setActualTimeRecord } = useTracker();
-  const { user } = useUser();
+  const { isTracking, stopTracking } = useTracker();
 
   const handleTrashClick = () => {
-    setIsTracking(false);
-    setActualTimeRecord({ userId: user.id });
+    stopTracking(true);
   };
   const handleClickOnTimer = () => {
     setTrackerMode(true);
