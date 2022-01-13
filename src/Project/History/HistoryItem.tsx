@@ -172,7 +172,6 @@ export default function HistoryItem({
 }: Props) {
   const projectRef = useRef(null);
   const tagRef = useRef(null);
-  const { user } = useUser();
   const tracker = useTracker();
   const { dispatchDateGroups } = useContext(DateGroupContext);
   const duration = moment.duration(endTime.diff(startTime));
@@ -186,13 +185,10 @@ export default function HistoryItem({
   const handleChangeOnTags = (tags: ITag[]) => {
     const newTagIds = tags.map(({ id }) => id);
 
-    handleTimeRecordChange({ userId: user.id, tagIds: newTagIds });
+    handleTimeRecordChange({ tagIds: newTagIds });
   };
   const handleChangeOnProject = (project?: IProject) =>
-    handleTimeRecordChange({
-      userId: user.id,
-      projectId: project ? project.id : null,
-    });
+    handleTimeRecordChange({ projectId: project ? project.id : null });
 
   const { isOpen: isProjectOpen, openCreateModal } = useProjects(id);
 
@@ -232,7 +228,6 @@ export default function HistoryItem({
                   tracker.stopTracking();
                 }
                 tracker.startTracking({
-                  userId: user.id,
                   label,
                   projectId: project?.id,
                   tagIds,

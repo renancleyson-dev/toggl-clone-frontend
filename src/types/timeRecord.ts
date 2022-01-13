@@ -17,7 +17,6 @@ export interface IDateGroup {
 }
 
 export interface ITrackingTimeRecord {
-  userId: number;
   startTime?: moment.Moment;
   label?: string;
   projectId?: number | null;
@@ -25,5 +24,6 @@ export interface ITrackingTimeRecord {
 }
 
 export interface ITimeRecordParams extends ITrackingTimeRecord {
+  userId: number;
   endTime?: moment.Moment;
 }

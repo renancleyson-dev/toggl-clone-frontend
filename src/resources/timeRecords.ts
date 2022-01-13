@@ -23,7 +23,7 @@ export const createTimeRecord = async (
 
 export const updateTimeRecord = async (
   timeRecordId: number,
-  data: ITimeRecordParams
+  data: Partial<ITimeRecordParams>
 ): Promise<{ data: ITimeRecord }> =>
   axios.put(`/time_records/${timeRecordId}`, {
     ...data,

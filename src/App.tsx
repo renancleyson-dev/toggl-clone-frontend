@@ -5,13 +5,13 @@ import Routes from './Routes';
 
 function App() {
   return (
-    <UserContextProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <UserContextProvider>
         <Switch>
           <Routes />
         </Switch>
-      </BrowserRouter>
-    </UserContextProvider>
+      </UserContextProvider>
+    </BrowserRouter>
   );
 }
 
