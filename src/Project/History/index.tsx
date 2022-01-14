@@ -1,15 +1,12 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroller';
 import { buttonResets } from 'src/styles';
 import { fetchTimeRecords } from 'src/resources/timeRecords';
-import { IDateGroup } from 'src/types/timeRecord';
-import { FETCH_TYPE } from 'src/reducers/dateGroupsReducer/types';
-import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
+import useDateGroups, { useDateGroupsSelector } from 'src/hooks/useDateGroups';
+import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
 import ProjectLoader from '../ProjectLoader';
 import DateGroup from './DateGroup';
-
-const fetchAction = (payload: IDateGroup[]) => ({ type: FETCH_TYPE, payload });
 
 const HistoryWrapper = styled.div`
   margin: 60px 0 360px;
@@ -30,48 +27,54 @@ const LoadMoreButton = styled.button`
   background-color: #fff;
 `;
 
-type LoaderProps = {
-  isLoading: boolean;
-  isEnd: boolean;
-  onClick: () => void;
-};
-
-const Loader = ({ isLoading, isEnd, onClick }: LoaderProps) => {
-  if (isLoading || isEnd) {
-    return null;
-  }
-
-  return <LoadMoreButton onClick={onClick}>Load more</LoadMoreButton>;
-};
-
 // infinite scroll to control and inform about time records
 export default function History() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
-  const { dateGroups, dispatchDateGroups } = useContext(DateGroupContext);
-  const dateGroupsUI = dateGroups.map(({ date, timeRecords }) => (
-    <DateGroup key={date} date={date} timeRecords={timeRecords} />
-  ));
+
+  const { dispatchDateGroups } = useDateGroups();
+  const dateGroups = useDateGroupsSelector(({ list }) => list);
 
   const loadMore = useCallback(
-    (page: number) => {
+    async (page: number) => {
       setIsLoading(true);
-      fetchTimeRecords(page).then((response) => {
-        if (dispatchDateGroups) {
-          dispatchDateGroups(fetchAction(response.data));
-        }
-        if (!response.data.length) {
-          setIsEnd(true);
-        }
-      });
+      const { data } = await fetchTimeRecords(page);
+      dispatchDateGroups(dateGroupActions.fetch(data));
+
+      if (data.length) {
+        setIsEnd(true);
+      }
+
       setIsLoading(false);
       setHasMore(false);
     },
     [dispatchDateGroups]
   );
 
-  useEffect(() => loadMore(0), [loadMore]);
+  useEffect(() => {
+    loadMore(0);
+  }, [loadMore]);
+
+  const requestMore = () => setHasMore(true);
+
+  let footerView = null;
+  const hasFooter = isEnd && !dateGroups.length;
+  const canLoadMore = isLoading || isEnd;
+
+  const dateGroupsUI = dateGroups.map(({ date, timeRecords }) => (
+    <DateGroup key={date} date={date} timeRecords={timeRecords} />
+  ));
+
+  if (hasFooter) {
+    footerView = (
+      <NoHistoryFallback>
+        <span>Get ready to track time and boost your productivity!</span>
+      </NoHistoryFallback>
+    );
+  } else if (canLoadMore) {
+    footerView = <LoadMoreButton onClick={requestMore}>Load more</LoadMoreButton>;
+  }
 
   return (
     <HistoryWrapper>
@@ -83,13 +86,7 @@ export default function History() {
         loader={<ProjectLoader key={0} />}
       >
         {dateGroupsUI}
-        {isEnd && !dateGroups.length ? (
-          <NoHistoryFallback>
-            <span>Get ready to track time and boost your productivity!</span>
-          </NoHistoryFallback>
-        ) : (
-          <Loader isLoading={isLoading} isEnd={isEnd} onClick={() => setHasMore(true)} />
-        )}
+        {footerView}
       </InfiniteScroll>
     </HistoryWrapper>
   );

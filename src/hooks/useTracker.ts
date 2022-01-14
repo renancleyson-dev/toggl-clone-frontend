@@ -1,18 +1,16 @@
 import { useCallback, useContext } from 'react';
 import moment from 'moment';
 import { TrackContext, ContextValue } from 'src/Contexts/TrackContext';
-import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
-import { ADD_TYPE } from 'src/reducers/dateGroupsReducer/types';
-import { ITimeRecord, ITrackingTimeRecord } from 'src/types/timeRecord';
+import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
+import { ITrackingTimeRecord } from 'src/types/timeRecord';
 import { createTimeRecord } from '../resources/timeRecords';
 import useUser from './useUser';
 import { useObjectSelector } from './shared/useObjectState';
-
-const addAction = (value: ITimeRecord) => ({ type: ADD_TYPE, payload: value });
+import useDateGroups from './useDateGroups';
 
 export default function useTracker() {
   const { user } = useUser();
-  const { dispatchDateGroups } = useContext(DateGroupContext);
+  const { dispatchDateGroups } = useDateGroups();
   const contextNullable = useContext(TrackContext);
 
   if (contextNullable === null) {
@@ -35,7 +33,7 @@ export default function useTracker() {
       if (!pass) {
         const payload = { ...getTimeRecord(), endTime: moment(), userId: user.id };
         const response = await createTimeRecord(payload);
-        dispatchDateGroups && dispatchDateGroups(addAction(response.data));
+        dispatchDateGroups(dateGroupActions.add(response.data));
       }
 
       resetTimeRecord();

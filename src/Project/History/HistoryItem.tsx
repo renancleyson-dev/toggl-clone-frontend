@@ -1,26 +1,24 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { BsFillPlayFill, BsThreeDotsVertical, BsFillTagFill } from 'react-icons/bs';
 import useUser from 'src/hooks/useUser';
 import { updateTimeRecord } from 'src/resources/timeRecords';
-import { ITimeRecord } from 'src/types/timeRecord';
 import { ITrackingTimeRecord } from 'src/types/timeRecord';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
 import formatDuration from 'src/helpers/formatDuration';
-import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
-import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
+import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
 import useTracker from 'src/hooks/useTracker';
 import useTagsOpen from 'src/hooks/useTagsOpen';
 import useProjectsOpen from 'src/hooks/useProjectsOpen';
 import useProjects from 'src/hooks/useProjects';
 import { buttonResets, IconWrapper, TagIcon } from 'src/styles';
 import ActualProject from 'src/Components/ActualProject';
+import useDateGroups from 'src/hooks/useDateGroups';
 import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
-const editAction = (value: ITimeRecord) => ({ type: EDIT_TYPE, payload: value });
 
 const TimeRecordWrapper = styled.div`
   padding: 10px 10px 10px 0px;
@@ -129,7 +127,7 @@ const TagNames = ({ names }: { names?: string[] }) => {
 const Label = ({ id, label }: { id: number; label?: string }) => {
   const [labelText, setLabelText] = useState('');
   const { user } = useUser();
-  const { dispatchDateGroups } = useContext(DateGroupContext);
+  const { dispatchDateGroups } = useDateGroups();
 
   useEffect(() => {
     if (label) {
@@ -145,7 +143,7 @@ const Label = ({ id, label }: { id: number; label?: string }) => {
       onChange={(e) => setLabelText(e.target.value)}
       onBlur={() => {
         updateTimeRecord(id, { userId: user.id, label: labelText }).then((response) => {
-          dispatchDateGroups && dispatchDateGroups(editAction(response.data));
+          dispatchDateGroups(dateGroupActions.edit(response.data));
         });
       }}
     />
@@ -162,7 +160,7 @@ interface Props {
 }
 
 // UI to show a specific time record
-export default function HistoryItem({
+export default memo(function HistoryItem({
   startTime,
   endTime,
   label,
@@ -173,13 +171,13 @@ export default function HistoryItem({
   const projectRef = useRef(null);
   const tagRef = useRef(null);
   const tracker = useTracker();
-  const { dispatchDateGroups } = useContext(DateGroupContext);
+  const { dispatchDateGroups } = useDateGroups();
   const duration = moment.duration(endTime.diff(startTime));
   const tagIds = tags?.map(({ id }) => id);
   const tagNames = tags?.map(({ name }) => name);
   const handleTimeRecordChange = (value: ITrackingTimeRecord) => {
     updateTimeRecord(id, value).then((response) => {
-      dispatchDateGroups && dispatchDateGroups(editAction(response.data));
+      dispatchDateGroups(dateGroupActions.edit(response.data));
     });
   };
   const handleChangeOnTags = (tags: ITag[]) => {
@@ -193,7 +191,6 @@ export default function HistoryItem({
   const { isOpen: isProjectOpen, openCreateModal } = useProjects(id);
 
   const openTags = useTagsOpen(handleChangeOnTags, tagRef, id, tags);
-
   const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, id, project);
 
   return (
@@ -244,4 +241,4 @@ export default function HistoryItem({
       </EditSection>
     </TimeRecordWrapper>
   );
-}
+});

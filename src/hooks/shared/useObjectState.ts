@@ -1,15 +1,8 @@
-import {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
 
-type InitialValue<T> = T | (() => T);
+export type InitialValue<T> = T | (() => T);
 
 export type ObjectControl<T> = MutableRefObject<{
   _state: T;
@@ -25,20 +18,21 @@ export default function useObjectState<T>(
   const _initialValue = initialValue instanceof Function ? initialValue() : initialValue;
   const control = useRef({ _state: _initialValue, _emitter: new EventEmitter() });
 
-  const getState = useCallback((key?: any): T | any => {
-    const state = control.current._state;
+  const [getState, setState] = useMemo(() => {
+    const getState = (key?: any): T | any => {
+      const state = control.current._state;
 
-    return _.get(state, key, state);
-  }, []);
+      return _.get(state, key, state);
+    };
 
-  const setState = useCallback(
-    (newValue: Partial<T>) => {
+    const setState = (newValue: Partial<T>) => {
       control.current._state = { ...getState(), ...newValue };
 
       control.current._emitter.emit(OBJECT_UPDATE, control.current._state);
-    },
-    [getState]
-  );
+    };
+
+    return [getState, setState];
+  }, []);
 
   return [getState, setState, control];
 }

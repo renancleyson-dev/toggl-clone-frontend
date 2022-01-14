@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import InputMask from 'react-input-mask';
 import { IoIosCheckmark } from 'react-icons/io';
 import { FaLongArrowAltRight } from 'react-icons/fa';
-import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
-import { ADD_TYPE } from 'src/reducers/dateGroupsReducer/types';
 import { createTimeRecord } from 'src/resources/timeRecords';
 import useTracker from 'src/hooks/useTracker';
 import { colors, buttonResets } from 'src/styles';
 import useUser from 'src/hooks/useUser';
+import useDateGroups from 'src/hooks/useDateGroups';
+import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
 
 const ManualTimerWrapper = styled.div`
   width: 250px;
@@ -114,7 +114,7 @@ export default function ManualMode() {
   const [endTime, setEndTime] = useState('');
   const { getTimeRecord, resetTimeRecord } = useTracker();
   const { user } = useUser();
-  const { dispatchDateGroups } = useContext(DateGroupContext);
+  const { dispatchDateGroups } = useDateGroups();
 
   const handleClickOnButton = () => {
     createTimeRecord({
@@ -123,8 +123,7 @@ export default function ManualMode() {
       startTime: moment(startTime, 'HH:mm A'),
       endTime: moment(endTime, 'HH:mm A'),
     }).then((response) => {
-      dispatchDateGroups &&
-        dispatchDateGroups({ type: ADD_TYPE, payload: response.data });
+      dispatchDateGroups(dateGroupActions.add(response.data));
     });
 
     resetTimeRecord();

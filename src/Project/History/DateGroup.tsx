@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { FaList } from 'react-icons/fa';
@@ -62,7 +62,7 @@ const MultiSelect = styled.div`
   align-items: center;
 `;
 
-export default function DateGroup({ date, timeRecords }: Props) {
+export default memo(function DateGroup({ date, timeRecords }: Props) {
   const records = timeRecords.map(
     ({ startTime, endTime, label, tags, project, id }: ITimeRecord) => (
       <HistoryItem
@@ -76,6 +76,7 @@ export default function DateGroup({ date, timeRecords }: Props) {
       />
     )
   );
+
   const totalDuration = timeRecords.reduce((acc, timeRecord) => {
     const timeRecordDuration = moment.duration(timeRecord.duration, 's');
     return acc.add(timeRecordDuration);
@@ -95,4 +96,4 @@ export default function DateGroup({ date, timeRecords }: Props) {
       {records}
     </DateGroupWrapper>
   );
-}
+});
