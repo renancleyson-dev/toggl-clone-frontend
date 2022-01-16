@@ -20,8 +20,8 @@ const Content = styled.div`
 export default () => (
   <>
     <Sidebar />
-    <TrackContextProvider>
-      <DateGroupsContextProvider>
+    <DateGroupsContextProvider>
+      <TrackContextProvider>
         <ProjectsModalProvider>
           <TagsModalProvider>
             <Content>
@@ -32,7 +32,7 @@ export default () => (
             <Tags />
           </TagsModalProvider>
         </ProjectsModalProvider>
-      </DateGroupsContextProvider>
-    </TrackContextProvider>
+      </TrackContextProvider>
+    </DateGroupsContextProvider>
   </>
 );

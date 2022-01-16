@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import moment from 'moment';
 import axios from 'axios';
+import useUser from '../hooks/useUser';
+import useDateGroups from '../hooks/useDateGroups';
+import useObjectState, { ObjectControl } from '../hooks/shared/useObjectState';
+import { dateGroupActions } from '../Contexts/DateGroupsContext';
 import { IProject } from '../types/projects';
 import { ITag } from '../types/tags';
 import { ITrackingTimeRecord } from '../types/timeRecord';
 import { fetchProjects } from '../resources/projects';
+import { createTimeRecord } from '../resources/timeRecords';
 import { fetchTags } from '../resources/tags';
 import ProjectLoader from '../Project/ProjectLoader';
-import useObjectState, { ObjectControl } from 'src/hooks/shared/useObjectState';
 
 const initialTimeRecord: ITrackingTimeRecord = {
   startTime: undefined,
@@ -19,8 +24,6 @@ interface Props {
   children: React.ReactNode;
 }
 
-type KeyOfITracking = keyof ITrackingTimeRecord;
-
 export interface ContextValue {
   isTracking: boolean;
   setIsTracking: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,11 +32,11 @@ export interface ContextValue {
   projects: IProject[];
   setProjects: React.Dispatch<React.SetStateAction<IProject[]>>;
   getTimeRecord: () => ITrackingTimeRecord;
-  getTimeRecordValue: <T extends keyof ITrackingTimeRecord>(
-    key: T
-  ) => ITrackingTimeRecord[T];
+  getTimeRecordValue: (key: string) => any;
   setTimeRecord: (newValue: ITrackingTimeRecord) => void;
   resetTimeRecord: () => void;
+  startTracking: (timeRecord?: ITrackingTimeRecord) => void;
+  stopTracking: (pass?: boolean) => Promise<void>;
   timeRecordControl: ObjectControl<ITrackingTimeRecord>;
 }
 
@@ -45,15 +48,36 @@ export default function TrackProvider({ children }: Props) {
   const [isTracking, setIsTracking] = useState(false);
   const [projects, setProjects] = useState<IProject[]>([]);
   const [tags, setTags] = useState<ITag[]>([]);
+
   const [_getTimeRecord, setTimeRecord, timeRecordControl] = useObjectState(
     initialTimeRecord
   );
 
+  const { user } = useUser();
+  const { dispatchDateGroups } = useDateGroups();
+
   const context = useMemo(() => {
-    const getTimeRecord = () => _getTimeRecord();
-    const getTimeRecordValue = <T extends KeyOfITracking>(key: T) => _getTimeRecord(key);
+    const getTimeRecord = (): ITrackingTimeRecord => _getTimeRecord();
+    const getTimeRecordValue = (key: string) => _getTimeRecord(key);
+
     const resetTimeRecord = () => {
       setTimeRecord(initialTimeRecord);
+    };
+
+    const startTracking = (_timeRecord?: ITrackingTimeRecord) => {
+      setIsTracking(true);
+      setTimeRecord({ ..._timeRecord, startTime: moment() });
+    };
+
+    const stopTracking = async (pass = false) => {
+      if (!pass) {
+        const payload = { ...getTimeRecord(), endTime: moment(), userId: user.id };
+        const response = await createTimeRecord(payload);
+        dispatchDateGroups(dateGroupActions.add(response.data));
+      }
+
+      resetTimeRecord();
+      setIsTracking(false);
     };
 
     return {
@@ -67,9 +91,20 @@ export default function TrackProvider({ children }: Props) {
       getTimeRecordValue,
       setTimeRecord,
       resetTimeRecord,
+      startTracking,
+      stopTracking,
       timeRecordControl,
     };
-  }, [_getTimeRecord, setTimeRecord, projects, tags, isTracking, timeRecordControl]);
+  }, [
+    _getTimeRecord,
+    setTimeRecord,
+    projects,
+    tags,
+    isTracking,
+    timeRecordControl,
+    dispatchDateGroups,
+    user.id,
+  ]);
 
   useEffect(() => {
     const source = axios.CancelToken.source();

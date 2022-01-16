@@ -66,13 +66,13 @@ const Providers = ({ children }: PropsWithChildren<{}>) => (
 
 const ProjectProviders = ({ children }: PropsWithChildren<{}>) => (
   <Providers>
-    <TrackProvider>
-      <ProjectsModalProvider>
-        <TagsModalProvider>
-          <DateGroupsContextProvider>{children}</DateGroupsContextProvider>
-        </TagsModalProvider>
-      </ProjectsModalProvider>
-    </TrackProvider>
+    <DateGroupsContextProvider>
+      <TrackProvider>
+        <ProjectsModalProvider>
+          <TagsModalProvider>{children}</TagsModalProvider>
+        </ProjectsModalProvider>
+      </TrackProvider>
+    </DateGroupsContextProvider>
   </Providers>
 );
 
