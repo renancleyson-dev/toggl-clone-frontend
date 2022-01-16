@@ -3,11 +3,10 @@ import React, { useEffect } from 'react';
 export default (ref: React.MutableRefObject<null | Node>, callback: Function) => {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        event.target instanceof Node &&
-        ref.current !== null &&
-        !ref.current.contains(event.target)
-      ) {
+      const { current } = ref;
+      const { target } = event;
+
+      if (target instanceof Node && current !== null && !current.contains(target)) {
         callback();
       }
     }
