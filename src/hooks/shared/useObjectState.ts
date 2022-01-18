@@ -19,14 +19,22 @@ export default function useObjectState<T>(
   const control = useRef({ _state: _initialValue, _emitter: new EventEmitter() });
 
   const [getState, setState] = useMemo(() => {
-    const getState = (key?: any): T | any => {
+    const getState = (key?: any): any => {
       const state = control.current._state;
 
-      return _.get(state, key, state);
+      if (!key) {
+        return { ...state };
+      }
+
+      return _.get(state, key, null);
     };
 
-    const setState = (newValue: Partial<T>) => {
-      control.current._state = { ...getState(), ...newValue };
+    const setState = (newValue: Partial<T> | ((prevValue: T) => T)) => {
+      if (newValue instanceof Function) {
+        control.current._state = newValue(getState());
+      } else {
+        control.current._state = { ...getState(), ...newValue };
+      }
 
       control.current._emitter.emit(OBJECT_UPDATE, control.current._state);
     };
@@ -42,10 +50,7 @@ function defaultCompare<T>(prevValue: T, value: T) {
 }
 
 export function useObjectSelector<T, Z>(
-  control: MutableRefObject<{
-    _state: Z;
-    _emitter: EventEmitter;
-  }>,
+  control: ObjectControl<Z>,
   selector: (obj: Z) => T,
   compareFunction?: (prevValue: T, value: T) => boolean
 ) {
@@ -65,12 +70,13 @@ export function useObjectSelector<T, Z>(
         return prevState;
       });
     };
+
     current._emitter.on(OBJECT_UPDATE, updateState);
 
     return () => {
       current._emitter.off(OBJECT_UPDATE, updateState);
     };
-  }, [state, control, selector, isEqual]);
+  }, [control, selector, isEqual]);
 
   return state;
 }
