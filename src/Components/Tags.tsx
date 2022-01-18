@@ -148,10 +148,10 @@ const TagsList = ({ searchText, tags }: { searchText: string; tags: ITag[] }) =>
 export default function Tags() {
   const [searchText, setSearchText] = useState('');
   const { tags, setTags } = useTracker();
-  const { isOpen, closeModal, position, setTags: setActualTags } = useTags();
+  const { isTagsOpen, closeTags, getPosition, setTags: setActualTags } = useTags();
   const updatedTagsModalStyles = {
     overlay: tagsModalStyles.overlay,
-    content: { ...tagsModalStyles.content, ...position },
+    content: { ...tagsModalStyles.content, ...getPosition().position },
   };
 
   const filteredTags = tags.filter(({ name }) => name.includes(searchText.trim()));
@@ -170,7 +170,7 @@ export default function Tags() {
   };
 
   return (
-    <Modal isOpen={isOpen} style={updatedTagsModalStyles} onRequestClose={closeModal}>
+    <Modal isOpen={isTagsOpen} style={updatedTagsModalStyles} onRequestClose={closeTags}>
       <div onKeyDown={handleKeyboardCreateTags}>
         <SearchInput>
           <Input

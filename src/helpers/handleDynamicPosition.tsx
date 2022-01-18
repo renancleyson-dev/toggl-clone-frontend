@@ -6,9 +6,6 @@ export default function handleDynamicPosition(
 ) {
   let newTopPosition;
   const scrollable = getScrollParent(element);
-  if (!scrollable) {
-    return;
-  }
 
   const { top, left } = element.getBoundingClientRect();
   const modalTopPosition = top + window.scrollY + 35;
@@ -16,7 +13,7 @@ export default function handleDynamicPosition(
     modalTopPosition + contentHeight - (window.scrollY + window.innerHeight);
 
   newTopPosition = modalTopPosition;
-  if (elementViewportOffset > 0) {
+  if (scrollable && elementViewportOffset > 0) {
     newTopPosition -= elementViewportOffset;
     scrollable.scrollBy({ top: elementViewportOffset, behavior: 'smooth' });
   }

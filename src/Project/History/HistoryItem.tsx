@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { BsFillPlayFill, BsThreeDotsVertical, BsFillTagFill } from 'react-icons/bs';
@@ -10,12 +10,11 @@ import { ITag } from 'src/types/tags';
 import formatDuration from 'src/helpers/formatDuration';
 import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
 import useTracker from 'src/hooks/useTracker';
-import useTagsOpen from 'src/hooks/useTagsOpen';
-import useProjectsOpen from 'src/hooks/useProjectsOpen';
 import useProjects from 'src/hooks/useProjects';
+import useTags from 'src/hooks/useTags';
+import useDateGroups from 'src/hooks/useDateGroups';
 import { buttonResets, IconWrapper, TagIcon } from 'src/styles';
 import ActualProject from 'src/Components/ActualProject';
-import useDateGroups from 'src/hooks/useDateGroups';
 import { TextInput } from '../Styles';
 
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
@@ -168,37 +167,43 @@ export default memo(function HistoryItem({
   project,
   tags,
 }: Props) {
-  const projectRef = useRef(null);
-  const tagRef = useRef(null);
   const tracker = useTracker();
   const { dispatchDateGroups } = useDateGroups();
+  const { openTags, registerTagsPosition } = useTags(id);
+  const {
+    openProjects,
+    isProjectsOpen,
+    registerProjectsPosition,
+    openCreateModal,
+  } = useProjects(id);
+
   const duration = moment.duration(endTime.diff(startTime));
   const tagIds = tags?.map(({ id }) => id);
   const tagNames = tags?.map(({ name }) => name);
+
   const handleTimeRecordChange = (value: ITrackingTimeRecord) => {
     updateTimeRecord(id, value).then((response) => {
       dispatchDateGroups(dateGroupActions.edit(response.data));
     });
   };
-  const handleChangeOnTags = (tags: ITag[]) => {
-    const newTagIds = tags.map(({ id }) => id);
 
-    handleTimeRecordChange({ tagIds: newTagIds });
-  };
   const handleChangeOnProject = (project?: IProject) =>
     handleTimeRecordChange({ projectId: project ? project.id : null });
 
-  const { isOpen: isProjectOpen, openCreateModal } = useProjects(id);
-
-  const openTags = useTagsOpen(handleChangeOnTags, tagRef, id, tags);
-  const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, id, project);
+  const handleChangeOnTags = (tags: ITag[]) => {
+    const newTagIds = tags.map(({ id }) => id);
+    handleTimeRecordChange({ tagIds: newTagIds });
+  };
 
   return (
     <TimeRecordWrapper data-testid={`time-record-${id}`}>
       <NamingSection>
         <Label id={id} label={label} />
         <ProjectSelectWrapper data-hover={!project}>
-          <IconWrapper ref={projectRef} showBox={isProjectOpen}>
+          <IconWrapper
+            ref={registerProjectsPosition(handleChangeOnProject)}
+            showBox={isProjectsOpen}
+          >
             <ActualProject
               actualProject={project}
               handleIconClick={openProjects}
@@ -207,7 +212,11 @@ export default memo(function HistoryItem({
           </IconWrapper>
         </ProjectSelectWrapper>
       </NamingSection>
-      <TagsWrapper ref={tagRef} data-hover={!tags?.length} onClick={openTags}>
+      <TagsWrapper
+        ref={registerTagsPosition(handleChangeOnTags)}
+        data-hover={!tags?.length}
+        onClick={openTags}
+      >
         <TagNames names={tagNames} />
       </TagsWrapper>
       <EditSection>

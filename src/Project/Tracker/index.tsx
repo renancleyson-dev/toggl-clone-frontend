@@ -1,10 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { BsFillTagFill } from 'react-icons/bs';
 import useTracker, { useTrackerSelector } from 'src/hooks/useTracker';
 import useTags from 'src/hooks/useTags';
-import useTagsOpen from 'src/hooks/useTagsOpen';
-import useProjectsOpen from 'src/hooks/useProjectsOpen';
 import useProjects from 'src/hooks/useProjects';
 import { colors, IconWrapper, TagIcon } from 'src/styles';
 import { IProject } from 'src/types/projects';
@@ -79,8 +77,14 @@ const TrackerMode = () => (
 // UI to control and inform about current time tracking
 export default function Tracker() {
   const [trackerMode, setTrackerMode] = useState(true);
-  const projectRef = useRef(null);
-  const tagRef = useRef(null);
+  const { isTagsOpen, openTags, registerTagsPosition } = useTags();
+  const {
+    isProjectsOpen,
+    openProjects,
+    openCreateModal,
+    registerProjectsPosition,
+  } = useProjects();
+
   const { setTimeRecord, projects, tags } = useTracker();
   const timeRecord = useTrackerSelector(({ projectId, tagIds }) => ({
     projectId,
@@ -96,25 +100,27 @@ export default function Tracker() {
   const handleChangeOntags = (tags: ITag[]) =>
     setTimeRecord({ tagIds: tags.map(({ id }) => id) });
 
-  const { isOpen: isProjectModalOpen, openCreateModal } = useProjects(0);
-  const { isOpen: isTagsModalOpen } = useTags(0);
-
-  const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, 0, project);
-  const openTags = useTagsOpen(handleChangeOntags, tagRef, 0, actualTags);
   const hasTags = !!actualTags?.length;
 
   return (
     <TrackerBar data-testid="tracker-bar">
       <LabelInput />
       <TimerMenu>
-        <TrackerIconWrapper ref={projectRef} showBox={isProjectModalOpen}>
+        <TrackerIconWrapper
+          ref={registerProjectsPosition(handleChangeOnProject)}
+          showBox={isProjectsOpen}
+        >
           <ActualProject
             actualProject={project}
             handleIconClick={openProjects}
             handleAddButtonClick={openCreateModal}
           />
         </TrackerIconWrapper>
-        <TrackerIconWrapper ref={tagRef} showBox={isTagsModalOpen} onClick={openTags}>
+        <TrackerIconWrapper
+          ref={registerTagsPosition(handleChangeOntags)}
+          showBox={isTagsOpen}
+          onClick={openTags}
+        >
           <TagIcon hasTags={hasTags}>
             <BsFillTagFill />
           </TagIcon>

@@ -1,4 +1,6 @@
-import React, { useState, useMemo, useRef } from 'react';
+import { noop } from 'lodash';
+import React, { useState, useMemo, useRef, PropsWithChildren } from 'react';
+import handleDynamicPosition from 'src/helpers/handleDynamicPosition';
 import { ITag } from 'src/types/tags';
 
 type Position = {
@@ -6,51 +8,78 @@ type Position = {
   left: string;
 };
 
-interface contextValue {
-  position: Position;
-  openId: React.MutableRefObject<number | undefined>;
-  isOpen: boolean;
-  openModal: () => void;
-  closeModal: () => void;
+type PositionsRef = Record<
+  number,
+  { position: Position; callback: (tags: ITag[]) => void }
+>;
+
+interface ContextValue {
+  key: number;
+  isTagsOpen: boolean;
+  openTags: (key: number) => void;
+  closeTags: () => void;
   tags: ITag[];
   setTags: React.Dispatch<React.SetStateAction<ITag[]>>;
-  setPosition: (position: Position) => void;
+  getPosition: () => { position: Position; callback: (tags: ITag[]) => void };
+  registerTagsPosition: (
+    key: number,
+    callback: (tags: ITag[]) => void
+  ) => (ref: Element | null) => void;
 }
 
-export const TagsModalContext = React.createContext<contextValue | null>(null);
+export const TagsModalContext = React.createContext<ContextValue | null>(null);
 
-interface Props {
-  children: React.ReactNode;
-}
-
-export default function TagsModalProvider({ children }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState({ top: '0', left: '0' });
+export default function TagsModalProvider({ children }: PropsWithChildren<{}>) {
+  const [isTagsOpen, setIsOpen] = useState(false);
+  const [key, setKey] = useState<number>(-1);
   const [tags, setTags] = useState<ITag[]>([]);
-  const openId = useRef<number>();
+  const positionsRef = useRef<PositionsRef>({});
 
-  const handleSetPosition = (position: Position) => {
-    setPosition(position);
-  };
+  const context = useMemo(() => {
+    const openTags = (key: number) => {
+      setIsOpen(true);
+      setKey(key);
+    };
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+    const closeTags = () => {
+      setIsOpen(false);
+      setKey(-1);
+    };
 
-  const contextValue = useMemo(
-    () => ({
-      position,
-      openId,
-      isOpen,
-      openModal,
-      closeModal,
+    const getPosition = () => {
+      const value = positionsRef.current[key];
+
+      if (!value) {
+        return { position: { top: '0', left: '0' }, callback: noop };
+      }
+
+      return value;
+    };
+
+    const registerTagsPosition = (key: number, callback: (tags: ITag[]) => void) => (
+      ref: Element | null
+    ) => {
+      if (!ref) {
+        return;
+      }
+
+      const position = handleDynamicPosition(ref);
+      positionsRef.current[key] = { position, callback };
+    };
+
+    return {
+      key,
+      getPosition,
+      isTagsOpen,
       tags,
+      openTags,
+      closeTags,
       setTags,
-      setPosition: handleSetPosition,
-    }),
-    [isOpen, tags, position]
-  );
+      registerTagsPosition,
+    };
+  }, [isTagsOpen, tags, key]);
 
   return (
-    <TagsModalContext.Provider value={contextValue}>{children}</TagsModalContext.Provider>
+    <TagsModalContext.Provider value={context}>{children}</TagsModalContext.Provider>
   );
 }
