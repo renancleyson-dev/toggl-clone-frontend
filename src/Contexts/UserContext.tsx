@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { createUser, login as loginAPI } from 'src/resources/users';
 import { IUser } from '../types/users';
 import { fetchUser } from '../resources/users';
@@ -13,10 +13,6 @@ type RegisterParams = {
   country: string;
 };
 
-interface Props {
-  children: React.ReactNode;
-}
-
 export interface ContextValue {
   user: IUser;
   isLoading: boolean;
@@ -27,7 +23,7 @@ export interface ContextValue {
 
 export const UserContext = React.createContext<ContextValue | null>(null);
 
-export default function UserProvider({ children }: Props) {
+export default function UserProvider({ children }: PropsWithChildren<{}>) {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<IUser>({
@@ -35,19 +31,16 @@ export default function UserProvider({ children }: Props) {
     email: '',
   });
 
-  const login = useCallback(
-    async (params: LoginParams) => {
-      const {
-        data: { authToken, ...sessionResponse },
-      } = await loginAPI(params);
+  const login = useCallback(async (params: LoginParams) => {
+    const {
+      data: { authToken, ...sessionResponse },
+    } = await loginAPI(params);
 
-      setJsonWebToken(authToken);
-      setUser(sessionResponse);
-      localStorage.setItem(JWT_KEY, `${authToken}`);
-      localStorage.setItem(USER_KEY, `${sessionResponse.id}`);
-    },
-    [setUser]
-  );
+    setJsonWebToken(authToken);
+    setUser(sessionResponse);
+    localStorage.setItem(JWT_KEY, `${authToken}`);
+    localStorage.setItem(USER_KEY, `${sessionResponse.id}`);
+  }, []);
 
   const register = useCallback(async (params: RegisterParams) => {
     const { data } = await createUser(params);

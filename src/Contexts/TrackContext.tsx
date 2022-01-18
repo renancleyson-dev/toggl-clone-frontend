@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, PropsWithChildren } from 'react';
 import moment from 'moment';
 import axios from 'axios';
 import useUser from '../hooks/useUser';
@@ -20,10 +20,6 @@ const initialTimeRecord: ITrackingTimeRecord = {
   tagIds: null,
 };
 
-interface Props {
-  children: React.ReactNode;
-}
-
 export interface ContextValue {
   isTracking: boolean;
   setIsTracking: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,7 +39,7 @@ export interface ContextValue {
 export const TrackContext = React.createContext<ContextValue | null>(null);
 
 // Provider to set and get states for time tracking
-export default function TrackProvider({ children }: Props) {
+export default function TrackProvider({ children }: PropsWithChildren<{}>) {
   const [isReady, setIsReady] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
   const [projects, setProjects] = useState<IProject[]>([]);

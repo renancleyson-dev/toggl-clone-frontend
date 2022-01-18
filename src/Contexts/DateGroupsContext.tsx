@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { AnyAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import moment from 'moment';
 import { IDateGroup, ITimeRecord } from '../types/timeRecord';
@@ -93,7 +93,7 @@ const slice = createSlice({
 export const { actions: dateGroupActions } = slice;
 export const DateGroupContext = React.createContext<IContextValue | null>(null);
 
-export default function DateGroupsProvider({ children }: { children: React.ReactNode }) {
+export default function DateGroupsProvider({ children }: PropsWithChildren<{}>) {
   const [getState, dispatchDateGroups, dateGroupsControl] = useReducer(
     slice.reducer,
     initialState
