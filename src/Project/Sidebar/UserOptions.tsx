@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { clearJsonWebToken } from 'src/axios';
-import { USER_KEY, JWT_KEY } from 'src/helpers/constants';
+import { JWT_KEY } from 'src/helpers/constants';
 import { buttonResets, dynamicModalStyles } from 'src/styles';
 
 const modalStyles = {
@@ -33,7 +33,6 @@ export default function (props: Modal.Props) {
   const history = useHistory();
   const logout = () => {
     clearJsonWebToken();
-    localStorage.setItem(USER_KEY, '');
     localStorage.setItem(JWT_KEY, '');
 
     history.push('/login');

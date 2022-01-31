@@ -7,13 +7,10 @@ export default function PrivateRoute({ component: Component, ...rest }: RoutePro
   const { user, isLoading, fetch } = useUser();
 
   useEffect(() => {
-    let isMount = true;
-    fetch(isMount);
-
-    return () => {
-      isMount = false;
-    };
-  }, [fetch]);
+    if (user.id === 0) {
+      fetch();
+    }
+  }, [fetch, user.id]);
 
   if (!Component || isLoading) {
     return <Route {...rest} component={Loader} />;

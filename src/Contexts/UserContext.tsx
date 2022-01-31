@@ -1,8 +1,8 @@
-import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useMemo, useState } from 'react';
 import { createUser, login as loginAPI } from 'src/resources/users';
 import { IUser } from '../types/users';
 import { fetchUser } from '../resources/users';
-import { USER_KEY, JWT_KEY } from '../helpers/constants';
+import { JWT_KEY } from '../helpers/constants';
 import { setJsonWebToken } from '../axios';
 import { useHistory } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ type RegisterParams = {
 export interface ContextValue {
   user: IUser;
   isLoading: boolean;
-  fetch: (isMount?: boolean) => void;
+  fetch: () => void;
   login: (params: LoginParams) => void;
   register: (params: RegisterParams) => void;
 }
@@ -31,28 +31,32 @@ export default function UserProvider({ children }: PropsWithChildren<{}>) {
     email: '',
   });
 
-  const login = useCallback(async (params: LoginParams) => {
-    const {
-      data: { authToken, ...sessionResponse },
-    } = await loginAPI(params);
+  const context = useMemo(() => {
+    const login = async (params: LoginParams) => {
+      const {
+        data: { authToken, ...sessionResponse },
+      } = await loginAPI(params);
 
-    setJsonWebToken(authToken);
-    setUser(sessionResponse);
-    localStorage.setItem(JWT_KEY, `${authToken}`);
-    localStorage.setItem(USER_KEY, `${sessionResponse.id}`);
-  }, []);
+      setJsonWebToken(authToken);
+      setUser(sessionResponse);
+      localStorage.setItem(JWT_KEY, authToken);
 
-  const register = useCallback(async (params: RegisterParams) => {
-    const { data } = await createUser(params);
-    setUser(data);
-  }, []);
+      history.push('/');
+    };
 
-  const fetch = useCallback(
-    async (isMount = true) => {
-      const userId = localStorage.getItem(USER_KEY);
+    const register = async (params: RegisterParams) => {
+      const { password } = params;
+
+      const {
+        data: { email },
+      } = await createUser(params);
+      await login({ email, password });
+    };
+
+    const fetch = async (isMount = true) => {
       const jsonWebToken = localStorage.getItem(JWT_KEY);
 
-      if (!userId || !jsonWebToken) {
+      if (!jsonWebToken) {
         history.push('/login');
 
         return;
@@ -60,29 +64,16 @@ export default function UserProvider({ children }: PropsWithChildren<{}>) {
 
       setJsonWebToken(jsonWebToken);
       try {
-        const { data } = await fetchUser(parseInt(userId, 10));
-        if (!isMount) {
-          return;
-        }
+        const { data } = await fetchUser();
         setUser(data);
       } catch (error) {
         console.warn(error);
       } finally {
-        if (isMount) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
-    },
-    [history]
-  );
-
-  const context = useMemo(() => ({ user, isLoading, fetch, login, register }), [
-    user,
-    isLoading,
-    fetch,
-    login,
-    register,
-  ]);
+    };
+    return { user, isLoading, fetch, login, register };
+  }, [history, user, isLoading]);
 
   return <UserContext.Provider value={context}>{children}</UserContext.Provider>;
 }
