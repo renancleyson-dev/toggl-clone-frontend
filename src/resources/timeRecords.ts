@@ -23,13 +23,8 @@ export const createTimeRecord = async (
 
 export const updateTimeRecord = async (
   timeRecordId: number,
-  data: Partial<ITimeRecordParams>
-): Promise<{ data: ITimeRecord }> =>
-  axios.put(`/time_records/${timeRecordId}`, {
-    ...data,
-    startTime: data.startTime?.format(),
-    endTime: data.endTime?.format(),
-  });
+  data: Partial<Omit<ITimeRecord, 'duration'>>
+): Promise<{ data: ITimeRecord }> => axios.put(`/time_records/${timeRecordId}`, data);
 
 export const deleteTimeRecord = async (timeRecordId: number): Promise<void | Error> =>
   axios.delete(`/time_records/${timeRecordId}`);

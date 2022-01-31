@@ -1,23 +1,31 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, memo, useRef, useEffect } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
+import { updatedDiff } from 'deep-object-diff';
 import { BsFillPlayFill, BsThreeDotsVertical, BsFillTagFill } from 'react-icons/bs';
-import useUser from 'src/hooks/useUser';
 import { updateTimeRecord } from 'src/resources/timeRecords';
-import { ITrackingTimeRecord } from 'src/types/timeRecord';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
 import formatDuration from 'src/helpers/formatDuration';
-import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
+import * as normalize from 'src/helpers/normalize';
 import useTracker from 'src/hooks/useTracker';
 import useProjects from 'src/hooks/useProjects';
 import useTags from 'src/hooks/useTags';
-import useDateGroups from 'src/hooks/useDateGroups';
 import { buttonResets, IconWrapper, TagIcon } from 'src/styles';
 import ActualProject from 'src/Components/ActualProject';
 import { TextInput } from '../Styles';
 
+interface Props {
+  startTime: moment.Moment;
+  endTime: moment.Moment;
+  project?: IProject;
+  label?: string;
+  tags?: ITag[];
+  id: number;
+}
+
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
+const hasKeys = (obj: any) => Object.keys(obj).length > 0;
 
 const TimeRecordWrapper = styled.div`
   padding: 10px 10px 10px 0px;
@@ -123,52 +131,38 @@ const TagNames = ({ names }: { names?: string[] }) => {
   return <TagNamesWrapper>{names.join(', ')}</TagNamesWrapper>;
 };
 
-const Label = ({ id, label }: { id: number; label?: string }) => {
-  const [labelText, setLabelText] = useState('');
-  const { user } = useUser();
-  const { dispatchDateGroups } = useDateGroups();
+const Label = ({
+  value,
+  onChange,
+  onBlur,
+}: {
+  value: string;
+  onChange: (value: Partial<Props>) => void;
+  onBlur: (value: Partial<Props>) => void;
+}) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onChange({ label: event.target.value });
 
-  useEffect(() => {
-    if (label) {
-      setLabelText(label);
-    }
-  }, [label]);
+  const handleBlur = () => onBlur({ label: value });
 
   return (
     <LabelWrapper
       data-testid="time-record-label"
       placeholder="Add description"
-      value={labelText}
-      onChange={(e) => setLabelText(e.target.value)}
-      onBlur={() => {
-        updateTimeRecord(id, { userId: user.id, label: labelText }).then((response) => {
-          dispatchDateGroups(dateGroupActions.edit(response.data));
-        });
-      }}
+      value={value}
+      onChange={handleChange}
+      onBlur={handleBlur}
     />
   );
 };
 
-interface Props {
-  startTime: moment.Moment;
-  endTime: moment.Moment;
-  project?: IProject;
-  label?: string;
-  tags?: ITag[];
-  id: number;
-}
-
 // UI to show a specific time record
-export default memo(function HistoryItem({
-  startTime,
-  endTime,
-  label,
-  id,
-  project,
-  tags,
-}: Props) {
+export default memo(function HistoryItem(props: Props) {
+  const [timeRecord, _setTimeRecord] = useState(props);
+  const timeRecordRef = useRef(timeRecord);
+  const { id, label = '', startTime, endTime, tags, project } = timeRecord;
+
   const tracker = useTracker();
-  const { dispatchDateGroups } = useDateGroups();
   const { openTags, registerTagsPosition } = useTags(id);
   const {
     openProjects,
@@ -177,28 +171,42 @@ export default memo(function HistoryItem({
     openCreateModal,
   } = useProjects(id);
 
+  useEffect(() => {
+    timeRecordRef.current = timeRecord;
+  }, [timeRecord]);
+
   const duration = moment.duration(endTime.diff(startTime));
   const tagIds = tags?.map(({ id }) => id);
   const tagNames = tags?.map(({ name }) => name);
 
-  const handleTimeRecordChange = (value: ITrackingTimeRecord) => {
-    updateTimeRecord(id, value).then((response) => {
-      dispatchDateGroups(dateGroupActions.edit(response.data));
-    });
+  const setTimeRecord = (value: Partial<Props>) =>
+    _setTimeRecord((prevState) => ({ ...prevState, ...value }));
+
+  const handleTimeRecordChange = async (value: Partial<Props>) => {
+    try {
+      setTimeRecord(value);
+      await updateTimeRecord(id, normalize.timeRecord(value));
+    } catch (e) {
+      const valueDidUpdate = hasKeys(updatedDiff(value, timeRecordRef.current));
+
+      if (!valueDidUpdate) {
+        const timeRecordDiff = updatedDiff(value, timeRecord);
+        setTimeRecord(timeRecordDiff);
+      }
+    }
   };
 
   const handleChangeOnProject = (project?: IProject) =>
-    handleTimeRecordChange({ projectId: project ? project.id : null });
+    handleTimeRecordChange({ project });
 
   const handleChangeOnTags = (tags: ITag[]) => {
-    const newTagIds = tags.map(({ id }) => id);
-    handleTimeRecordChange({ tagIds: newTagIds });
+    handleTimeRecordChange({ tags });
   };
 
   return (
     <TimeRecordWrapper data-testid={`time-record-${id}`}>
       <NamingSection>
-        <Label id={id} label={label} />
+        <Label value={label} onChange={setTimeRecord} onBlur={handleTimeRecordChange} />
         <ProjectSelectWrapper data-hover={!project}>
           <IconWrapper
             ref={registerProjectsPosition(handleChangeOnProject)}

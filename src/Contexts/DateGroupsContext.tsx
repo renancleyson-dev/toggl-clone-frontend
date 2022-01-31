@@ -53,28 +53,6 @@ const slice = createSlice({
         state.list.unshift({ date: 'Today', timeRecords: [payload] });
       }
     },
-    edit(state = initialState, { payload }: PayloadAction<ITimeRecord>) {
-      const startTimeMoment = moment(payload.startTime).format();
-
-      const list = state.list.map((dateGroup) => {
-        const [timeRecord] = dateGroup.timeRecords;
-        if (moment(timeRecord.startTime).isSame(startTimeMoment, 'date')) {
-          const newTimeRecords = dateGroup.timeRecords.map((actualTimeRecord) => {
-            if (actualTimeRecord.id === payload.id) {
-              return payload;
-            }
-
-            return actualTimeRecord;
-          });
-
-          return { date: dateGroup.date, timeRecords: newTimeRecords };
-        }
-
-        return dateGroup;
-      });
-
-      state.list = list;
-    },
     delete(state = initialState, { payload }: PayloadAction<ITimeRecord>) {
       state.list = state.list.map(({ date, timeRecords }) => {
         const newTimeRecords = timeRecords.filter(({ id }) => id !== payload.id);
