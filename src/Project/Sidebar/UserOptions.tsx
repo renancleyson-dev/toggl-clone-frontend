@@ -11,10 +11,11 @@ const modalStyles = {
   content: {
     ...dynamicModalStyles.content,
     left: '185px',
-    top: '92%',
-    height: '35px',
+    bottom: '2%',
+    top: 'auto',
+    height: 'min-content',
     width: '190px',
-    padding: '8px',
+    padding: '10px',
   },
 };
 
