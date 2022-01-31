@@ -4,15 +4,15 @@ import { BsFillTagFill } from 'react-icons/bs';
 import useTracker, { useTrackerSelector } from 'src/hooks/useTracker';
 import useTags from 'src/hooks/useTags';
 import useProjects from 'src/hooks/useProjects';
-import { colors, IconWrapper, TagIcon } from 'src/styles';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
+import ActualProject from 'src/Components/ActualProject';
+import { colors, IconWrapper, TagIcon } from 'src/styles';
 import { TextInput } from '../Styles';
 import Timer from './Timer';
 import TimerButton from './TimerButton';
 import MenuOptions from './MenuOptions';
 import ManualMode from './ManualMode';
-import ActualProject from 'src/Components/ActualProject';
 
 const TrackerBar = styled.div`
   position: sticky;
@@ -67,13 +67,6 @@ const LabelInput = () => {
   );
 };
 
-const TrackerMode = () => (
-  <>
-    <Timer />
-    <TimerButton />
-  </>
-);
-
 // UI to control and inform about current time tracking
 export default function Tracker() {
   const [trackerMode, setTrackerMode] = useState(true);
@@ -93,6 +86,7 @@ export default function Tracker() {
 
   const project = projects.find(({ id }) => id === timeRecord.projectId);
   const actualTags = tags.filter(({ id }) => timeRecord.tagIds?.includes(id));
+  const hasTags = !!actualTags?.length;
 
   const handleChangeOnProject = (project: IProject | null = null) =>
     setTimeRecord({ projectId: project?.id });
@@ -100,7 +94,12 @@ export default function Tracker() {
   const handleChangeOntags = (tags: ITag[]) =>
     setTimeRecord({ tagIds: tags.map(({ id }) => id) });
 
-  const hasTags = !!actualTags?.length;
+  const trackerModeView = (
+    <>
+      <Timer />
+      <TimerButton />
+    </>
+  );
 
   return (
     <TrackerBar data-testid="tracker-bar">
@@ -125,7 +124,7 @@ export default function Tracker() {
             <BsFillTagFill />
           </TagIcon>
         </TrackerIconWrapper>
-        {trackerMode ? <TrackerMode /> : <ManualMode />}
+        {trackerMode ? trackerModeView : <ManualMode />}
         <MenuOptions trackerMode={trackerMode} setTrackerMode={setTrackerMode} />
       </TimerMenu>
     </TrackerBar>
