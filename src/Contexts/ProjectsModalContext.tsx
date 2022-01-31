@@ -1,105 +1,67 @@
-import { noop } from 'lodash';
-import React, { useMemo, useState, useRef } from 'react';
-import handleDynamicPosition from 'src/helpers/handleDynamicPosition';
+import React, { PropsWithChildren, useMemo, useState } from 'react';
+import useMultiPosition, { Position, Register } from 'src/hooks/shared/useMultiPosition';
 import { IProject } from 'src/types/projects';
 
-type Position = {
-  top: string;
-  left: string;
-};
-
-type PositionsRef = Record<
-  number,
-  { position: Position; callback: (project: IProject) => void }
->;
+export type ProjectCallback = (project?: IProject) => void;
 
 interface ContextValue {
   key: number;
-  isProjectsOpen: boolean;
+  clearKey: (project?: IProject) => void;
+  currentProject?: IProject;
   isCreateModalOpen: boolean;
-  getPosition: () => { position: Position; callback: (project: IProject) => void };
-  registerProjectsPosition: (
-    key: number,
-    callback: (project: IProject) => void
-  ) => (ref: Element | null) => void;
-  project?: IProject;
-  setProject: (project?: IProject) => void;
-  openProjects: (key: number) => void;
-  closeProjects: () => void;
+  getPosition: () => Position;
   openCreateModal: () => void;
   closeCreateModal: () => void;
+  registerProjectsPosition: (
+    key: number,
+    callback: ProjectCallback,
+    project?: IProject
+  ) => Register;
 }
 
 export const ProjectsModalContext = React.createContext<ContextValue | null>(null);
 
-interface Props {
-  children: React.ReactNode;
-}
+export default function ProjectsModalProvider({ children }: PropsWithChildren<{}>) {
+  const { key, clearKey, getPosition, registerPosition } = useMultiPosition<
+    [IProject | undefined]
+  >();
 
-export default function ProjectsModalProvider({ children }: Props) {
-  const [key, setKey] = useState<number>(-1);
-  const [isProjectsOpen, setIsOpen] = useState(false);
+  const [currentProject, setProject] = useState<IProject | undefined>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [project, setProject] = useState<IProject>();
-  const positionsRef = useRef<PositionsRef>({});
 
-  const contextValue = useMemo(() => {
-    const handleSetProject = (project: IProject | undefined) => {
-      setProject(project);
-    };
+  const context = useMemo(() => {
+    const registerProjectsPosition = (
+      key: number,
+      callback: ProjectCallback,
+      project?: IProject
+    ) => {
+      const props = registerPosition(key, callback);
 
-    const openProjects = (key: number) => {
-      setIsOpen(true);
-      setKey(key);
-    };
+      const onClick = () => {
+        setProject(project);
+        props.onClick();
+      };
 
-    const closeProjects = () => {
-      setIsOpen(false);
-      setKey(-1);
+      return { ...props, onClick };
     };
 
     const openCreateModal = () => setIsCreateModalOpen(true);
     const closeCreateModal = () => setIsCreateModalOpen(false);
 
-    const getPosition = () => {
-      const value = positionsRef.current[key];
-
-      if (!value) {
-        return { position: { top: '0', left: '0' }, callback: noop };
-      }
-
-      return value;
-    };
-
-    const registerProjectsPosition = (
-      key: number,
-      callback: (project: IProject) => void
-    ) => (ref: Element | null) => {
-      if (!ref) {
-        return;
-      }
-
-      const position = handleDynamicPosition(ref);
-      positionsRef.current[key] = { position, callback };
-    };
-
     return {
       key,
-      isProjectsOpen,
+      clearKey,
+      currentProject,
       isCreateModalOpen,
-      project,
-      openProjects,
-      closeProjects,
       openCreateModal,
       closeCreateModal,
       getPosition,
       registerProjectsPosition,
-      setProject: handleSetProject,
     };
-  }, [isProjectsOpen, project, isCreateModalOpen, key]);
+  }, [currentProject, isCreateModalOpen, key, clearKey, getPosition, registerPosition]);
 
   return (
-    <ProjectsModalContext.Provider value={contextValue}>
+    <ProjectsModalContext.Provider value={context}>
       {children}
     </ProjectsModalContext.Provider>
   );

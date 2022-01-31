@@ -10,6 +10,7 @@ import randomArrayValue from 'src/helpers/randomValue';
 import { createProject } from 'src/resources/projects';
 import { InputStyles, colors, buttonResets } from '../styles';
 import TextInput from './TextInput';
+import { useProjectsConsumer } from 'src/hooks/useProjects';
 
 if (Modal.defaultStyles.overlay) {
   Modal.defaultStyles.overlay.backgroundColor = 'rgba(0, 0, 0, 0.6)';
@@ -197,17 +198,21 @@ export default function CreateProjectModal({
   initialName,
   ...props
 }: CreateProjectModalProps) {
-  const handleSubmit = (
+  const { clearKey } = useProjectsConsumer();
+
+  const handleSubmit = async (
     field: IForm,
     { setSubmitting }: { setSubmitting: (boolState: boolean) => void }
   ) => {
-    createProject(field).then((response) => {
-      if (onCreateProject) {
-        onCreateProject(response.data);
-      }
-      closeModal();
-      setSubmitting(false);
-    });
+    const { data } = await createProject(field);
+
+    if (onCreateProject) {
+      onCreateProject(data);
+    }
+
+    clearKey(data);
+    closeModal();
+    setSubmitting(false);
   };
 
   const initialValuesWithProps = { ...initialValues, name: initialName || '' };

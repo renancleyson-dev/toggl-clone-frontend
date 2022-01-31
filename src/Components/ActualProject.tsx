@@ -26,30 +26,25 @@ const ActualProjectWrapper = styled.div`
 `;
 
 interface Props {
-  actualProject?: IProject;
-  handleIconClick: () => void;
+  project?: IProject;
   handleAddButtonClick: () => void;
 }
 
-export default function ActualProject({
-  actualProject,
-  handleIconClick,
-  handleAddButtonClick,
-}: Props) {
+export default function ActualProject({ project, handleAddButtonClick }: Props) {
   const { projects } = useTracker();
 
   if (!projects.length) {
     return <NoProjectsAddButton text="Create a project" onClick={handleAddButtonClick} />;
   }
 
-  if (!actualProject) {
-    return <RiFolder2Fill onClick={handleIconClick} />;
+  if (!project) {
+    return <RiFolder2Fill />;
   }
 
   return (
-    <ActualProjectWrapper onClick={handleIconClick}>
-      <MiniColorCircle color={actualProject.color} />
-      <ProjectName color={actualProject.color}>{actualProject.name}</ProjectName>
+    <ActualProjectWrapper>
+      <MiniColorCircle color={project.color} />
+      <ProjectName color={project.color}>{project.name}</ProjectName>
     </ActualProjectWrapper>
   );
 }

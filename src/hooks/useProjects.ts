@@ -1,27 +1,24 @@
 import { useContext } from 'react';
-import { ProjectsModalContext } from 'src/Contexts/ProjectsModalContext';
+import { ProjectCallback, ProjectsModalContext } from 'src/Contexts/ProjectsModalContext';
 import { IProject } from 'src/types/projects';
 
-export default function useProjects(id?: number) {
+export function useProjectsConsumer() {
   const context = useContext(ProjectsModalContext);
 
   if (context === null) {
     throw new Error('useProjects must be within a ProjectsModalProvider');
   }
 
-  const {
-    key,
-    openProjects: _openProjects,
-    registerProjectsPosition: _registerProjectsPosition,
-    isProjectsOpen: _isProjectsOpen,
-  } = context;
+  return context;
+}
 
-  const _id = id || -1;
-  const isProjectsOpen = _isProjectsOpen && key === _id;
-  const openProjects = () => _openProjects(_id || -1);
+export default function useProjects(id = 0, project?: IProject) {
+  const context = useProjectsConsumer();
+  const { key, registerProjectsPosition: _registerProjectsPosition } = context;
 
-  const registerProjectsPosition = (callback: (project: IProject) => void) =>
-    _registerProjectsPosition(_id, callback);
+  const isProjectsOpen = key === id;
+  const registerProjectsPosition = (callback: ProjectCallback) =>
+    _registerProjectsPosition(id, callback, project);
 
-  return { ...context, openProjects, registerProjectsPosition, isProjectsOpen };
+  return { ...context, registerProjectsPosition, isProjectsOpen };
 }

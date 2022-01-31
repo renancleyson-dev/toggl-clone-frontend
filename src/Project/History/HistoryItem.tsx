@@ -24,6 +24,8 @@ interface Props {
   id: number;
 }
 
+const TIME_FORMAT = 'HH:mm A';
+
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
 const hasKeys = (obj: any) => Object.keys(obj).length > 0;
 
@@ -117,10 +119,10 @@ const MoreActionsWrapper = styled(ActionsIconWrapper)`
 
 const DurationDisplay = styled.div``;
 
-const TagNames = ({ names }: { names?: string[] }) => {
+const TagNames = ({ names, showBox }: { names?: string[]; showBox?: boolean }) => {
   if (!names?.length) {
     return (
-      <IconWrapper>
+      <IconWrapper showBox={showBox}>
         <TagIcon>
           <BsFillTagFill />
         </TagIcon>
@@ -158,26 +160,28 @@ const Label = ({
 
 // UI to show a specific time record
 export default memo(function HistoryItem(props: Props) {
+  const tracker = useTracker();
   const [timeRecord, _setTimeRecord] = useState(props);
   const timeRecordRef = useRef(timeRecord);
-  const { id, label = '', startTime, endTime, tags, project } = timeRecord;
 
-  const tracker = useTracker();
-  const { openTags, registerTagsPosition } = useTags(id);
-  const {
-    openProjects,
-    isProjectsOpen,
-    registerProjectsPosition,
-    openCreateModal,
-  } = useProjects(id);
+  const { id, label = '', startTime, endTime, tags = [], project } = timeRecord;
+  const { isTagsOpen, registerTagsPosition } = useTags(id, tags);
+  const { isProjectsOpen, registerProjectsPosition, openCreateModal } = useProjects(
+    id,
+    project
+  );
 
   useEffect(() => {
     timeRecordRef.current = timeRecord;
   }, [timeRecord]);
 
+  const startTimeFormatted = startTime.format(TIME_FORMAT);
+  const endTimeFormatted = endTime.format(TIME_FORMAT);
+  const detailedDuration = `${startTimeFormatted} - ${endTimeFormatted}`;
+
   const duration = moment.duration(endTime.diff(startTime));
-  const tagIds = tags?.map(({ id }) => id);
-  const tagNames = tags?.map(({ name }) => name);
+  const tagIds = tags.map(({ id }) => id);
+  const tagNames = tags.map(({ name }) => name);
 
   const setTimeRecord = (value: Partial<Props>) =>
     _setTimeRecord((prevState) => ({ ...prevState, ...value }));
@@ -196,11 +200,11 @@ export default memo(function HistoryItem(props: Props) {
     }
   };
 
-  const handleChangeOnProject = (project?: IProject) =>
-    handleTimeRecordChange({ project });
+  const handleChangeOnProject = (newProject?: IProject) =>
+    handleTimeRecordChange({ project: newProject });
 
-  const handleChangeOnTags = (tags: ITag[]) => {
-    handleTimeRecordChange({ tags });
+  const handleChangeOnTags = (newTags: ITag[]) => {
+    handleTimeRecordChange({ tags: newTags });
   };
 
   return (
@@ -209,28 +213,23 @@ export default memo(function HistoryItem(props: Props) {
         <Label value={label} onChange={setTimeRecord} onBlur={handleTimeRecordChange} />
         <ProjectSelectWrapper data-hover={!project}>
           <IconWrapper
-            ref={registerProjectsPosition(handleChangeOnProject)}
+            {...registerProjectsPosition(handleChangeOnProject)}
             showBox={isProjectsOpen}
           >
-            <ActualProject
-              actualProject={project}
-              handleIconClick={openProjects}
-              handleAddButtonClick={openCreateModal}
-            />
+            <ActualProject project={project} handleAddButtonClick={openCreateModal} />
           </IconWrapper>
         </ProjectSelectWrapper>
       </NamingSection>
       <TagsWrapper
-        ref={registerTagsPosition(handleChangeOnTags)}
-        data-hover={!tags?.length}
-        onClick={openTags}
+        {...registerTagsPosition(handleChangeOnTags)}
+        data-hover={!isTagsOpen && !tags.length}
       >
-        <TagNames names={tagNames} />
+        <TagNames names={tagNames} showBox={isTagsOpen} />
       </TagsWrapper>
       <EditSection>
         <EditOptions>
           <div>
-            <span>{`${startTime.format('HH:mm A')} - ${endTime.format('HH:mm A')}`}</span>
+            <span>{detailedDuration}</span>
           </div>
           <DurationDisplay>{formatDuration(duration)}</DurationDisplay>
           <Actions>

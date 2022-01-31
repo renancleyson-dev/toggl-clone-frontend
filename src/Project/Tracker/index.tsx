@@ -70,13 +70,6 @@ const LabelInput = () => {
 // UI to control and inform about current time tracking
 export default function Tracker() {
   const [trackerMode, setTrackerMode] = useState(true);
-  const { isTagsOpen, openTags, registerTagsPosition } = useTags();
-  const {
-    isProjectsOpen,
-    openProjects,
-    openCreateModal,
-    registerProjectsPosition,
-  } = useProjects();
 
   const { setTimeRecord, projects, tags } = useTracker();
   const timeRecord = useTrackerSelector(({ projectId, tagIds }) => ({
@@ -86,6 +79,13 @@ export default function Tracker() {
 
   const project = projects.find(({ id }) => id === timeRecord.projectId);
   const actualTags = tags.filter(({ id }) => timeRecord.tagIds?.includes(id));
+
+  const { isTagsOpen, registerTagsPosition } = useTags(0, actualTags);
+  const { isProjectsOpen, openCreateModal, registerProjectsPosition } = useProjects(
+    0,
+    project
+  );
+
   const hasTags = !!actualTags?.length;
 
   const handleChangeOnProject = (project: IProject | null = null) =>
@@ -106,19 +106,14 @@ export default function Tracker() {
       <LabelInput />
       <TimerMenu>
         <TrackerIconWrapper
-          ref={registerProjectsPosition(handleChangeOnProject)}
+          {...registerProjectsPosition(handleChangeOnProject)}
           showBox={isProjectsOpen}
         >
-          <ActualProject
-            actualProject={project}
-            handleIconClick={openProjects}
-            handleAddButtonClick={openCreateModal}
-          />
+          <ActualProject project={project} handleAddButtonClick={openCreateModal} />
         </TrackerIconWrapper>
         <TrackerIconWrapper
-          ref={registerTagsPosition(handleChangeOntags)}
+          {...registerTagsPosition(handleChangeOntags)}
           showBox={isTagsOpen}
-          onClick={openTags}
         >
           <TagIcon hasTags={hasTags}>
             <BsFillTagFill />

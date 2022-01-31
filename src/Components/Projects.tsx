@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import useTracker from '../hooks/useTracker';
@@ -14,7 +14,8 @@ import {
 } from '../styles';
 import AddButton from './AddButton';
 import NoResourceFallback from './NoResourceFallback';
-import useProjects from 'src/hooks/useProjects';
+import { useProjectsConsumer } from 'src/hooks/useProjects';
+import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
@@ -71,35 +72,34 @@ interface ProjectsListProps {
 
 const ProjectsList = ({ searchText, projects }: ProjectsListProps) => {
   const [lastHovered, setLastHovered] = useState<number>(0);
-  const { closeModal, project, setProject } = useProjects();
+  const { currentProject, clearKey } = useProjectsConsumer();
+  const currentId = currentProject || 0;
+
+  const isItemHovered = (id: number) => lastHovered === id || currentId === id;
   const handleMouseOver = (id: number) => () => setLastHovered(id);
+  const handleClose = (project?: IProject) => () => clearKey(project);
 
   const defaultProjectItem = (
     <DefaultProjectItem
-      hovered={lastHovered === 0 || !project?.id}
       key={0}
+      hovered={isItemHovered(0)}
       onMouseOver={handleMouseOver(0)}
-      onClick={() => {
-        closeModal();
-        setProject();
-      }}
+      onClick={handleClose()}
     >
       <MiniColorCircle color="#aaa" />
       <ProjectName color="#000">No Project</ProjectName>
     </DefaultProjectItem>
   );
-  const projectItems = projects.map(({ id, name, color }) => (
+
+  const projectItems = projects.map((project) => (
     <ProjectItem
-      key={id}
-      onClick={() => {
-        closeModal();
-        setProject({ id, name, color });
-      }}
-      hovered={lastHovered === id || project?.id === id}
-      onMouseOver={handleMouseOver(id)}
+      key={project.id}
+      hovered={isItemHovered(project.id)}
+      onMouseOver={handleMouseOver(project.id)}
+      onClick={handleClose(project)}
     >
-      <MiniColorCircle color={color} />
-      <ProjectName color={color}>{name}</ProjectName>
+      <MiniColorCircle color={project.color} />
+      <ProjectName color={project.color}>{project.name}</ProjectName>
     </ProjectItem>
   ));
 
@@ -119,33 +119,40 @@ const ProjectsList = ({ searchText, projects }: ProjectsListProps) => {
 export default function Projects() {
   const [searchText, setSearchText] = useState('');
   const [initialName, setInitialName] = useState('');
-
   const { projects, setProjects } = useTracker();
 
   const {
-    position,
-    isOpen,
+    key,
+    currentProject,
+    getPosition,
     isCreateModalOpen,
-    closeModal,
+    clearKey,
     openCreateModal,
     closeCreateModal,
-    setProject,
-  } = useProjects();
+  } = useProjectsConsumer();
+  const { isOpen, position } = useMultiPositionConsumer(key, getPosition);
 
-  const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
+  useEffect(() => {
+    if (isOpen) {
+      setSearchText('');
+    }
+  }, [isOpen]);
+
   const updatedProjectModalStyles = {
     overlay: projectModalStyles.overlay,
     content: { ...projectModalStyles.content, ...position },
   };
 
-  const handleCreateProject = (project: IProject) => {
-    setProjects((prevState) => [...prevState, project]);
-    setProject(project);
-  };
+  const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
 
-  const handleAddButtonClick = () => {
-    openCreateModal();
-  };
+  const handleAddButtonClick = () => openCreateModal();
+  const handleOnRequestClose = () => clearKey(currentProject);
+
+  const handleCreateProject = (project: IProject) =>
+    setProjects((prevState) => [...prevState, project]);
+
+  const onSearch = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setSearchText(event.target.value);
 
   const handleKeyboardCreateProject = (event: React.KeyboardEvent) => {
     const { key, ctrlKey } = event;
@@ -164,9 +171,9 @@ export default function Projects() {
         initialName={initialName}
       />
       <Modal
-        isOpen={isOpen}
+        isOpen={isOpen && !isCreateModalOpen}
         style={updatedProjectModalStyles}
-        onRequestClose={closeModal}
+        onRequestClose={handleOnRequestClose}
       >
         <div onKeyDown={handleKeyboardCreateProject}>
           <SearchInput>
@@ -174,7 +181,7 @@ export default function Projects() {
               autoFocus
               placeholder="Find project..."
               value={searchText}
-              onChange={(event) => setSearchText(event.target.value)}
+              onChange={onSearch}
             />
           </SearchInput>
           <ProjectsList searchText={searchText} projects={filteredProjects} />

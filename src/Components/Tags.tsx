@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import useTracker from 'src/hooks/useTracker';
@@ -9,7 +9,8 @@ import AddButton from './AddButton';
 import SearchInput from './SearchInput';
 import NoResourceFallback from './NoResourceFallback';
 import TagCheckBox from './TagCheckBox';
-import useTags from 'src/hooks/useTags';
+import { useTagsConsumer } from 'src/hooks/useTags';
+import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
 
 if (process.env.NODE_ENV !== 'test') {
   Modal.setAppElement('#root');
@@ -108,26 +109,25 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
   );
 };
 
-const TagsList = ({ searchText, tags }: { searchText: string; tags: ITag[] }) => {
-  const { tags: actualTags, setTags } = useTags();
-
-  const tagItems = tags.map(({ id, name }) => {
-    const actualIndex = actualTags?.findIndex((tag: ITag) => tag.id === id);
-    const handleClick = () => {
-      if (actualIndex === -1) {
-        setTags([...actualTags, { id, name }]);
-      } else {
-        setTags([
-          ...actualTags.slice(0, actualIndex),
-          ...actualTags.slice(actualIndex + 1),
-        ]);
-      }
-    };
+const TagsList = ({
+  searchText,
+  list,
+  value,
+  onChange,
+}: {
+  searchText: string;
+  list: ITag[];
+  value: ITag[];
+  onChange: (index: number, tag: ITag) => void;
+}) => {
+  const tagItems = list.map((tag) => {
+    const actualIndex = value.findIndex(({ id }) => tag.id === id);
+    const handleClick = () => onChange(actualIndex, tag);
 
     return (
       <TagItem
-        key={id}
-        name={name}
+        key={tag.id}
+        name={tag.name}
         searchText={searchText}
         checked={actualIndex !== -1}
         onClick={handleClick}
@@ -135,31 +135,61 @@ const TagsList = ({ searchText, tags }: { searchText: string; tags: ITag[] }) =>
     );
   });
 
-  if (!tags.length) {
+  if (!list.length) {
     return (
       <FallbackWrapper>
         <NoResourceFallback hasSearchText={!!searchText} resourceName="tag" />
       </FallbackWrapper>
     );
   }
+
   return <TagsListWrapper>{tagItems}</TagsListWrapper>;
 };
 
 export default function Tags() {
   const [searchText, setSearchText] = useState('');
+  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+
   const { tags, setTags } = useTracker();
-  const { isTagsOpen, closeTags, getPosition, setTags: setActualTags } = useTags();
+  const { currentTags, key, clearKey, getPosition } = useTagsConsumer();
+  const { isOpen, position } = useMultiPositionConsumer(key, getPosition);
+
+  const filteredTags = useMemo(
+    () => tags.filter(({ name }) => name.includes(searchText.trim())),
+    [tags, searchText]
+  );
+
+  useEffect(() => {
+    setSelectedTags(currentTags);
+  }, [currentTags]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSearchText('');
+    }
+  }, [isOpen]);
+
   const updatedTagsModalStyles = {
     overlay: tagsModalStyles.overlay,
-    content: { ...tagsModalStyles.content, ...getPosition().position },
+    content: { ...tagsModalStyles.content, ...position },
   };
 
-  const filteredTags = tags.filter(({ name }) => name.includes(searchText.trim()));
-  const handleCreateTag = () => {
-    createTag({ name: searchText.trim() }).then((response) => {
-      setTags((prevState) => [...prevState, response.data]);
-      setActualTags((prevState) => [...prevState, response.data]);
-    });
+  const handleRequestClose = () => clearKey(selectedTags);
+  const selectTag = (tag: ITag) => setSelectedTags((prevTags) => [...prevTags, tag]);
+
+  const unselectTag = (index: number) =>
+    setSelectedTags((prevTags) => [
+      ...prevTags.slice(0, index),
+      ...prevTags.slice(index + 1),
+    ]);
+
+  const handleTagsOnChange = (index: number, tag: ITag) =>
+    index === -1 ? selectTag(tag) : unselectTag(index);
+
+  const handleCreateTag = async () => {
+    const { data } = await createTag({ name: searchText.trim() });
+    selectTag(data);
+    setTags((prevState) => [...prevState, data]);
     setSearchText('');
   };
 
@@ -169,18 +199,30 @@ export default function Tags() {
     }
   };
 
+  const handleSearchOnChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setSearchText(event.target.value);
+
   return (
-    <Modal isOpen={isTagsOpen} style={updatedTagsModalStyles} onRequestClose={closeTags}>
+    <Modal
+      isOpen={isOpen}
+      style={updatedTagsModalStyles}
+      onRequestClose={handleRequestClose}
+    >
       <div onKeyDown={handleKeyboardCreateTags}>
         <SearchInput>
           <Input
             autoFocus
             placeholder="Add/filter tags"
             value={searchText}
-            onChange={(event) => setSearchText(event.target.value)}
+            onChange={handleSearchOnChange}
           />
         </SearchInput>
-        <TagsList tags={filteredTags} searchText={searchText} />
+        <TagsList
+          list={filteredTags}
+          value={selectedTags}
+          onChange={handleTagsOnChange}
+          searchText={searchText}
+        />
         <AddButton
           text={`Create a tag "${searchText.trim() || ' '}"`}
           disabled={!!filteredTags.length}
