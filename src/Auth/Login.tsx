@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Formik, ErrorMessage } from 'formik';
 import useUser from 'src/hooks/useUser';
 import {
@@ -44,7 +44,6 @@ const validate = (fields: IForm) => {
 
 export default function Login() {
   const { login } = useUser();
-  const history = useHistory();
 
   const handleSubmit = async (
     loginParams: IForm,
@@ -58,7 +57,6 @@ export default function Login() {
   ) => {
     try {
       await login(loginParams);
-      history.push('/');
     } catch (error) {
       const data = error.response?.data;
       if (!data) {
@@ -103,7 +101,7 @@ export default function Login() {
                 </AuthErrorMessage>
               </FormRow>
               <SubmitButton type="submit" disabled={isSubmitting}>
-                Submit
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </SubmitButton>
             </Form>
           )}

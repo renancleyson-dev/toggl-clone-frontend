@@ -177,7 +177,7 @@ const RegisterForm = () => {
             </FormRow>
           </FormSection>
           <SubmitButton type="submit" disabled={isSubmitting}>
-            Submit
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </SubmitButton>
         </Form>
       )}

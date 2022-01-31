@@ -10,7 +10,6 @@ const EntrySection = styled.div`
   background: linear-gradient(rgba(0, 0, 0, 0.5) 100%, rgba(0, 0, 0, 0.5) 100%),
     url(laptops.jpg);
   background-repeat: no-repeat;
-  background-size: 1300px;
 `;
 
 const HeaderWrapper = styled.div`

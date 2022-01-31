@@ -34,7 +34,7 @@ const customModalStyles = {
   },
 };
 
-const FormWrapper = styled.div`
+const FormWrapper = styled.form`
   display: flex;
   flex-flow: wrap;
   align-items: center;
@@ -221,7 +221,7 @@ export default function CreateProjectModal({
         onSubmit={handleSubmit}
       >
         {({ handleSubmit, isSubmitting, errors }) => (
-          <FormWrapper>
+          <FormWrapper onSubmit={handleSubmit}>
             <Input
               name="name"
               placeholder="Project name"
@@ -232,8 +232,8 @@ export default function CreateProjectModal({
             <ErrorMessageWrapper>
               <ErrorMessage name="name" />
             </ErrorMessageWrapper>
-            <CreateButton disabled={isSubmitting} onClick={() => handleSubmit()}>
-              Create project
+            <CreateButton disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create project'}
             </CreateButton>
           </FormWrapper>
         )}
