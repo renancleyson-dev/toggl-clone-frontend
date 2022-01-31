@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroller';
 import { buttonResets } from 'src/styles';
 import { fetchTimeRecords } from 'src/resources/timeRecords';
-import useDateGroups, { useDateGroupsSelector } from 'src/hooks/useDateGroups';
+import useDateGroups from 'src/hooks/useDateGroups';
 import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
 import ProjectLoader from '../ProjectLoader';
 import DateGroup from './DateGroup';
@@ -30,11 +30,9 @@ const LoadMoreButton = styled.button`
 // infinite scroll to control and inform about time records
 export default function History() {
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
-
-  const { dispatchDateGroups } = useDateGroups();
-  const dateGroups = useDateGroupsSelector(({ list }) => list);
+  const [hasMore, setHasMore] = useState(false);
+  const { dateGroups: state, dispatchDateGroups } = useDateGroups();
 
   const loadMore = useCallback(
     async (page: number) => {
@@ -42,12 +40,12 @@ export default function History() {
       const { data } = await fetchTimeRecords(page);
       dispatchDateGroups(dateGroupActions.fetch(data));
 
-      if (data.length) {
+      if (!data.length) {
         setIsEnd(true);
       }
 
-      setIsLoading(false);
       setHasMore(false);
+      setIsLoading(false);
     },
     [dispatchDateGroups]
   );
@@ -59,14 +57,18 @@ export default function History() {
   const requestMore = () => setHasMore(true);
 
   let footerView = null;
-  const hasFooter = isEnd && !dateGroups.length;
-  const canLoadMore = isLoading || isEnd;
+  const { list: dateGroups } = state;
+
+  const isEmpty = isEnd && !dateGroups.length;
+  const canLoadMore = !isLoading && hasMore && (isLoading || isEnd);
 
   const dateGroupsUI = dateGroups.map(({ date, timeRecords }) => (
     <DateGroup key={date} date={date} timeRecords={timeRecords} />
   ));
 
-  if (hasFooter) {
+  if (isLoading) {
+    footerView = <ProjectLoader key={0} />;
+  } else if (isEmpty) {
     footerView = (
       <NoHistoryFallback>
         <span>Get ready to track time and boost your productivity!</span>
@@ -83,7 +85,6 @@ export default function History() {
         useWindow={false}
         loadMore={loadMore}
         hasMore={hasMore}
-        loader={<ProjectLoader key={0} />}
       >
         {dateGroupsUI}
         {footerView}

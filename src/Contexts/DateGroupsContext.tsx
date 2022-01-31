@@ -1,17 +1,12 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useMemo, useReducer } from 'react';
 import { AnyAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import moment from 'moment';
 import { IDateGroup, ITimeRecord } from '../types/timeRecord';
-import useReducer from 'src/hooks/shared/useReducer';
-import { ObjectControl } from 'src/hooks/shared/useObjectState';
-import { useMemo } from 'react';
 
 type State = { list: IDateGroup[] };
 
 export interface IContextValue {
-  getDateGroups: () => State;
-  getDateGroupsValue: (key: string) => any;
-  dateGroupsControl: ObjectControl<State>;
+  dateGroups: State;
   dispatchDateGroups: React.Dispatch<AnyAction>;
 }
 
@@ -94,17 +89,11 @@ export const { actions: dateGroupActions } = slice;
 export const DateGroupContext = React.createContext<IContextValue | null>(null);
 
 export default function DateGroupsProvider({ children }: PropsWithChildren<{}>) {
-  const [getState, dispatchDateGroups, dateGroupsControl] = useReducer(
-    slice.reducer,
-    initialState
-  );
+  const [dateGroups, dispatchDateGroups] = useReducer(slice.reducer, initialState);
 
   const context = useMemo(() => {
-    const getDateGroups = (): State => getState();
-    const getDateGroupsValue = (key: string) => getState(key);
-
-    return { getDateGroups, getDateGroupsValue, dispatchDateGroups, dateGroupsControl };
-  }, [getState, dispatchDateGroups, dateGroupsControl]);
+    return { dateGroups, dispatchDateGroups };
+  }, [dateGroups, dispatchDateGroups]);
 
   return (
     <DateGroupContext.Provider value={context}>{children}</DateGroupContext.Provider>
