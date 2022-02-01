@@ -1,4 +1,4 @@
-import React, { useState, memo, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { updatedDiff } from 'deep-object-diff';
@@ -159,7 +159,7 @@ const Label = ({
 };
 
 // UI to show a specific time record
-export default memo(function HistoryItem(props: Props) {
+export default function HistoryItem(props: Props) {
   const tracker = useTracker();
   const [timeRecord, _setTimeRecord] = useState(props);
   const timeRecordRef = useRef(timeRecord);
@@ -254,4 +254,4 @@ export default memo(function HistoryItem(props: Props) {
       </EditSection>
     </TimeRecordWrapper>
   );
-});
+}
