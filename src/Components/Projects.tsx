@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import useTracker from '../hooks/useTracker';
@@ -16,12 +16,10 @@ import AddButton from './AddButton';
 import NoResourceFallback from './NoResourceFallback';
 import { useProjectsConsumer } from 'src/hooks/useProjects';
 import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
-
-if (process.env.NODE_ENV !== 'test') {
-  Modal.setAppElement('#root');
-}
+import useScrollToModal from 'src/hooks/shared/useScrollToModal';
 
 const modalContentHeight = 455;
+const parentSelector = () => document.getElementById('project-content')!;
 
 const projectModalStyles = {
   overlay: dynamicModalStyles.overlay,
@@ -30,7 +28,7 @@ const projectModalStyles = {
     maxWidth: '350px',
     height: `${modalContentHeight}px`,
     padding: '15px 0 0',
-    overflow: 'auto',
+    overflow: 'hidden',
     fontSize: '14px',
     backgroundColor: '#fff',
   },
@@ -131,6 +129,16 @@ export default function Projects() {
     closeCreateModal,
   } = useProjectsConsumer();
   const { isOpen, position } = useMultiPositionConsumer(key, getPosition);
+  const { ref, overflow } = useScrollToModal(isOpen);
+
+  const filteredProjects = useMemo(
+    () => projects.filter(({ name }) => name.includes(searchText)),
+    [projects, searchText]
+  );
+
+  useEffect(() => {
+    Modal.setAppElement(parentSelector());
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -139,11 +147,9 @@ export default function Projects() {
   }, [isOpen]);
 
   const updatedProjectModalStyles = {
-    overlay: projectModalStyles.overlay,
+    overlay: { ...projectModalStyles.overlay, overflow },
     content: { ...projectModalStyles.content, ...position },
   };
-
-  const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
 
   const handleAddButtonClick = () => openCreateModal();
   const handleOnRequestClose = () => clearKey(currentProject);
@@ -173,9 +179,10 @@ export default function Projects() {
       <Modal
         isOpen={isOpen && !isCreateModalOpen}
         style={updatedProjectModalStyles}
+        parentSelector={parentSelector}
         onRequestClose={handleOnRequestClose}
       >
-        <div onKeyDown={handleKeyboardCreateProject}>
+        <div ref={ref} onKeyDown={handleKeyboardCreateProject}>
           <SearchInput>
             <Input
               autoFocus

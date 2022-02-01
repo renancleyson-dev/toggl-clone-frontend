@@ -15,6 +15,8 @@ export const dynamicModalStyles = {
   overlay: {
     zIndex: 101,
     backgroundColor: 'transparent',
+    height: '100%',
+    overflow: 'auto',
   },
   content: {
     boxShadow: '0px 0px 5px 0px #ccc',

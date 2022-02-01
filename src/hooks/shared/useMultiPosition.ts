@@ -28,34 +28,9 @@ type PublicAPI<T extends unknown[]> = {
   registerPosition: (key: number, callback: Callback<T>) => Register;
 };
 
-function getScrollParent(node: Element | null): Element | null {
-  if (!node) {
-    return null;
-  }
-
-  const overflowY = window.getComputedStyle(node).overflowY;
-  const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
-
-  if (isScrollable && node.scrollHeight >= node.clientHeight) {
-    return node;
-  }
-
-  return getScrollParent(node.parentElement) || document.body;
-}
-
 function getPossiblePosition(element: Element) {
-  const scrollable = getScrollParent(element);
   const { top, left } = element.getBoundingClientRect();
   let newTopPosition = top + window.scrollY + 35;
-
-  const height = element.clientHeight;
-  const elementViewportOffset =
-    newTopPosition + height - (window.scrollY + window.innerHeight);
-
-  if (scrollable && elementViewportOffset > 0) {
-    newTopPosition -= elementViewportOffset;
-    scrollable.scrollBy({ top: elementViewportOffset, behavior: 'smooth' });
-  }
 
   return {
     top: `${newTopPosition}px`,

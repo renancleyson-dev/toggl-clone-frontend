@@ -11,12 +11,10 @@ import NoResourceFallback from './NoResourceFallback';
 import TagCheckBox from './TagCheckBox';
 import { useTagsConsumer } from 'src/hooks/useTags';
 import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
-
-if (process.env.NODE_ENV !== 'test') {
-  Modal.setAppElement('#root');
-}
+import useScrollToModal from 'src/hooks/shared/useScrollToModal';
 
 const modalContentHeight = 360;
+const parentSelector = () => document.getElementById('project-content')!;
 
 const tagsModalStyles = {
   overlay: dynamicModalStyles.overlay,
@@ -153,11 +151,16 @@ export default function Tags() {
   const { tags, setTags } = useTracker();
   const { currentTags, key, clearKey, getPosition } = useTagsConsumer();
   const { isOpen, position } = useMultiPositionConsumer(key, getPosition);
+  const { ref, overflow } = useScrollToModal(isOpen);
 
   const filteredTags = useMemo(
     () => tags.filter(({ name }) => name.includes(searchText.trim())),
     [tags, searchText]
   );
+
+  useEffect(() => {
+    Modal.setAppElement(parentSelector());
+  }, []);
 
   useEffect(() => {
     setSelectedTags(currentTags);
@@ -170,7 +173,7 @@ export default function Tags() {
   }, [isOpen]);
 
   const updatedTagsModalStyles = {
-    overlay: tagsModalStyles.overlay,
+    overlay: { ...tagsModalStyles.overlay, overflow },
     content: { ...tagsModalStyles.content, ...position },
   };
 
@@ -206,9 +209,10 @@ export default function Tags() {
     <Modal
       isOpen={isOpen}
       style={updatedTagsModalStyles}
+      parentSelector={parentSelector}
       onRequestClose={handleRequestClose}
     >
-      <div onKeyDown={handleKeyboardCreateTags}>
+      <div ref={ref} onKeyDown={handleKeyboardCreateTags}>
         <SearchInput>
           <Input
             autoFocus

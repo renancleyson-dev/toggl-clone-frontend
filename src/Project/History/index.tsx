@@ -9,7 +9,7 @@ import ProjectLoader from '../ProjectLoader';
 import DateGroup from './DateGroup';
 
 const HistoryWrapper = styled.div`
-  margin: 60px 0 400px;
+  margin: 60px 0 460px;
 `;
 
 const NoHistoryFallback = styled.div`
