@@ -5,6 +5,7 @@ import AddButton from './AddButton';
 import { projectNameStyles, MiniColorCircle, ProjectName } from '../styles';
 import { IProject } from 'src/types/projects';
 import useTracker from 'src/hooks/useTracker';
+import { useProjectsConsumer } from 'src/hooks/useProjects';
 
 const NoProjectsAddButton = styled(AddButton)`
   border: none;
@@ -27,14 +28,14 @@ const ActualProjectWrapper = styled.div`
 
 interface Props {
   project?: IProject;
-  handleAddButtonClick: () => void;
 }
 
-export default function ActualProject({ project, handleAddButtonClick }: Props) {
+export default function ActualProject({ project }: Props) {
   const { projects } = useTracker();
+  const { openCreateModal } = useProjectsConsumer();
 
   if (!projects.length) {
-    return <NoProjectsAddButton text="Create a project" onClick={handleAddButtonClick} />;
+    return <NoProjectsAddButton text="Create a project" onClick={openCreateModal} />;
   }
 
   if (!project) {

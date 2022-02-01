@@ -23,7 +23,7 @@ const TrackerBar = styled.div`
   display: flex;
   padding: 10px 10px 10px 20px;
   background-color: #fff;
-  box-shadow: 0px 1px 8px 0px #ccc;
+  box-shadow: 3px 1px 8px 0px #ccc;
   color: ${colors.purpleDark};
 `;
 
@@ -81,10 +81,7 @@ export default function Tracker() {
   const actualTags = tags.filter(({ id }) => timeRecord.tagIds?.includes(id));
 
   const { isTagsOpen, registerTagsPosition } = useTags(0, actualTags);
-  const { isProjectsOpen, openCreateModal, registerProjectsPosition } = useProjects(
-    0,
-    project
-  );
+  const { isProjectsOpen, registerProjectsPosition } = useProjects(0, project);
 
   const hasTags = !!actualTags?.length;
 
@@ -109,7 +106,7 @@ export default function Tracker() {
           {...registerProjectsPosition(handleChangeOnProject)}
           showBox={isProjectsOpen}
         >
-          <ActualProject project={project} handleAddButtonClick={openCreateModal} />
+          <ActualProject project={project} />
         </TrackerIconWrapper>
         <TrackerIconWrapper
           {...registerTagsPosition(handleChangeOntags)}

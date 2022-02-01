@@ -166,10 +166,7 @@ export default memo(function HistoryItem(props: Props) {
 
   const { id, label = '', startTime, endTime, tags = [], project } = timeRecord;
   const { isTagsOpen, registerTagsPosition } = useTags(id, tags);
-  const { isProjectsOpen, registerProjectsPosition, openCreateModal } = useProjects(
-    id,
-    project
-  );
+  const { isProjectsOpen, registerProjectsPosition } = useProjects(id, project);
 
   useEffect(() => {
     timeRecordRef.current = timeRecord;
@@ -216,7 +213,7 @@ export default memo(function HistoryItem(props: Props) {
             {...registerProjectsPosition(handleChangeOnProject)}
             showBox={isProjectsOpen}
           >
-            <ActualProject project={project} handleAddButtonClick={openCreateModal} />
+            <ActualProject project={project} />
           </IconWrapper>
         </ProjectSelectWrapper>
       </NamingSection>
