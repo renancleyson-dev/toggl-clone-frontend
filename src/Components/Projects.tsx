@@ -1,32 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
+import { useProjectsConsumer } from 'src/hooks/useProjects';
+import useScrollToModal from 'src/hooks/shared/useScrollToModal';
+import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
 import useTracker from '../hooks/useTracker';
 import { IProject } from '../types/projects';
-import CreateProjectModal from './CreateProjectModal';
-import { InputStyles } from '../styles';
-import SearchInput from './SearchInput';
 import {
+  InputStyles,
   dynamicModalStyles,
   projectNameStyles,
   ProjectName,
   MiniColorCircle,
 } from '../styles';
-import AddButton from './AddButton';
+import SearchInput from './SearchInput';
+import CreateProjectModal from './CreateProjectModal';
 import NoResourceFallback from './NoResourceFallback';
-import { useProjectsConsumer } from 'src/hooks/useProjects';
-import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
-import useScrollToModal from 'src/hooks/shared/useScrollToModal';
+import AddButton from './AddButton';
 
-const modalContentHeight = 455;
 const parentSelector = () => document.getElementById('project-content')!;
 
 const projectModalStyles = {
   overlay: dynamicModalStyles.overlay,
   content: {
     ...dynamicModalStyles.content,
-    maxWidth: '350px',
-    height: `${modalContentHeight}px`,
+    maxWidth: '400px',
+    height: '360px',
     padding: '15px 0 0',
     overflow: 'hidden',
     fontSize: '14px',
@@ -41,14 +40,14 @@ const Input = styled.input`
 const FallbackWrapper = styled.div`
   padding: 15px 15px 20px;
   margin: 14px 0;
-  height: 340px;
+  height: 250px;
   color: #827188;
 `;
 
 const ProjectsListWrapper = styled.ul`
   list-style-type: none;
   flex: 1 1 100%;
-  height: 340px;
+  height: 250px;
   margin: 20px 0 10px;
   padding: 0 5px;
   overflow: auto;

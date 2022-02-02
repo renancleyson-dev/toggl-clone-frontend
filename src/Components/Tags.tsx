@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import useTracker from 'src/hooks/useTracker';
+import { useTagsConsumer } from 'src/hooks/useTags';
+import useScrollToModal from 'src/hooks/shared/useScrollToModal';
+import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
 import { createTag } from 'src/resources/tags';
 import { ITag } from 'src/types/tags';
 import { InputStyles, dynamicModalStyles } from '../styles';
@@ -9,11 +12,7 @@ import AddButton from './AddButton';
 import SearchInput from './SearchInput';
 import NoResourceFallback from './NoResourceFallback';
 import TagCheckBox from './TagCheckBox';
-import { useTagsConsumer } from 'src/hooks/useTags';
-import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
-import useScrollToModal from 'src/hooks/shared/useScrollToModal';
 
-const modalContentHeight = 360;
 const parentSelector = () => document.getElementById('project-content')!;
 
 const tagsModalStyles = {
@@ -21,7 +20,7 @@ const tagsModalStyles = {
   content: {
     ...dynamicModalStyles.content,
     maxWidth: '240px',
-    height: `${modalContentHeight}px`,
+    height: '320px',
     padding: '15px 0 0',
     overflow: 'hidden',
     fontSize: '14px',
@@ -34,7 +33,7 @@ const Input = styled.input`
 `;
 
 const TagsListWrapper = styled.ul`
-  height: 250px;
+  height: 210px;
   padding: 5px;
   overflow: auto;
 `;
@@ -46,10 +45,6 @@ const TagItemWrapper = styled.li`
   display: flex;
   align-items: center;
 
-  &:first-child {
-    background-color: #f1f1f1;
-  }
-
   &:hover {
     background-color: #f1f1f1;
   }
@@ -58,7 +53,7 @@ const TagItemWrapper = styled.li`
 const FallbackWrapper = styled.div`
   padding: 0px 23px;
   margin: 14px 0;
-  height: 250px;
+  height: 210px;
   color: #827188;
 `;
 
@@ -82,11 +77,19 @@ const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
       </TagItemWrapper>
     );
   }
+  if (name === searchText) {
+    return (
+      <TagItemWrapper onClick={onClick}>
+        <TagCheckBox checked={checked} />
+        <HighlightedTagItemName>{searchText}</HighlightedTagItemName>
+      </TagItemWrapper>
+    );
+  }
 
   const withoutSubStringPieces = name.split(searchText);
   const highlightedItemSearchText = withoutSubStringPieces.reduce(
-    (acc: Array<string | JSX.Element>, piece, index, currentArray) => {
-      if (!piece && index !== currentArray.length - 1) {
+    (acc: Array<string | JSX.Element>, piece) => {
+      if (!piece) {
         const highlightedPiece = (
           <HighlightedTagItemName>{searchText}</HighlightedTagItemName>
         );
