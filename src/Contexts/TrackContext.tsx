@@ -78,6 +78,7 @@ export default function TrackProvider({ children }: PropsWithChildren<{}>) {
         dispatchDateGroups(dateGroupActions.add(response.data));
       }
 
+      setIsTracking(true);
       setTimeRecord({ ...timeRecord, startTime: moment() });
     };
 
