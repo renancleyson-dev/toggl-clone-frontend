@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { History } from 'history';
 
-const config = {
-  baseURL: 'http://localhost:5000',
+const config: any = {
+  baseURL: 'https://toggl-clone-backend.herokuapp.com',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
