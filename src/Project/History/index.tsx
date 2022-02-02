@@ -27,6 +27,10 @@ const LoadMoreButton = styled.button`
   background-color: #fff;
 `;
 
+const LoaderWrapper = styled.div`
+  margin-top: 40px;
+`;
+
 // infinite scroll to control and inform about time records
 export default function History() {
   const [isLoading, setIsLoading] = useState(false);
@@ -60,14 +64,18 @@ export default function History() {
   const { list: dateGroups } = state;
 
   const isEmpty = isEnd && !dateGroups.length;
-  const canLoadMore = !isLoading && hasMore && (isLoading || isEnd);
+  const canLoadMore = !(isLoading || isEnd);
 
   const dateGroupsUI = dateGroups.map(({ date, timeRecords }) => (
     <DateGroup key={date} date={date} timeRecords={timeRecords} />
   ));
 
   if (isLoading) {
-    footerView = <ProjectLoader key={0} />;
+    footerView = (
+      <LoaderWrapper>
+        <ProjectLoader key={0} />
+      </LoaderWrapper>
+    );
   } else if (isEmpty) {
     footerView = (
       <NoHistoryFallback>
