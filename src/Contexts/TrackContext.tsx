@@ -60,11 +60,6 @@ export default function TrackProvider({ children }: PropsWithChildren<{}>) {
       setTimeRecord(initialTimeRecord);
     };
 
-    const startTracking = (_timeRecord?: ITrackingTimeRecord) => {
-      setIsTracking(true);
-      setTimeRecord({ ..._timeRecord, startTime: moment() });
-    };
-
     const stopTracking = async (pass = false) => {
       if (!pass) {
         const payload = { ...getTimeRecord(), endTime: moment(), userId: user.id };
@@ -74,6 +69,16 @@ export default function TrackProvider({ children }: PropsWithChildren<{}>) {
 
       resetTimeRecord();
       setIsTracking(false);
+    };
+
+    const startTracking = async (timeRecord?: ITrackingTimeRecord) => {
+      if (isTracking) {
+        const payload = { ...getTimeRecord(), endTime: moment(), userId: user.id };
+        const response = await createTimeRecord(payload);
+        dispatchDateGroups(dateGroupActions.add(response.data));
+      }
+
+      setTimeRecord({ ...timeRecord, startTime: moment() });
     };
 
     return {

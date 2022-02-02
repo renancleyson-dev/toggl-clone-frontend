@@ -11,7 +11,7 @@ import * as normalize from 'src/helpers/normalize';
 import useTracker from 'src/hooks/useTracker';
 import useProjects from 'src/hooks/useProjects';
 import useTags from 'src/hooks/useTags';
-import { buttonResets, IconWrapper, TagIcon } from 'src/styles';
+import { buttonResets, colors, IconWrapper, TagIcon } from 'src/styles';
 import ActualProject from 'src/Components/ActualProject';
 import { TextInput } from '../Styles';
 
@@ -42,11 +42,11 @@ const TimeRecordWrapper = styled.div`
     background-color: #f9f9f9;
   }
 
-  & div[data-hover='true'] {
+  & *[data-hover='true'] {
     opacity: 0;
   }
 
-  &:hover div[data-hover='true'] {
+  &:hover *[data-hover='true'] {
     opacity: 1;
   }
 `;
@@ -83,7 +83,7 @@ const EditSection = styled.div`
 `;
 
 const EditOptions = styled.div`
-  width: 300px;
+  width: 290px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -92,7 +92,6 @@ const EditOptions = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: space-between;
-  flex-basis: 60px;
 `;
 
 const ActionsIconWrapper = styled.button`
@@ -117,7 +116,9 @@ const MoreActionsWrapper = styled(ActionsIconWrapper)`
   font-size: 20px;
 `;
 
-const DurationDisplay = styled.div``;
+const DurationDetailed = styled.span`
+  color: ${colors.purpleDark};
+`;
 
 const TagNames = ({ names, showBox }: { names?: string[]; showBox?: boolean }) => {
   if (!names?.length) {
@@ -160,7 +161,7 @@ const Label = ({
 
 // UI to show a specific time record
 export default function HistoryItem(props: Props) {
-  const tracker = useTracker();
+  const { startTracking } = useTracker();
   const [timeRecord, _setTimeRecord] = useState(props);
   const timeRecordRef = useRef(timeRecord);
 
@@ -184,6 +185,13 @@ export default function HistoryItem(props: Props) {
     _setTimeRecord((prevState) => ({ ...prevState, ...value }));
 
   const handleTimeRecordChange = async (value: Partial<Props>) => {
+    const timeRecordDiff = updatedDiff(value, timeRecord);
+    const hasChanged = hasKeys(timeRecordDiff);
+
+    if (!hasChanged) {
+      return;
+    }
+
     try {
       setTimeRecord(value);
       await updateTimeRecord(id, normalize.timeRecord(value));
@@ -191,11 +199,13 @@ export default function HistoryItem(props: Props) {
       const valueDidUpdate = hasKeys(updatedDiff(value, timeRecordRef.current));
 
       if (!valueDidUpdate) {
-        const timeRecordDiff = updatedDiff(value, timeRecord);
         setTimeRecord(timeRecordDiff);
       }
     }
   };
+
+  const handleClickOnStart = () =>
+    startTracking({ label, projectId: project?.id, tagIds });
 
   const handleChangeOnProject = (newProject?: IProject) =>
     handleTimeRecordChange({ project: newProject });
@@ -208,7 +218,7 @@ export default function HistoryItem(props: Props) {
     <TimeRecordWrapper data-testid={`time-record-${id}`}>
       <NamingSection>
         <Label value={label} onChange={setTimeRecord} onBlur={handleTimeRecordChange} />
-        <ProjectSelectWrapper data-hover={!project}>
+        <ProjectSelectWrapper data-hover={!project && !isProjectsOpen}>
           <IconWrapper
             {...registerProjectsPosition(handleChangeOnProject)}
             showBox={isProjectsOpen}
@@ -226,27 +236,18 @@ export default function HistoryItem(props: Props) {
       <EditSection>
         <EditOptions>
           <div>
-            <span>{detailedDuration}</span>
+            <DurationDetailed>{detailedDuration}</DurationDetailed>
           </div>
-          <DurationDisplay>{formatDuration(duration)}</DurationDisplay>
+          <span>{formatDuration(duration)}</span>
           <Actions>
             <PlayWrapper
+              data-hover
               aria-label="start time record"
-              data-hover={true}
-              onClick={() => {
-                if (tracker.isTracking) {
-                  tracker.stopTracking();
-                }
-                tracker.startTracking({
-                  label,
-                  projectId: project?.id,
-                  tagIds,
-                });
-              }}
+              onClick={handleClickOnStart}
             >
               <BsFillPlayFill />
             </PlayWrapper>
-            <MoreActionsWrapper data-hover={true}>
+            <MoreActionsWrapper data-hover>
               <BsThreeDotsVertical />
             </MoreActionsWrapper>
           </Actions>
