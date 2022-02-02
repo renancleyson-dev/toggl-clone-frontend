@@ -1,10 +1,7 @@
-import React, { useContext } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Formik, ErrorMessage } from 'formik';
-import { UserContext } from '../Contexts/UserContext';
-import { USER_KEY, JWT_KEY } from '../helpers/constants';
-import { login } from '../resources/users';
-import { setJsonWebToken } from '../axios';
+import useUser from 'src/hooks/useUser';
 import {
   FormBox,
   Form,
@@ -46,8 +43,7 @@ const validate = (fields: IForm) => {
 };
 
 export default function Login() {
-  const { setUser } = useContext(UserContext);
-  const history = useHistory();
+  const { login } = useUser();
 
   const handleSubmit = async (
     loginParams: IForm,
@@ -60,15 +56,7 @@ export default function Login() {
     }
   ) => {
     try {
-      const {
-        data: { authToken, ...sessionResponse },
-      } = await login(loginParams);
-      setJsonWebToken(authToken);
-      setUser(sessionResponse);
-      localStorage.setItem(JWT_KEY, `${authToken}`);
-      localStorage.setItem(USER_KEY, `${sessionResponse.id}`);
-
-      history.push('/');
+      await login(loginParams);
     } catch (error) {
       const data = error.response?.data;
       if (!data) {
@@ -113,7 +101,7 @@ export default function Login() {
                 </AuthErrorMessage>
               </FormRow>
               <SubmitButton type="submit" disabled={isSubmitting}>
-                Submit
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </SubmitButton>
             </Form>
           )}

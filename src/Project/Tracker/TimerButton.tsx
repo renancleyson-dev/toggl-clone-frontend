@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { IoIosPlayCircle } from 'react-icons/io';
 import { RiStopCircleFill } from 'react-icons/ri';
@@ -26,9 +26,18 @@ const Button = styled.button`
 
 // UI to manage the start time, end time and the post request of the time record
 export default function TimerButton() {
+  const [isSubmitting, setSubmitting] = useState(false);
   const { isTracking, startTracking, stopTracking } = useTracker();
 
-  const handleClick = isTracking ? stopTracking : () => startTracking();
+  const handleClick = async () => {
+    if (isTracking) {
+      setSubmitting(true);
+      await stopTracking();
+      setSubmitting(false);
+    } else {
+      startTracking();
+    }
+  };
 
   return (
     <Button
@@ -36,6 +45,7 @@ export default function TimerButton() {
       type="button"
       isTracking={isTracking}
       onClick={handleClick}
+      disabled={isSubmitting}
     >
       {isTracking ? <RiStopCircleFill /> : <IoIosPlayCircle />}
     </Button>

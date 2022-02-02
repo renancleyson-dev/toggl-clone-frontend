@@ -1,20 +1,18 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { BsFillTagFill } from 'react-icons/bs';
-import useTracker from 'src/hooks/useTracker';
+import useTracker, { useTrackerSelector } from 'src/hooks/useTracker';
 import useTags from 'src/hooks/useTags';
-import useTagsOpen from 'src/hooks/useTagsOpen';
-import useProjectsOpen from 'src/hooks/useProjectsOpen';
 import useProjects from 'src/hooks/useProjects';
-import { colors, IconWrapper, TagIcon } from 'src/styles';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
+import ActualProject from 'src/Components/ActualProject';
+import { colors, IconWrapper, TagIcon } from 'src/styles';
 import { TextInput } from '../Styles';
 import Timer from './Timer';
 import TimerButton from './TimerButton';
 import MenuOptions from './MenuOptions';
 import ManualMode from './ManualMode';
-import ActualProject from 'src/Components/ActualProject';
 
 const TrackerBar = styled.div`
   position: sticky;
@@ -25,7 +23,7 @@ const TrackerBar = styled.div`
   display: flex;
   padding: 10px 10px 10px 20px;
   background-color: #fff;
-  box-shadow: 0px 1px 8px 0px #ccc;
+  box-shadow: 3px 1px 8px 0px #ccc;
   color: ${colors.purpleDark};
 `;
 
@@ -37,7 +35,7 @@ const TimerMenu = styled.div`
   font-size: 18px;
 `;
 
-const LabelInput = styled(TextInput)`
+const StyledLabelInput = styled(TextInput)`
   font-size: 16px;
   flex: 0 1 75%;
 
@@ -52,68 +50,73 @@ const TrackerIconWrapper = styled(IconWrapper)`
   font-size: 20px;
 `;
 
-const TrackerMode = () => (
-  <>
-    <Timer />
-    <TimerButton />
-  </>
-);
+const LabelInput = () => {
+  const { setTimeRecord } = useTracker();
+  const label = useTrackerSelector(({ label }) => label);
+
+  const handleLabelInputOnChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setTimeRecord({ label: event.target.value });
+
+  return (
+    <StyledLabelInput
+      aria-label="time record description"
+      placeholder="What are you working on?"
+      value={label}
+      onChange={handleLabelInputOnChange}
+    />
+  );
+};
 
 // UI to control and inform about current time tracking
 export default function Tracker() {
   const [trackerMode, setTrackerMode] = useState(true);
-  const projectRef = useRef(null);
-  const tagRef = useRef(null);
-  const { actualTimeRecord, setActualTimeRecord, projects, tags } = useTracker();
-  const project = projects.find(({ id }) => id === actualTimeRecord.projectId);
-  const actualTags = tags.filter(({ id }) => actualTimeRecord.tagIds?.includes(id));
-  const handleChangeOnProject = (project: IProject | null = null) => {
-    setActualTimeRecord((prevState) => ({ ...prevState, projectId: project?.id }));
-  };
-  const handleChangeOntags = (tags: ITag[]) => {
-    setActualTimeRecord((prevState) => {
-      return { ...prevState, tagIds: [...tags.map(({ id }) => id)] };
-    });
-  };
 
-  const { isOpen: isProjectModalOpen, openCreateModal } = useProjects(0);
-  const { isOpen: isTagsModalOpen } = useTags(0);
+  const { setTimeRecord, projects, tags } = useTracker();
+  const timeRecord = useTrackerSelector(({ projectId, tagIds }) => ({
+    projectId,
+    tagIds,
+  }));
 
-  const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, 0, project);
-  const openTags = useTagsOpen(handleChangeOntags, tagRef, 0, actualTags);
+  const project = projects.find(({ id }) => id === timeRecord.projectId);
+  const actualTags = tags.filter(({ id }) => timeRecord.tagIds?.includes(id));
 
-  const { label = '' } = actualTimeRecord;
+  const { isTagsOpen, registerTagsPosition } = useTags(0, actualTags);
+  const { isProjectsOpen, registerProjectsPosition } = useProjects(0, project);
+
   const hasTags = !!actualTags?.length;
+
+  const handleChangeOnProject = (project: IProject | null = null) =>
+    setTimeRecord({ projectId: project?.id });
+
+  const handleChangeOntags = (tags: ITag[]) =>
+    setTimeRecord({ tagIds: tags.map(({ id }) => id) });
+
+  const trackerModeView = (
+    <>
+      <Timer />
+      <TimerButton />
+    </>
+  );
 
   return (
     <TrackerBar data-testid="tracker-bar">
-      <LabelInput
-        aria-label="time record description"
-        placeholder="What are you working on?"
-        value={label}
-        onChange={(event) => {
-          const { target } = event;
-
-          setActualTimeRecord((prevState) => ({
-            ...prevState,
-            label: target.value,
-          }));
-        }}
-      />
+      <LabelInput />
       <TimerMenu>
-        <TrackerIconWrapper ref={projectRef} showBox={isProjectModalOpen}>
-          <ActualProject
-            actualProject={project}
-            handleIconClick={openProjects}
-            handleAddButtonClick={openCreateModal}
-          />
+        <TrackerIconWrapper
+          {...registerProjectsPosition(handleChangeOnProject)}
+          showBox={isProjectsOpen}
+        >
+          <ActualProject project={project} />
         </TrackerIconWrapper>
-        <TrackerIconWrapper ref={tagRef} showBox={isTagsModalOpen} onClick={openTags}>
+        <TrackerIconWrapper
+          {...registerTagsPosition(handleChangeOntags)}
+          showBox={isTagsOpen}
+        >
           <TagIcon hasTags={hasTags}>
             <BsFillTagFill />
           </TagIcon>
         </TrackerIconWrapper>
-        {trackerMode ? <TrackerMode /> : <ManualMode />}
+        {trackerMode ? trackerModeView : <ManualMode />}
         <MenuOptions trackerMode={trackerMode} setTrackerMode={setTrackerMode} />
       </TimerMenu>
     </TrackerBar>

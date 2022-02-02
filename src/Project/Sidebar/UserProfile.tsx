@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { UserContext } from 'src/Contexts/UserContext';
 import UserOptions from './UserOptions';
 import { buttonResets } from 'src/styles';
+import useUser from 'src/hooks/useUser';
 
 const Button = styled.button`
   ${buttonResets}
@@ -50,7 +50,7 @@ const UserEmail = styled(TextWithEllipsis)`
 
 export default function UserProfile() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
 
   const openOptionsModal = () => {
     setIsOpen(true);

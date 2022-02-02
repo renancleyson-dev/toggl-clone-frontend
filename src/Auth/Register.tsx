@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Formik, ErrorMessage } from 'formik';
 import { Link } from 'react-router-dom';
+import useUser from 'src/hooks/useUser';
 import CheckBox from '../Components/CheckBox';
-import { UserContext } from '../Contexts/UserContext';
-import { createUser } from '../resources/users';
 import { colors } from '../styles';
 import CountrySelect from './CountrySelect';
 import {
@@ -105,7 +104,7 @@ const validate = (fields: IForm) => {
 };
 
 const RegisterForm = () => {
-  const { setUser } = useContext(UserContext);
+  const { register } = useUser();
 
   const handleSubmit = async (
     { email, password, country }: IForm,
@@ -118,8 +117,7 @@ const RegisterForm = () => {
     }
   ) => {
     try {
-      const { data } = await createUser({ email, password, country });
-      setUser(data);
+      await register({ email, password, country });
     } catch (error) {
       if (!error.response?.data) {
         console.warn(error.message);
@@ -179,7 +177,7 @@ const RegisterForm = () => {
             </FormRow>
           </FormSection>
           <SubmitButton type="submit" disabled={isSubmitting}>
-            Submit
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </SubmitButton>
         </Form>
       )}

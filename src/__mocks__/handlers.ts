@@ -45,7 +45,7 @@ const dateGroup: IDateGroup = {
 
 export const handlers = [
   rest.post('/login', (req, res, ctx) => res(ctx.json({ ...baseUser, authToken }))),
-  rest.get(/\/users\/\d+/, (req, res, ctx) => res(ctx.json(baseUser))),
+  rest.get('/users/me', (req, res, ctx) => res(ctx.json(baseUser))),
   rest.get('/time_records', (req, res, ctx) => {
     if (req.url.searchParams.get('page') === '0') {
       return res(ctx.json([dateGroup]));

@@ -22,7 +22,7 @@ const Loader = styled.div`
 
 export default function ProjectLoader() {
   return (
-    <ProjectLoaderWrapper role="alert" aria-label="Loading time records">
+    <ProjectLoaderWrapper role="alert" aria-label="loading time records">
       <Loader />
     </ProjectLoaderWrapper>
   );

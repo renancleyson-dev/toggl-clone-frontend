@@ -1,26 +1,33 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
+import { updatedDiff } from 'deep-object-diff';
 import { BsFillPlayFill, BsThreeDotsVertical, BsFillTagFill } from 'react-icons/bs';
 import { updateTimeRecord } from 'src/resources/timeRecords';
-import { ITimeRecord } from 'src/types/timeRecord';
-import { ITrackingTimeRecord } from 'src/types/timeRecord';
 import { IProject } from 'src/types/projects';
 import { ITag } from 'src/types/tags';
 import formatDuration from 'src/helpers/formatDuration';
-import { UserContext } from 'src/Contexts/UserContext';
-import { DateGroupContext } from 'src/Contexts/DateGroupsContext';
-import { EDIT_TYPE } from 'src/reducers/dateGroupsReducer/types';
+import * as normalize from 'src/helpers/normalize';
 import useTracker from 'src/hooks/useTracker';
-import useTagsOpen from 'src/hooks/useTagsOpen';
-import useProjectsOpen from 'src/hooks/useProjectsOpen';
 import useProjects from 'src/hooks/useProjects';
-import { buttonResets, IconWrapper, TagIcon } from 'src/styles';
+import useTags from 'src/hooks/useTags';
+import { buttonResets, colors, IconWrapper, TagIcon } from 'src/styles';
 import ActualProject from 'src/Components/ActualProject';
 import { TextInput } from '../Styles';
 
+interface Props {
+  startTime: moment.Moment;
+  endTime: moment.Moment;
+  project?: IProject;
+  label?: string;
+  tags?: ITag[];
+  id: number;
+}
+
+const TIME_FORMAT = 'HH:mm A';
+
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
-const editAction = (value: ITimeRecord) => ({ type: EDIT_TYPE, payload: value });
+const hasKeys = (obj: any) => Object.keys(obj).length > 0;
 
 const TimeRecordWrapper = styled.div`
   padding: 10px 10px 10px 0px;
@@ -35,11 +42,11 @@ const TimeRecordWrapper = styled.div`
     background-color: #f9f9f9;
   }
 
-  & div[data-hover='true'] {
+  & *[data-hover='true'] {
     opacity: 0;
   }
 
-  &:hover div[data-hover='true'] {
+  &:hover *[data-hover='true'] {
     opacity: 1;
   }
 `;
@@ -76,7 +83,7 @@ const EditSection = styled.div`
 `;
 
 const EditOptions = styled.div`
-  width: 300px;
+  width: 290px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,7 +92,6 @@ const EditOptions = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: space-between;
-  flex-basis: 60px;
 `;
 
 const ActionsIconWrapper = styled.button`
@@ -110,12 +116,14 @@ const MoreActionsWrapper = styled(ActionsIconWrapper)`
   font-size: 20px;
 `;
 
-const DurationDisplay = styled.div``;
+const DurationDetailed = styled.span`
+  color: ${colors.purpleDark};
+`;
 
-const TagNames = ({ names }: { names?: string[] }) => {
+const TagNames = ({ names, showBox }: { names?: string[]; showBox?: boolean }) => {
   if (!names?.length) {
     return (
-      <IconWrapper>
+      <IconWrapper showBox={showBox}>
         <TagIcon>
           <BsFillTagFill />
         </TagIcon>
@@ -126,122 +134,120 @@ const TagNames = ({ names }: { names?: string[] }) => {
   return <TagNamesWrapper>{names.join(', ')}</TagNamesWrapper>;
 };
 
-const Label = ({ id, label }: { id: number; label?: string }) => {
-  const [labelText, setLabelText] = useState('');
-  const { user } = useContext(UserContext);
-  const { dispatchDateGroups } = useContext(DateGroupContext);
+const Label = ({
+  value,
+  onChange,
+  onBlur,
+}: {
+  value: string;
+  onChange: (value: Partial<Props>) => void;
+  onBlur: (value: Partial<Props>) => void;
+}) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onChange({ label: event.target.value });
 
-  useEffect(() => {
-    if (label) {
-      setLabelText(label);
-    }
-  }, [label]);
+  const handleBlur = () => onBlur({ label: value });
 
   return (
     <LabelWrapper
       data-testid="time-record-label"
       placeholder="Add description"
-      value={labelText}
-      onChange={(e) => setLabelText(e.target.value)}
-      onBlur={() => {
-        updateTimeRecord(id, { userId: user.id, label: labelText }).then((response) => {
-          dispatchDateGroups && dispatchDateGroups(editAction(response.data));
-        });
-      }}
+      value={value}
+      onChange={handleChange}
+      onBlur={handleBlur}
     />
   );
 };
 
-interface Props {
-  startTime: moment.Moment;
-  endTime: moment.Moment;
-  project?: IProject;
-  label?: string;
-  tags?: ITag[];
-  id: number;
-}
-
 // UI to show a specific time record
-export default function HistoryItem({
-  startTime,
-  endTime,
-  label,
-  id,
-  project,
-  tags,
-}: Props) {
-  const projectRef = useRef(null);
-  const tagRef = useRef(null);
-  const { user } = useContext(UserContext);
-  const tracker = useTracker();
-  const { dispatchDateGroups } = useContext(DateGroupContext);
+export default function HistoryItem(props: Props) {
+  const { startTracking } = useTracker();
+  const [timeRecord, _setTimeRecord] = useState(props);
+  const timeRecordRef = useRef(timeRecord);
+
+  const { id, label = '', startTime, endTime, tags = [], project } = timeRecord;
+  const { isTagsOpen, registerTagsPosition } = useTags(id, tags);
+  const { isProjectsOpen, registerProjectsPosition } = useProjects(id, project);
+
+  useEffect(() => {
+    timeRecordRef.current = timeRecord;
+  }, [timeRecord]);
+
+  const startTimeFormatted = startTime.format(TIME_FORMAT);
+  const endTimeFormatted = endTime.format(TIME_FORMAT);
+  const detailedDuration = `${startTimeFormatted} - ${endTimeFormatted}`;
+
   const duration = moment.duration(endTime.diff(startTime));
-  const tagIds = tags?.map(({ id }) => id);
-  const tagNames = tags?.map(({ name }) => name);
-  const handleTimeRecordChange = (value: ITrackingTimeRecord) => {
-    updateTimeRecord(id, value).then((response) => {
-      dispatchDateGroups && dispatchDateGroups(editAction(response.data));
-    });
+  const tagIds = tags.map(({ id }) => id);
+  const tagNames = tags.map(({ name }) => name);
+
+  const setTimeRecord = (value: Partial<Props>) =>
+    _setTimeRecord((prevState) => ({ ...prevState, ...value }));
+
+  const handleTimeRecordChange = async (value: Partial<Props>) => {
+    const timeRecordDiff = updatedDiff(value, timeRecord);
+    const hasChanged = hasKeys(timeRecordDiff);
+
+    if (!hasChanged) {
+      return;
+    }
+
+    try {
+      setTimeRecord(value);
+      await updateTimeRecord(id, normalize.timeRecord(value));
+    } catch (e) {
+      const valueDidUpdate = hasKeys(updatedDiff(value, timeRecordRef.current));
+
+      if (!valueDidUpdate) {
+        setTimeRecord(timeRecordDiff);
+      }
+    }
   };
-  const handleChangeOnTags = (tags: ITag[]) => {
-    const newTagIds = tags.map(({ id }) => id);
 
-    handleTimeRecordChange({ userId: user.id, tagIds: newTagIds });
+  const handleClickOnStart = () =>
+    startTracking({ label, projectId: project?.id, tagIds });
+
+  const handleChangeOnProject = (newProject?: IProject) =>
+    handleTimeRecordChange({ project: newProject });
+
+  const handleChangeOnTags = (newTags: ITag[]) => {
+    handleTimeRecordChange({ tags: newTags });
   };
-  const handleChangeOnProject = (project?: IProject) =>
-    handleTimeRecordChange({
-      userId: user.id,
-      projectId: project ? project.id : null,
-    });
-
-  const { isOpen: isProjectOpen, openCreateModal } = useProjects(id);
-
-  const openTags = useTagsOpen(handleChangeOnTags, tagRef, id, tags);
-
-  const openProjects = useProjectsOpen(handleChangeOnProject, projectRef, id, project);
 
   return (
     <TimeRecordWrapper data-testid={`time-record-${id}`}>
       <NamingSection>
-        <Label id={id} label={label} />
-        <ProjectSelectWrapper data-hover={!project}>
-          <IconWrapper ref={projectRef} showBox={isProjectOpen}>
-            <ActualProject
-              actualProject={project}
-              handleIconClick={openProjects}
-              handleAddButtonClick={openCreateModal}
-            />
+        <Label value={label} onChange={setTimeRecord} onBlur={handleTimeRecordChange} />
+        <ProjectSelectWrapper data-hover={!project && !isProjectsOpen}>
+          <IconWrapper
+            {...registerProjectsPosition(handleChangeOnProject)}
+            showBox={isProjectsOpen}
+          >
+            <ActualProject project={project} />
           </IconWrapper>
         </ProjectSelectWrapper>
       </NamingSection>
-      <TagsWrapper ref={tagRef} data-hover={!tags?.length} onClick={openTags}>
-        <TagNames names={tagNames} />
+      <TagsWrapper
+        {...registerTagsPosition(handleChangeOnTags)}
+        data-hover={!isTagsOpen && !tags.length}
+      >
+        <TagNames names={tagNames} showBox={isTagsOpen} />
       </TagsWrapper>
       <EditSection>
         <EditOptions>
           <div>
-            <span>{`${startTime.format('HH:mm A')} - ${endTime.format('HH:mm A')}`}</span>
+            <DurationDetailed>{detailedDuration}</DurationDetailed>
           </div>
-          <DurationDisplay>{formatDuration(duration)}</DurationDisplay>
+          <span>{formatDuration(duration)}</span>
           <Actions>
             <PlayWrapper
+              data-hover
               aria-label="start time record"
-              data-hover={true}
-              onClick={() => {
-                if (tracker.isTracking) {
-                  tracker.stopTracking();
-                }
-                tracker.startTracking({
-                  userId: user.id,
-                  label,
-                  projectId: project?.id,
-                  tagIds,
-                });
-              }}
+              onClick={handleClickOnStart}
             >
               <BsFillPlayFill />
             </PlayWrapper>
-            <MoreActionsWrapper data-hover={true}>
+            <MoreActionsWrapper data-hover>
               <BsThreeDotsVertical />
             </MoreActionsWrapper>
           </Actions>

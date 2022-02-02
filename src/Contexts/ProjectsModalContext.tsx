@@ -1,71 +1,67 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { PropsWithChildren, useMemo, useState } from 'react';
+import useMultiPosition, { Position, Register } from 'src/hooks/shared/useMultiPosition';
 import { IProject } from 'src/types/projects';
 
-type Position = {
-  top: string;
-  left: string;
-};
+export type ProjectCallback = (project?: IProject) => void;
 
-interface contextValue {
-  isOpen: boolean;
+interface ContextValue {
+  key: number;
+  clearKey: (project?: IProject) => void;
+  currentProject?: IProject;
   isCreateModalOpen: boolean;
-  position: Position;
-  setPosition: (position: Position) => void;
-  project?: IProject;
-  setProject: (project?: IProject) => void;
-  openId: React.MutableRefObject<number | undefined>;
-  openModal: () => void;
-  closeModal: () => void;
+  getPosition: () => Position;
   openCreateModal: () => void;
   closeCreateModal: () => void;
+  registerProjectsPosition: (
+    key: number,
+    callback: ProjectCallback,
+    project?: IProject
+  ) => Register;
 }
 
-export const ProjectsModalContext = React.createContext<contextValue | null>(null);
+export const ProjectsModalContext = React.createContext<ContextValue | null>(null);
 
-interface Props {
-  children: React.ReactNode;
-}
+export default function ProjectsModalProvider({ children }: PropsWithChildren<{}>) {
+  const { key, clearKey, getPosition, registerPosition } = useMultiPosition<
+    [IProject | undefined]
+  >();
 
-export default function ProjectsModalProvider({ children }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [currentProject, setProject] = useState<IProject | undefined>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [position, setPosition] = useState({ top: '0', left: '0' });
-  const [project, setProject] = useState<IProject>();
-  const openId = useRef<number>();
 
-  const handleSetProject = (project: IProject | undefined) => {
-    setProject(project);
-  };
+  const context = useMemo(() => {
+    const registerProjectsPosition = (
+      key: number,
+      callback: ProjectCallback,
+      project?: IProject
+    ) => {
+      const props = registerPosition(key, callback);
 
-  const handleSetPosition = (position: Position) => {
-    setPosition(position);
-  };
+      const onClick = () => {
+        setProject(project);
+        props.onClick();
+      };
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+      return { ...props, onClick };
+    };
 
-  const openCreateModal = () => setIsCreateModalOpen(true);
-  const closeCreateModal = () => setIsCreateModalOpen(false);
+    const openCreateModal = () => setIsCreateModalOpen(true);
+    const closeCreateModal = () => setIsCreateModalOpen(false);
 
-  const contextValue = useMemo(
-    () => ({
-      isOpen,
+    return {
+      key,
+      clearKey,
+      currentProject,
       isCreateModalOpen,
-      position,
-      project,
-      openId,
-      openModal,
-      closeModal,
       openCreateModal,
       closeCreateModal,
-      setPosition: handleSetPosition,
-      setProject: handleSetProject,
-    }),
-    [isOpen, project, isCreateModalOpen, position]
-  );
+      getPosition,
+      registerProjectsPosition,
+    };
+  }, [currentProject, isCreateModalOpen, key, clearKey, getPosition, registerPosition]);
 
   return (
-    <ProjectsModalContext.Provider value={contextValue}>
+    <ProjectsModalContext.Provider value={context}>
       {children}
     </ProjectsModalContext.Provider>
   );

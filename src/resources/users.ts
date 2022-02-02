@@ -11,17 +11,14 @@ export const login = (loginParams: {
 
 // REST API
 
-export const fetchUser = (
-  userId: number,
-  source?: CancelTokenSource
-): Promise<{ data: IUser }> =>
-  axios.get(`users/${userId}`, { cancelToken: source?.token });
+export const fetchUser = (source?: CancelTokenSource): Promise<{ data: IUser }> =>
+  axios.get(`/users/me`, { cancelToken: source?.token });
 
 export const createUser = (userParams: IRegistration): Promise<{ data: IUser }> =>
-  axios.post('users', { user: userParams });
+  axios.post('/users', userParams);
 
 export const updateUser = (userId: number): Promise<void | Error> =>
-  axios.put(`users/${userId}`);
+  axios.put(`/users/${userId}`);
 
 export const deleteUser = (userId: number): Promise<void | Error> =>
-  axios.delete(`users/${userId}`);
+  axios.delete(`/users/${userId}`);

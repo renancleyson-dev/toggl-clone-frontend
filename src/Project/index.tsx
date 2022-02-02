@@ -13,18 +13,18 @@ import Tags from 'src/Components/Tags';
 const Content = styled.div`
   position: relative;
   flex: 1 1 100%;
+  align-self: start;
   background-color: rgb(254, 249, 248);
-  overflow: auto;
 `;
 
 export default () => (
   <>
     <Sidebar />
-    <TrackContextProvider>
-      <DateGroupsContextProvider>
+    <DateGroupsContextProvider>
+      <TrackContextProvider>
         <ProjectsModalProvider>
           <TagsModalProvider>
-            <Content>
+            <Content id="project-content">
               <Tracker />
               <History />
             </Content>
@@ -32,7 +32,7 @@ export default () => (
             <Tags />
           </TagsModalProvider>
         </ProjectsModalProvider>
-      </DateGroupsContextProvider>
-    </TrackContextProvider>
+      </TrackContextProvider>
+    </DateGroupsContextProvider>
   </>
 );

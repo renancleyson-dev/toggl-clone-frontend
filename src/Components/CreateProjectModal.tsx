@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import { FaCheck } from 'react-icons/fa';
 import { ErrorMessage, Formik, useField } from 'formik';
@@ -10,6 +11,7 @@ import randomArrayValue from 'src/helpers/randomValue';
 import { createProject } from 'src/resources/projects';
 import { InputStyles, colors, buttonResets } from '../styles';
 import TextInput from './TextInput';
+import { useProjectsConsumer } from 'src/hooks/useProjects';
 
 if (Modal.defaultStyles.overlay) {
   Modal.defaultStyles.overlay.backgroundColor = 'rgba(0, 0, 0, 0.6)';
@@ -24,8 +26,8 @@ const customModalStyles = {
     zIndex: 101,
   },
   content: {
-    width: '360px',
-    height: '180px',
+    width: '320px',
+    height: '185px',
     margin: 'auto',
     paddingTop: '15px',
     borderRadius: '8px',
@@ -34,7 +36,7 @@ const customModalStyles = {
   },
 };
 
-const FormWrapper = styled.div`
+const Field = styled.div`
   display: flex;
   flex-flow: wrap;
   align-items: center;
@@ -53,7 +55,7 @@ const Input = styled(TextInput).withConfig({
   border-color: ${({ hasError }: { hasError: boolean }) =>
     hasError ? '#ff0000' : '#000'};
   border-radius: 8px;
-  flex: 0 0 89%;
+  flex: 0 0 85%;
   padding-left: 15px;
   height: 35px;
 `;
@@ -95,6 +97,7 @@ const ColorCircle = styled.div`
 `;
 
 const ErrorMessageWrapper = styled.div`
+  height: 12px;
   padding-left: 5px;
   font-size: 10px;
   color: #ff0000;
@@ -103,7 +106,7 @@ const ErrorMessageWrapper = styled.div`
 const CreateButton = styled.button`
   ${buttonResets}
   min-width: 100%;
-  margin-top: 30px;
+  margin-top: 35px;
   padding: 7px 0;
   text-align: center;
   border-radius: 8px;
@@ -197,17 +200,37 @@ export default function CreateProjectModal({
   initialName,
   ...props
 }: CreateProjectModalProps) {
-  const handleSubmit = (
+  const { clearKey } = useProjectsConsumer();
+
+  const handleSubmit = async (
     field: IForm,
-    { setSubmitting }: { setSubmitting: (boolState: boolean) => void }
+    {
+      setSubmitting,
+      setFieldError,
+    }: {
+      setFieldError: (field: string, errorMsg: string) => void;
+      setSubmitting: (boolState: boolean) => void;
+    }
   ) => {
-    createProject(field).then((response) => {
+    try {
+      const { data } = await createProject(field);
+
       if (onCreateProject) {
-        onCreateProject(response.data);
+        onCreateProject(data);
       }
+
+      clearKey(data);
       closeModal();
       setSubmitting(false);
-    });
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response?.data) {
+        const messages: { [key: string]: string } = e.response.data;
+        Object.entries(messages).forEach((value) => {
+          const [field, fieldError] = value;
+          setFieldError(field, `${field} ${fieldError}`);
+        });
+      }
+    }
   };
 
   const initialValuesWithProps = { ...initialValues, name: initialName || '' };
@@ -221,21 +244,25 @@ export default function CreateProjectModal({
         onSubmit={handleSubmit}
       >
         {({ handleSubmit, isSubmitting, errors }) => (
-          <FormWrapper>
-            <Input
-              name="name"
-              placeholder="Project name"
-              hasError={!!errors.name}
-              autoFocus
-            />
-            <ColorPicker />
+          <form onSubmit={handleSubmit}>
+            <Field>
+              <Input
+                name="name"
+                placeholder="Project name"
+                hasError={!!errors.name}
+                autoFocus
+              />
+              <ColorPicker />
+            </Field>
             <ErrorMessageWrapper>
-              <ErrorMessage name="name" />
+              <span>
+                <ErrorMessage name="name" />
+              </span>
             </ErrorMessageWrapper>
-            <CreateButton disabled={isSubmitting} onClick={() => handleSubmit()}>
-              Create project
+            <CreateButton disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create project'}
             </CreateButton>
-          </FormWrapper>
+          </form>
         )}
       </Formik>
     </Modal>

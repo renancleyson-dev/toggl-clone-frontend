@@ -36,6 +36,7 @@ describe('on tracker mode', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /start tracking/i })).toBeInTheDocument();
     });
+
     expect(trackerInput).not.toHaveValue();
     expect(axiosSpy).toHaveBeenCalled();
     axiosSpy.mockRestore();

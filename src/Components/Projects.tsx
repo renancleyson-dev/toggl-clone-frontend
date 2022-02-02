@@ -1,35 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
+import { useProjectsConsumer } from 'src/hooks/useProjects';
+import useScrollToModal from 'src/hooks/shared/useScrollToModal';
+import { useMultiPositionConsumer } from 'src/hooks/shared/useMultiPosition';
 import useTracker from '../hooks/useTracker';
 import { IProject } from '../types/projects';
-import CreateProjectModal from './CreateProjectModal';
-import { InputStyles } from '../styles';
-import SearchInput from './SearchInput';
 import {
+  InputStyles,
   dynamicModalStyles,
   projectNameStyles,
   ProjectName,
   MiniColorCircle,
 } from '../styles';
-import AddButton from './AddButton';
+import SearchInput from './SearchInput';
+import CreateProjectModal from './CreateProjectModal';
 import NoResourceFallback from './NoResourceFallback';
-import useProjects from 'src/hooks/useProjects';
+import AddButton from './AddButton';
 
-if (process.env.NODE_ENV !== 'test') {
-  Modal.setAppElement('#root');
-}
-
-const modalContentHeight = 455;
+const parentSelector = () => document.getElementById('project-content')!;
 
 const projectModalStyles = {
   overlay: dynamicModalStyles.overlay,
   content: {
     ...dynamicModalStyles.content,
-    maxWidth: '350px',
-    height: `${modalContentHeight}px`,
+    maxWidth: '400px',
+    height: '360px',
     padding: '15px 0 0',
-    overflow: 'auto',
+    overflow: 'hidden',
     fontSize: '14px',
     backgroundColor: '#fff',
   },
@@ -42,14 +40,14 @@ const Input = styled.input`
 const FallbackWrapper = styled.div`
   padding: 15px 15px 20px;
   margin: 14px 0;
-  height: 340px;
+  height: 250px;
   color: #827188;
 `;
 
 const ProjectsListWrapper = styled.ul`
   list-style-type: none;
   flex: 1 1 100%;
-  height: 340px;
+  height: 250px;
   margin: 20px 0 10px;
   padding: 0 5px;
   overflow: auto;
@@ -71,35 +69,34 @@ interface ProjectsListProps {
 
 const ProjectsList = ({ searchText, projects }: ProjectsListProps) => {
   const [lastHovered, setLastHovered] = useState<number>(0);
-  const { closeModal, project, setProject } = useProjects();
+  const { currentProject, clearKey } = useProjectsConsumer();
+  const currentId = currentProject || 0;
+
+  const isItemHovered = (id: number) => lastHovered === id || currentId === id;
   const handleMouseOver = (id: number) => () => setLastHovered(id);
+  const handleClose = (project?: IProject) => () => clearKey(project);
 
   const defaultProjectItem = (
     <DefaultProjectItem
-      hovered={lastHovered === 0 || !project?.id}
       key={0}
+      hovered={isItemHovered(0)}
       onMouseOver={handleMouseOver(0)}
-      onClick={() => {
-        closeModal();
-        setProject();
-      }}
+      onClick={handleClose()}
     >
       <MiniColorCircle color="#aaa" />
       <ProjectName color="#000">No Project</ProjectName>
     </DefaultProjectItem>
   );
-  const projectItems = projects.map(({ id, name, color }) => (
+
+  const projectItems = projects.map((project) => (
     <ProjectItem
-      key={id}
-      onClick={() => {
-        closeModal();
-        setProject({ id, name, color });
-      }}
-      hovered={lastHovered === id || project?.id === id}
-      onMouseOver={handleMouseOver(id)}
+      key={project.id}
+      hovered={isItemHovered(project.id)}
+      onMouseOver={handleMouseOver(project.id)}
+      onClick={handleClose(project)}
     >
-      <MiniColorCircle color={color} />
-      <ProjectName color={color}>{name}</ProjectName>
+      <MiniColorCircle color={project.color} />
+      <ProjectName color={project.color}>{project.name}</ProjectName>
     </ProjectItem>
   ));
 
@@ -119,33 +116,48 @@ const ProjectsList = ({ searchText, projects }: ProjectsListProps) => {
 export default function Projects() {
   const [searchText, setSearchText] = useState('');
   const [initialName, setInitialName] = useState('');
-
   const { projects, setProjects } = useTracker();
 
   const {
-    position,
-    isOpen,
+    key,
+    currentProject,
+    getPosition,
     isCreateModalOpen,
-    closeModal,
+    clearKey,
     openCreateModal,
     closeCreateModal,
-    setProject,
-  } = useProjects();
+  } = useProjectsConsumer();
+  const { isOpen, position } = useMultiPositionConsumer(key, getPosition);
+  const { ref, overflow } = useScrollToModal(isOpen);
 
-  const filteredProjects = projects.filter(({ name }) => name.includes(searchText));
+  const filteredProjects = useMemo(
+    () => projects.filter(({ name }) => name.includes(searchText)),
+    [projects, searchText]
+  );
+
+  useEffect(() => {
+    Modal.setAppElement(parentSelector());
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSearchText('');
+    }
+  }, [isOpen]);
+
   const updatedProjectModalStyles = {
-    overlay: projectModalStyles.overlay,
+    overlay: { ...projectModalStyles.overlay, overflow },
     content: { ...projectModalStyles.content, ...position },
   };
 
-  const handleCreateProject = (project: IProject) => {
-    setProjects((prevState) => [...prevState, project]);
-    setProject(project);
-  };
+  const handleAddButtonClick = () => openCreateModal();
+  const handleOnRequestClose = () => clearKey(currentProject);
 
-  const handleAddButtonClick = () => {
-    openCreateModal();
-  };
+  const handleCreateProject = (project: IProject) =>
+    setProjects((prevState) => [...prevState, project]);
+
+  const onSearch = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setSearchText(event.target.value);
 
   const handleKeyboardCreateProject = (event: React.KeyboardEvent) => {
     const { key, ctrlKey } = event;
@@ -164,17 +176,18 @@ export default function Projects() {
         initialName={initialName}
       />
       <Modal
-        isOpen={isOpen}
+        isOpen={isOpen && !isCreateModalOpen}
         style={updatedProjectModalStyles}
-        onRequestClose={closeModal}
+        parentSelector={parentSelector}
+        onRequestClose={handleOnRequestClose}
       >
-        <div onKeyDown={handleKeyboardCreateProject}>
+        <div ref={ref} onKeyDown={handleKeyboardCreateProject}>
           <SearchInput>
             <Input
               autoFocus
               placeholder="Find project..."
               value={searchText}
-              onChange={(event) => setSearchText(event.target.value)}
+              onChange={onSearch}
             />
           </SearchInput>
           <ProjectsList searchText={searchText} projects={filteredProjects} />

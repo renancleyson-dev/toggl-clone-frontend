@@ -76,6 +76,7 @@ export default function DateGroup({ date, timeRecords }: Props) {
       />
     )
   );
+
   const totalDuration = timeRecords.reduce((acc, timeRecord) => {
     const timeRecordDuration = moment.duration(timeRecord.duration, 's');
     return acc.add(timeRecordDuration);

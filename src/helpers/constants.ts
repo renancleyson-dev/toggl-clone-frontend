@@ -1,4 +1,3 @@
-export const USER_KEY = 'userId';
 export const JWT_KEY = 'JWTToken';
 
 export const projectColors = [

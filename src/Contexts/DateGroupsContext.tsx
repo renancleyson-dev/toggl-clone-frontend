@@ -1,27 +1,79 @@
-import React, { useReducer } from 'react';
-import { IDateGroup } from '../types/timeRecord';
-import dateGroupsReducer, { Action } from '../reducers/dateGroupsReducer/reducer';
+import React, { PropsWithChildren, useMemo, useReducer } from 'react';
+import { AnyAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import moment from 'moment';
+import { IDateGroup, ITimeRecord } from '../types/timeRecord';
 
-const initialDateGroupsState: IDateGroup[] = [];
+type State = { list: IDateGroup[] };
 
-interface IContextValue {
-  dateGroups: IDateGroup[];
-  dispatchDateGroups?: React.Dispatch<Action>;
+export interface IContextValue {
+  dateGroups: State;
+  dispatchDateGroups: React.Dispatch<AnyAction>;
 }
 
-export const DateGroupContext = React.createContext<IContextValue>({
-  dateGroups: [],
+const initialState: State = { list: [] };
+
+const findByDate = (date: string, groups: IDateGroup[]) =>
+  groups.findIndex((dateGroups) => date === dateGroups.date);
+
+const fetchDateGroupsReducer = (groups: IDateGroup[], actualDateGroup: IDateGroup) => {
+  const { date, timeRecords } = actualDateGroup;
+
+  const dateIndex = findByDate(date, groups);
+
+  if (dateIndex === -1) {
+    return [...groups, actualDateGroup];
+  }
+
+  return groups.map((dateGroup) => {
+    if (dateGroup.date === date) {
+      const newTimeRecords = [...dateGroup.timeRecords, ...timeRecords];
+      return { date: dateGroup.date, timeRecords: newTimeRecords };
+    }
+    return dateGroup;
+  });
+};
+
+const slice = createSlice({
+  name: 'dateGroups',
+  initialState,
+  reducers: {
+    fetch(state = initialState, { payload }: PayloadAction<IDateGroup[]>) {
+      state.list = payload.reduce(fetchDateGroupsReducer, state.list);
+    },
+    add(state = initialState, { payload }: PayloadAction<ITimeRecord>) {
+      const momentStartTime = moment(payload.startTime);
+      const [dateGroup] = state.list;
+      const [timeRecord] = dateGroup?.timeRecords || [];
+      if (timeRecord && moment(timeRecord.startTime).isSame(momentStartTime, 'date')) {
+        state.list[0] = {
+          ...dateGroup,
+          timeRecords: [payload, ...dateGroup.timeRecords],
+        };
+      } else {
+        state.list.unshift({ date: 'Today', timeRecords: [payload] });
+      }
+    },
+    delete(state = initialState, { payload }: PayloadAction<ITimeRecord>) {
+      state.list = state.list.map(({ date, timeRecords }) => {
+        const newTimeRecords = timeRecords.filter(({ id }) => id !== payload.id);
+
+        return { date, timeRecords: newTimeRecords };
+      });
+    },
+  },
 });
 
-export default function DateGroupsProvider({ children }: { children: React.ReactNode }) {
-  const [dateGroups, dispatchDateGroups] = useReducer(
-    dateGroupsReducer,
-    initialDateGroupsState
-  );
+export const { actions: dateGroupActions } = slice;
+export const DateGroupContext = React.createContext<IContextValue | null>(null);
+
+export default function DateGroupsProvider({ children }: PropsWithChildren<{}>) {
+  const [dateGroups, dispatchDateGroups] = useReducer(slice.reducer, initialState);
+
+  const context = useMemo(() => {
+    return { dateGroups, dispatchDateGroups };
+  }, [dateGroups, dispatchDateGroups]);
 
   return (
-    <DateGroupContext.Provider value={{ dateGroups, dispatchDateGroups }}>
-      {children}
-    </DateGroupContext.Provider>
+    <DateGroupContext.Provider value={context}>{children}</DateGroupContext.Provider>
   );
 }
