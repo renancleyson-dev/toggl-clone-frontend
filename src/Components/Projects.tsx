@@ -18,7 +18,10 @@ import CreateProjectModal from './CreateProjectModal';
 import NoResourceFallback from './NoResourceFallback';
 import AddButton from './AddButton';
 
-const parentSelector = () => document.getElementById('project-content')!;
+interface ProjectsListProps {
+  searchText: string;
+  projects: IProject[];
+}
 
 const projectModalStyles = {
   overlay: dynamicModalStyles.overlay,
@@ -33,39 +36,7 @@ const projectModalStyles = {
   },
 };
 
-const Input = styled.input`
-  ${InputStyles}
-`;
-
-const FallbackWrapper = styled.div`
-  padding: 15px 15px 20px;
-  margin: 14px 0;
-  height: 250px;
-  color: #827188;
-`;
-
-const ProjectsListWrapper = styled.ul`
-  list-style-type: none;
-  flex: 1 1 100%;
-  height: 250px;
-  margin: 20px 0 10px;
-  padding: 0 5px;
-  overflow: auto;
-`;
-
-const ProjectItem = styled.li`
-  ${projectNameStyles}
-  padding: 5px 10px;
-`;
-
-const DefaultProjectItem = styled(ProjectItem)`
-  margin-bottom: 20px;
-`;
-
-interface ProjectsListProps {
-  searchText: string;
-  projects: IProject[];
-}
+const parentSelector = () => document.getElementById('project-content')!;
 
 const ProjectsList = ({ searchText, projects }: ProjectsListProps) => {
   const [lastHovered, setLastHovered] = useState<number>(0);
@@ -197,3 +168,32 @@ export default function Projects() {
     </>
   );
 }
+
+const Input = styled.input`
+  ${InputStyles}
+`;
+
+const FallbackWrapper = styled.div`
+  padding: 15px 15px 20px;
+  margin: 14px 0;
+  height: 250px;
+  color: #827188;
+`;
+
+const ProjectsListWrapper = styled.ul`
+  list-style-type: none;
+  flex: 1 1 100%;
+  height: 250px;
+  margin: 20px 0 10px;
+  padding: 0 5px;
+  overflow: auto;
+`;
+
+const ProjectItem = styled.li`
+  ${projectNameStyles}
+  padding: 5px 10px;
+`;
+
+const DefaultProjectItem = styled(ProjectItem)`
+  margin-bottom: 20px;
+`;

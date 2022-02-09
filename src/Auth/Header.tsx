@@ -6,6 +6,32 @@ import Logo from '../Components/Logo';
 import { colors } from '../styles';
 import { Button } from './Styles';
 
+export default function Header() {
+  const { user } = useUser();
+
+  return (
+    <EntrySection>
+      <HeaderWrapper>
+        <LogoWrapper>
+          <Logo />
+        </LogoWrapper>
+        <div>
+          <LogoutButton>
+            {user.id ? 'Logout' : 'Login'} <Arrow />
+          </LogoutButton>
+          <Link to={user.id ? '/' : '/register'}>
+            <TimerButton>{user.id ? 'Go to timer' : 'Try for free'}</TimerButton>
+          </Link>
+        </div>
+      </HeaderWrapper>
+      <TitleWrapper>
+        <Title>Get Tracking</Title>
+        <Description>Login to your Toggl Track account</Description>
+      </TitleWrapper>
+    </EntrySection>
+  );
+}
+
 const EntrySection = styled.div`
   background: linear-gradient(rgba(0, 0, 0, 0.5) 100%, rgba(0, 0, 0, 0.5) 100%),
     url(laptops.jpg);
@@ -73,29 +99,3 @@ const Description = styled.span`
   font-family: Inter, 'sans-serif';
   font-size: 18px;
 `;
-
-export default function Header() {
-  const { user } = useUser();
-
-  return (
-    <EntrySection>
-      <HeaderWrapper>
-        <LogoWrapper>
-          <Logo />
-        </LogoWrapper>
-        <div>
-          <LogoutButton>
-            {user.id ? 'Logout' : 'Login'} <Arrow />
-          </LogoutButton>
-          <Link to={user.id ? '/' : '/register'}>
-            <TimerButton>{user.id ? 'Go to timer' : 'Try for free'}</TimerButton>
-          </Link>
-        </div>
-      </HeaderWrapper>
-      <TitleWrapper>
-        <Title>Get Tracking</Title>
-        <Description>Login to your Toggl Track account</Description>
-      </TitleWrapper>
-    </EntrySection>
-  );
-}

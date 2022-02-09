@@ -8,29 +8,6 @@ import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
 import ProjectLoader from '../ProjectLoader';
 import DateGroup from './DateGroup';
 
-const HistoryWrapper = styled.div`
-  margin: 60px 0 460px;
-`;
-
-const NoHistoryFallback = styled.div`
-  text-align: center;
-  color: #666;
-`;
-
-const LoadMoreButton = styled.button`
-  ${buttonResets}
-  display: block;
-  margin: 40px auto 0;
-  padding: 7px 18px;
-  border-radius: 6px;
-  border: 1.8px solid #888;
-  background-color: #fff;
-`;
-
-const LoaderWrapper = styled.div`
-  margin-top: 40px;
-`;
-
 // infinite scroll to control and inform about time records
 export default function History() {
   const [isLoading, setIsLoading] = useState(false);
@@ -100,3 +77,26 @@ export default function History() {
     </HistoryWrapper>
   );
 }
+
+const HistoryWrapper = styled.div`
+  margin: 60px 0 460px;
+`;
+
+const NoHistoryFallback = styled.div`
+  text-align: center;
+  color: #666;
+`;
+
+const LoadMoreButton = styled.button`
+  ${buttonResets}
+  display: block;
+  margin: 40px auto 0;
+  padding: 7px 18px;
+  border-radius: 6px;
+  border: 1.8px solid #888;
+  background-color: #fff;
+`;
+
+const LoaderWrapper = styled.div`
+  margin-top: 40px;
+`;

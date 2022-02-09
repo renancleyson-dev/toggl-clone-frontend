@@ -13,6 +13,21 @@ import { InputStyles, colors, buttonResets } from '../styles';
 import TextInput from './TextInput';
 import { useProjectsConsumer } from 'src/hooks/useProjects';
 
+interface CreateProjectModalProps extends Modal.Props {
+  closeModal: () => void;
+  initialName?: string;
+  onCreateProject?: (project: IProject) => any;
+}
+
+interface IForm {
+  name: string;
+  color: string;
+}
+
+interface IErrors {
+  name?: string;
+}
+
 if (Modal.defaultStyles.overlay) {
   Modal.defaultStyles.overlay.backgroundColor = 'rgba(0, 0, 0, 0.6)';
 }
@@ -35,6 +50,129 @@ const customModalStyles = {
     fontSize: '14px',
   },
 };
+
+const validate = (fields: { name: string; color: string }) => {
+  const errors: IErrors = {};
+
+  if (!fields.name) {
+    errors.name = 'Please enter a project name';
+  }
+
+  return errors;
+};
+
+const ColorPicker = () => {
+  const pickerRef = useRef(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const [field, , helpers] = useField('color');
+
+  const openPicker = () => setShowPicker(true);
+  const closePicker = () => setShowPicker(false);
+
+  useOutsideonCreateProject(pickerRef, closePicker);
+
+  const colorChoices = projectColors.map((color: string) => {
+    const isSelected = field.value === color;
+
+    const handleClick = () => {
+      helpers.setValue(color);
+      setShowPicker(false);
+    };
+
+    if (isSelected) {
+      return (
+        <ColorCircle key={color} color={color} onClick={handleClick}>
+          <FaCheck />
+        </ColorCircle>
+      );
+    }
+    return <ColorCircle key={color} color={color} onClick={handleClick} />;
+  });
+
+  if (showPicker) {
+    return <ColorPickerWrapper ref={pickerRef}>{colorChoices}</ColorPickerWrapper>;
+  }
+
+  return (
+    <div ref={pickerRef} onClick={openPicker}>
+      <ColorCircle color={field.value} />
+    </div>
+  );
+};
+
+export default function CreateProjectModal({
+  closeModal,
+  onCreateProject,
+  initialName,
+  ...props
+}: CreateProjectModalProps) {
+  const { clearKey } = useProjectsConsumer();
+
+  const initialValues = {
+    name: initialName || '',
+    color: randomArrayValue(projectColors),
+  };
+
+  const handleSubmit = async (
+    field: IForm,
+    {
+      setSubmitting,
+      setFieldError,
+    }: {
+      setFieldError: (field: string, errorMsg: string) => void;
+      setSubmitting: (boolState: boolean) => void;
+    }
+  ) => {
+    try {
+      const { data } = await createProject(field);
+
+      if (onCreateProject) {
+        onCreateProject(data);
+      }
+
+      clearKey(data);
+      closeModal();
+      setSubmitting(false);
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response?.data) {
+        const messages: { [key: string]: string } = e.response.data;
+        Object.entries(messages).forEach((value) => {
+          const [field, fieldError] = value;
+          setFieldError(field, `${field} ${fieldError}`);
+        });
+      }
+    }
+  };
+
+  return (
+    <Modal style={customModalStyles} onRequestClose={closeModal} {...props}>
+      <ModalTitle>Create new project</ModalTitle>
+      <Formik initialValues={initialValues} validate={validate} onSubmit={handleSubmit}>
+        {({ handleSubmit, isSubmitting, errors }) => (
+          <form onSubmit={handleSubmit}>
+            <Field>
+              <Input
+                name="name"
+                placeholder="Project name"
+                hasError={!!errors.name}
+                autoFocus
+              />
+              <ColorPicker />
+            </Field>
+            <ErrorMessageWrapper>
+              <span>
+                <ErrorMessage name="name" />
+              </span>
+            </ErrorMessageWrapper>
+            <CreateButton disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create project'}
+            </CreateButton>
+          </form>
+        )}
+      </Formik>
+    </Modal>
+  );
+}
 
 const Field = styled.div`
   display: flex;
@@ -118,153 +256,3 @@ const CreateButton = styled.button`
     background-color: ${colors.darkPrimary};
   }
 `;
-
-interface ColorChoiceProps {
-  selected?: boolean;
-  color: string;
-  onClick: () => any;
-}
-
-const ColorChoice = ({ selected, color, ...props }: ColorChoiceProps) => {
-  if (selected) {
-    return (
-      <ColorCircle color={color} {...props}>
-        <FaCheck />
-      </ColorCircle>
-    );
-  }
-  return <ColorCircle color={color} {...props} />;
-};
-
-const ColorPicker = () => {
-  const [showPicker, setShowPicker] = useState(false);
-  const [field, , helpers] = useField('color');
-  const pickerRef = useRef(null);
-  const colorChoices = projectColors.map((color: string) => (
-    <ColorChoice
-      selected={field.value === color}
-      color={color}
-      key={color}
-      onClick={() => {
-        helpers.setValue(color);
-        setShowPicker(false);
-      }}
-    />
-  ));
-  useOutsideonCreateProject(pickerRef, () => setShowPicker(false));
-
-  if (showPicker) {
-    return <ColorPickerWrapper ref={pickerRef}>{colorChoices}</ColorPickerWrapper>;
-  }
-
-  return (
-    <div ref={pickerRef} onClick={() => setShowPicker(true)}>
-      <ColorCircle color={field.value} />
-    </div>
-  );
-};
-
-interface IForm {
-  name: string;
-  color: string;
-}
-
-interface IErrors {
-  name?: string;
-}
-
-const initialValues = {
-  name: '',
-  color: randomArrayValue(projectColors),
-};
-
-const validate = (fields: { name: string; color: string }) => {
-  const errors: IErrors = {};
-
-  if (!fields.name) {
-    errors.name = 'Please enter a project name';
-  }
-
-  return errors;
-};
-
-interface CreateProjectModalProps extends Modal.Props {
-  closeModal: () => void;
-  initialName?: string;
-  onCreateProject?: (project: IProject) => any;
-}
-
-export default function CreateProjectModal({
-  closeModal,
-  onCreateProject,
-  initialName,
-  ...props
-}: CreateProjectModalProps) {
-  const { clearKey } = useProjectsConsumer();
-
-  const handleSubmit = async (
-    field: IForm,
-    {
-      setSubmitting,
-      setFieldError,
-    }: {
-      setFieldError: (field: string, errorMsg: string) => void;
-      setSubmitting: (boolState: boolean) => void;
-    }
-  ) => {
-    try {
-      const { data } = await createProject(field);
-
-      if (onCreateProject) {
-        onCreateProject(data);
-      }
-
-      clearKey(data);
-      closeModal();
-      setSubmitting(false);
-    } catch (e) {
-      if (axios.isAxiosError(e) && e.response?.data) {
-        const messages: { [key: string]: string } = e.response.data;
-        Object.entries(messages).forEach((value) => {
-          const [field, fieldError] = value;
-          setFieldError(field, `${field} ${fieldError}`);
-        });
-      }
-    }
-  };
-
-  const initialValuesWithProps = { ...initialValues, name: initialName || '' };
-
-  return (
-    <Modal style={customModalStyles} onRequestClose={closeModal} {...props}>
-      <ModalTitle>Create new project</ModalTitle>
-      <Formik
-        initialValues={initialValuesWithProps}
-        validate={validate}
-        onSubmit={handleSubmit}
-      >
-        {({ handleSubmit, isSubmitting, errors }) => (
-          <form onSubmit={handleSubmit}>
-            <Field>
-              <Input
-                name="name"
-                placeholder="Project name"
-                hasError={!!errors.name}
-                autoFocus
-              />
-              <ColorPicker />
-            </Field>
-            <ErrorMessageWrapper>
-              <span>
-                <ErrorMessage name="name" />
-              </span>
-            </ErrorMessageWrapper>
-            <CreateButton disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create project'}
-            </CreateButton>
-          </form>
-        )}
-      </Formik>
-    </Modal>
-  );
-}

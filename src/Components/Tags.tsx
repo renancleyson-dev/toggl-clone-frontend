@@ -13,7 +13,12 @@ import SearchInput from './SearchInput';
 import NoResourceFallback from './NoResourceFallback';
 import TagCheckBox from './TagCheckBox';
 
-const parentSelector = () => document.getElementById('project-content')!;
+interface TagItemProps {
+  name: string;
+  searchText: string;
+  checked: boolean;
+  onClick: () => void;
+}
 
 const tagsModalStyles = {
   overlay: dynamicModalStyles.overlay,
@@ -28,45 +33,7 @@ const tagsModalStyles = {
   },
 };
 
-const Input = styled.input`
-  ${InputStyles}
-`;
-
-const TagsListWrapper = styled.ul`
-  height: 210px;
-  padding: 5px;
-  overflow: auto;
-`;
-
-const TagItemWrapper = styled.li`
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-
-  &:hover {
-    background-color: #f1f1f1;
-  }
-`;
-
-const FallbackWrapper = styled.div`
-  padding: 0px 23px;
-  margin: 14px 0;
-  height: 210px;
-  color: #827188;
-`;
-
-const HighlightedTagItemName = styled.span`
-  background-color: #eaeaea;
-`;
-
-interface TagItemProps {
-  name: string;
-  searchText: string;
-  checked: boolean;
-  onClick: () => void;
-}
+const parentSelector = () => document.getElementById('project-content')!;
 
 const TagItem = ({ name, searchText, checked, onClick }: TagItemProps) => {
   if (!searchText) {
@@ -239,3 +206,36 @@ export default function Tags() {
     </Modal>
   );
 }
+
+const Input = styled.input`
+  ${InputStyles}
+`;
+
+const TagsListWrapper = styled.ul`
+  height: 210px;
+  padding: 5px;
+  overflow: auto;
+`;
+
+const TagItemWrapper = styled.li`
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
+`;
+
+const FallbackWrapper = styled.div`
+  padding: 0px 23px;
+  margin: 14px 0;
+  height: 210px;
+  color: #827188;
+`;
+
+const HighlightedTagItemName = styled.span`
+  background-color: #eaeaea;
+`;

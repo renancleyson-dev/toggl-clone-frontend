@@ -2,6 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { rotate } from '../styles';
 
+export default function ProjectLoader() {
+  return (
+    <ProjectLoaderWrapper role="alert" aria-label="loading time records">
+      <Loader />
+    </ProjectLoaderWrapper>
+  );
+}
+
 const ProjectLoaderWrapper = styled.div`
   height: 100%;
   width: 100%;
@@ -19,11 +27,3 @@ const Loader = styled.div`
   border-left: 3px solid #ccc;
   animation: ${rotate} 0.4s linear infinite;
 `;
-
-export default function ProjectLoader() {
-  return (
-    <ProjectLoaderWrapper role="alert" aria-label="loading time records">
-      <Loader />
-    </ProjectLoaderWrapper>
-  );
-}

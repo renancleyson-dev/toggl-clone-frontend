@@ -7,25 +7,6 @@ import { IProject } from 'src/types/projects';
 import useTracker from 'src/hooks/useTracker';
 import { useProjectsConsumer } from 'src/hooks/useProjects';
 
-const NoProjectsAddButton = styled(AddButton)`
-  border: none;
-  border-radius: 8px;
-  padding: 5px 12px 5px 8px;
-
-  &:not(:disabled):hover {
-    background-color: #f1f1f1;
-  }
-`;
-
-const ActualProjectWrapper = styled.div`
-  ${projectNameStyles}
-  font-size: 14px;
-
-  &:hover {
-    background-color: initial;
-  }
-`;
-
 interface Props {
   project?: IProject;
 }
@@ -49,3 +30,22 @@ export default function ActualProject({ project }: Props) {
     </ActualProjectWrapper>
   );
 }
+
+const NoProjectsAddButton = styled(AddButton)`
+  border: none;
+  border-radius: 8px;
+  padding: 5px 12px 5px 8px;
+
+  &:not(:disabled):hover {
+    background-color: #f1f1f1;
+  }
+`;
+
+const ActualProjectWrapper = styled.div`
+  ${projectNameStyles}
+  font-size: 14px;
+
+  &:hover {
+    background-color: initial;
+  }
+`;

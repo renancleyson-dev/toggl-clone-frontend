@@ -3,25 +3,6 @@ import styled from 'styled-components';
 import { RiAddFill } from 'react-icons/ri';
 import { colors, buttonResets } from '../styles';
 
-const AddButtonIcon = styled.span`
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  color: ${({ disabled }: { disabled: boolean | undefined }) =>
-    disabled ? '#777' : colors.primary};
-  margin-right: 5px;
-`;
-
-const AddButtonText = styled.span`
-  color: ${({ disabled }: { disabled: boolean | undefined }) =>
-    disabled ? '#827188' : '#000'};
-  display: block;
-  max-width: 210px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-`;
-
 interface Props extends React.ComponentProps<'button'> {
   text: string;
 }
@@ -53,6 +34,25 @@ const AddButtonWrapper = styled(AddButton)`
   &:not(:disabled):hover {
     background-color: #f1f1f1;
   }
+`;
+
+const AddButtonIcon = styled.span`
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  color: ${({ disabled }: { disabled: boolean | undefined }) =>
+    disabled ? '#777' : colors.primary};
+  margin-right: 5px;
+`;
+
+const AddButtonText = styled.span`
+  color: ${({ disabled }: { disabled: boolean | undefined }) =>
+    disabled ? '#827188' : '#000'};
+  display: block;
+  max-width: 210px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 export default AddButtonWrapper;

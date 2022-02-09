@@ -22,62 +22,15 @@ import {
 } from './Styles';
 import Layout from './Layout';
 
-const TermsAndPrivacyFormRow = styled.div`
-  margin: 50px 0 0;
-  min-width: 100%;
-  display: flex;
-  align-items: center;
-`;
-
-const TermsAndPrivacyLabel = styled(Label)`
-  color: #fff;
-  position: relative;
-  display: flex;
-
-  &::before {
-    content: '';
-    display: inline-block;
-    margin-right: 20px;
-    background-color: rgba(0, 0, 0, 0);
-    border: solid 2px #fff;
-    width: 28px;
-    height: 28px;
-  }
-
-  &::after {
-    content: '';
-    display: inline-block;
-    width: 18px;
-    height: 11px;
-    position: absolute;
-    top: 8px;
-    left: 5px;
-    border-bottom: 4px solid ${colors.primary};
-    border-left: 4px solid ${colors.primary};
-    transform: rotate(-45deg) scale(0);
-    will-change: transform;
-  }
-
-  #accept-terms-checkbox:checked + &::before {
-    content: '';
-    color: ${colors.primary};
-    background-color: ${colors.pinkLight};
-  }
-
-  #accept-terms-checkbox:checked ~ &::after {
-    transform: rotate(-45deg) scale(1);
-  }
-`;
-
-const TermsAndPrivacyCheckBox = styled(CheckBox)`
-  display: none;
-`;
-
 interface IForm {
   termsAndPolicy: boolean;
   email: string;
   password: string;
   country: string;
+}
+
+interface IErrors {
+  [key: string]: string;
 }
 
 const initialValues = {
@@ -86,10 +39,6 @@ const initialValues = {
   password: '',
   country: '',
 };
-
-interface IErrors {
-  [key: string]: string;
-}
 
 const validate = (fields: IForm) => {
   const errors: IErrors = {};
@@ -200,3 +149,54 @@ export default function Register() {
     </Layout>
   );
 }
+
+const TermsAndPrivacyFormRow = styled.div`
+  margin: 50px 0 0;
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+`;
+
+const TermsAndPrivacyLabel = styled(Label)`
+  color: #fff;
+  position: relative;
+  display: flex;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    margin-right: 20px;
+    background-color: rgba(0, 0, 0, 0);
+    border: solid 2px #fff;
+    width: 28px;
+    height: 28px;
+  }
+
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 11px;
+    position: absolute;
+    top: 8px;
+    left: 5px;
+    border-bottom: 4px solid ${colors.primary};
+    border-left: 4px solid ${colors.primary};
+    transform: rotate(-45deg) scale(0);
+    will-change: transform;
+  }
+
+  #accept-terms-checkbox:checked + &::before {
+    content: '';
+    color: ${colors.primary};
+    background-color: ${colors.pinkLight};
+  }
+
+  #accept-terms-checkbox:checked ~ &::after {
+    transform: rotate(-45deg) scale(1);
+  }
+`;
+
+const TermsAndPrivacyCheckBox = styled(CheckBox)`
+  display: none;
+`;

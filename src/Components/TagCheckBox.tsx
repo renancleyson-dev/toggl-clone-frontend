@@ -7,6 +7,18 @@ const checkboxStyles = {
   display: 'none',
 };
 
+export default function TagCheckBox({
+  checked,
+  ...props
+}: React.HTMLProps<HTMLInputElement>) {
+  return (
+    <CheckBoxWrapper checked={checked}>
+      <input type="checkbox" checked={checked} style={checkboxStyles} {...props} />
+      <Check />
+    </CheckBoxWrapper>
+  );
+}
+
 const CheckBoxWrapper = styled.div`
   position: relative;
   display: flex;
@@ -27,15 +39,3 @@ const CheckBoxWrapper = styled.div`
 const Check = styled(IoIosCheckmark)`
   position: absolute;
 `;
-
-export default function TagCheckBox({
-  checked,
-  ...props
-}: React.HTMLProps<HTMLInputElement>) {
-  return (
-    <CheckBoxWrapper checked={checked}>
-      <input type="checkbox" checked={checked} style={checkboxStyles} {...props} />
-      <Check />
-    </CheckBoxWrapper>
-  );
-}

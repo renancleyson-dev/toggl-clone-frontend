@@ -19,17 +19,6 @@ const modalStyles = {
   },
 };
 
-const OptionButton = styled.button`
-  ${buttonResets}
-  font-size: 15px;
-  width: 100%;
-  border-radius: 5px;
-
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
-
 export default function (props: Modal.Props) {
   const history = useHistory();
   const logout = () => {
@@ -45,3 +34,14 @@ export default function (props: Modal.Props) {
     </Modal>
   );
 }
+
+const OptionButton = styled.button`
+  ${buttonResets}
+  font-size: 15px;
+  width: 100%;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;

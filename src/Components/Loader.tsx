@@ -3,6 +3,17 @@ import styled, { keyframes } from 'styled-components';
 import { colors } from '../styles';
 import Logo from './Logo';
 
+export default function Loader() {
+  return (
+    <LoaderWrapper role="alert" aria-label="Loading App">
+      <LogoWrapper>
+        <Logo />
+      </LogoWrapper>
+      <Spinner />
+    </LoaderWrapper>
+  );
+}
+
 const rotate = keyframes`
   from {
     transform: rotate(0deg);
@@ -37,14 +48,3 @@ const Spinner = styled.div`
 
   animation: ${rotate} 0.5s linear infinite;
 `;
-
-export default function Loader() {
-  return (
-    <LoaderWrapper role="alert" aria-label="Loading App">
-      <LogoWrapper>
-        <Logo />
-      </LogoWrapper>
-      <Spinner />
-    </LoaderWrapper>
-  );
-}

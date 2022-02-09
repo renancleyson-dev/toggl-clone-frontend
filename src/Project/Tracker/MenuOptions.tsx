@@ -5,35 +5,6 @@ import { FaTrash } from 'react-icons/fa';
 import useTracker from 'src/hooks/useTracker';
 import { buttonResets, colors } from 'src/styles';
 
-const ModeMenuWrapper = styled.div`
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const TrashButton = styled.button`
-  ${buttonResets}
-`;
-
-const TrashIcon = styled(FaTrash)`
-  width: 13px;
-  height: 13px;
-  color: #bcbcbc;
-`;
-
-const ModeIconButton = styled.button`
-  ${buttonResets}
-  font-size: 20px;
-  color: ${({ selected }: { selected: boolean }) =>
-    selected ? colors.purpleDark : '#777'};
-
-  &:focus {
-    outline: none;
-  }
-`;
-
 interface Props {
   trackerMode: boolean;
   setTrackerMode: React.Dispatch<React.SetStateAction<boolean>>;
@@ -71,3 +42,32 @@ export default function MenuOptions({ trackerMode, setTrackerMode }: Props) {
     </ModeMenuWrapper>
   );
 }
+
+const ModeMenuWrapper = styled.div`
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const TrashButton = styled.button`
+  ${buttonResets}
+`;
+
+const TrashIcon = styled(FaTrash)`
+  width: 13px;
+  height: 13px;
+  color: #bcbcbc;
+`;
+
+const ModeIconButton = styled.button`
+  ${buttonResets}
+  font-size: 20px;
+  color: ${({ selected }: { selected: boolean }) =>
+    selected ? colors.purpleDark : '#777'};
+
+  &:focus {
+    outline: none;
+  }
+`;

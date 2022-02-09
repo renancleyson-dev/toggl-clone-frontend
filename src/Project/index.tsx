@@ -10,13 +10,6 @@ import TagsModalProvider from 'src/Contexts/TagsModalContext';
 import Projects from 'src/Components/Projects';
 import Tags from 'src/Components/Tags';
 
-const Content = styled.div`
-  position: relative;
-  flex: 1 1 100%;
-  align-self: start;
-  background-color: rgb(254, 249, 248);
-`;
-
 export default () => (
   <>
     <Sidebar />
@@ -36,3 +29,10 @@ export default () => (
     </DateGroupsContextProvider>
   </>
 );
+
+const Content = styled.div`
+  position: relative;
+  flex: 1 1 100%;
+  align-self: start;
+  background-color: rgb(254, 249, 248);
+`;

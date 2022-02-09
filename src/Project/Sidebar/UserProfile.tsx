@@ -4,6 +4,33 @@ import UserOptions from './UserOptions';
 import { buttonResets } from 'src/styles';
 import useUser from 'src/hooks/useUser';
 
+export default function UserProfile() {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useUser();
+
+  const openOptionsModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeOptionsModal = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <Button onClick={openOptionsModal}>
+        <UserProfileWrapper>
+          <TextSection>
+            <UserEmail>{user.email}</UserEmail>
+          </TextSection>
+          <AvatarSection />
+        </UserProfileWrapper>
+      </Button>
+      <UserOptions isOpen={isOpen} onRequestClose={closeOptionsModal} />
+    </>
+  );
+}
+
 const Button = styled.button`
   ${buttonResets}
   color: inherit;
@@ -47,30 +74,3 @@ const TextWithEllipsis = styled.span`
 const UserEmail = styled(TextWithEllipsis)`
   font-size: 12px;
 `;
-
-export default function UserProfile() {
-  const [isOpen, setIsOpen] = useState(false);
-  const { user } = useUser();
-
-  const openOptionsModal = () => {
-    setIsOpen(true);
-  };
-
-  const closeOptionsModal = () => {
-    setIsOpen(false);
-  };
-
-  return (
-    <>
-      <Button onClick={openOptionsModal}>
-        <UserProfileWrapper>
-          <TextSection>
-            <UserEmail>{user.email}</UserEmail>
-          </TextSection>
-          <AvatarSection />
-        </UserProfileWrapper>
-      </Button>
-      <UserOptions isOpen={isOpen} onRequestClose={closeOptionsModal} />
-    </>
-  );
-}

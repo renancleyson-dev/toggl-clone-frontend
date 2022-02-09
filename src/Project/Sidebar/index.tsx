@@ -21,6 +21,31 @@ const sidebarOptions: ISidebarOption[] = [
   },
 ];
 
+export default function Sidebar() {
+  const [selected] = useState(0);
+  const ElementOptions = sidebarOptions.map(
+    ({ name, route, Icon }: ISidebarOption, index) => (
+      <Link to={route} key={name}>
+        <SidebarRow selected={selected === index}>
+          <Icon />
+          <OptionText>{name}</OptionText>
+        </SidebarRow>
+      </Link>
+    )
+  );
+  return (
+    <SidebarWrapper>
+      <LogoWrapper>
+        <Logo />
+      </LogoWrapper>
+      <OptionsWrapper>
+        {ElementOptions}
+        <UserProfile />
+      </OptionsWrapper>
+    </SidebarWrapper>
+  );
+}
+
 const SidebarWrapper = styled.div`
   position: sticky;
   top: 0;
@@ -62,28 +87,3 @@ const OptionText = styled.span`
   margin-left: 12px;
   font-size: 14px;
 `;
-
-export default function Sidebar() {
-  const [selected] = useState(0);
-  const ElementOptions = sidebarOptions.map(
-    ({ name, route, Icon }: ISidebarOption, index) => (
-      <Link to={route} key={name}>
-        <SidebarRow selected={selected === index}>
-          <Icon />
-          <OptionText>{name}</OptionText>
-        </SidebarRow>
-      </Link>
-    )
-  );
-  return (
-    <SidebarWrapper>
-      <LogoWrapper>
-        <Logo />
-      </LogoWrapper>
-      <OptionsWrapper>
-        {ElementOptions}
-        <UserProfile />
-      </OptionsWrapper>
-    </SidebarWrapper>
-  );
-}

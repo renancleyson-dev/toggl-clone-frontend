@@ -1,12 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const FallbackHeader = styled.span`
-  display: block;
-  font-weight: 600;
-  margin-bottom: 10px;
-`;
-
 const noResourceHeader = (resource: string) => `There are no ${resource}s yet`;
 const noResourceBody = (resource: string) =>
   `Start typing and press Ctrl+Enter to create a new ${resource}.`;
@@ -32,3 +26,9 @@ export default function NoResourceFallback({ hasSearchText, resourceName }: Prop
     </>
   );
 }
+
+const FallbackHeader = styled.span`
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+`;

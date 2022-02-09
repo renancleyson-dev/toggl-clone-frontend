@@ -4,19 +4,6 @@ import moment from 'moment';
 import format from 'src/helpers/formatDuration';
 import useTracker, { useTrackerSelector } from 'src/hooks/useTracker';
 
-const TimerWrapper = styled.div`
-  min-width: 80px;
-  margin-right: 10px;
-  padding: 5px 7px;
-  border-radius: 7px;
-  font-weight: 600;
-  text-align: center;
-
-  &:hover {
-    background-color: rgb(251, 229, 247);
-  }
-`;
-
 // UI to show duration of the tracking
 export default function Timer() {
   const [duration, setDuration] = useState<moment.Duration>(moment.duration(0));
@@ -49,3 +36,16 @@ export default function Timer() {
     </TimerWrapper>
   );
 }
+
+const TimerWrapper = styled.div`
+  min-width: 80px;
+  margin-right: 10px;
+  padding: 5px 7px;
+  border-radius: 7px;
+  font-weight: 600;
+  text-align: center;
+
+  &:hover {
+    background-color: rgb(251, 229, 247);
+  }
+`;

@@ -14,42 +14,6 @@ import TimerButton from './TimerButton';
 import MenuOptions from './MenuOptions';
 import ManualMode from './ManualMode';
 
-const TrackerBar = styled.div`
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 65px;
-  z-index: 100;
-  display: flex;
-  padding: 10px 10px 10px 20px;
-  background-color: #fff;
-  box-shadow: 3px 1px 8px 0px #ccc;
-  color: ${colors.purpleDark};
-`;
-
-const TimerMenu = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  font-size: 18px;
-`;
-
-const StyledLabelInput = styled(TextInput)`
-  font-size: 16px;
-  flex: 0 1 75%;
-
-  &::placeholder {
-    font-size: 18px;
-  }
-`;
-
-const TrackerIconWrapper = styled(IconWrapper)`
-  margin-right: 15px;
-  padding: 5px;
-  font-size: 20px;
-`;
-
 const LabelInput = () => {
   const { setTimeRecord } = useTracker();
   const label = useTrackerSelector(({ label }) => label);
@@ -122,3 +86,39 @@ export default function Tracker() {
     </TrackerBar>
   );
 }
+
+const TrackerBar = styled.div`
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 65px;
+  z-index: 100;
+  display: flex;
+  padding: 10px 10px 10px 20px;
+  background-color: #fff;
+  box-shadow: 3px 1px 8px 0px #ccc;
+  color: ${colors.purpleDark};
+`;
+
+const TimerMenu = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 18px;
+`;
+
+const StyledLabelInput = styled(TextInput)`
+  font-size: 16px;
+  flex: 0 1 75%;
+
+  &::placeholder {
+    font-size: 18px;
+  }
+`;
+
+const TrackerIconWrapper = styled(IconWrapper)`
+  margin-right: 15px;
+  padding: 5px;
+  font-size: 20px;
+`;

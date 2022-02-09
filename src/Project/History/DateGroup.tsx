@@ -12,6 +12,42 @@ interface Props {
   timeRecords: ITimeRecord[];
 }
 
+export default function DateGroup({ date, timeRecords }: Props) {
+  const records = timeRecords.map(
+    ({ startTime, endTime, label, tags, project, id }: ITimeRecord) => (
+      <HistoryItem
+        key={id}
+        startTime={moment(startTime)}
+        endTime={moment(endTime)}
+        label={label}
+        project={project}
+        tags={tags}
+        id={id}
+      />
+    )
+  );
+
+  const totalDuration = timeRecords.reduce((acc, timeRecord) => {
+    const timeRecordDuration = moment.duration(timeRecord.duration, 's');
+    return acc.add(timeRecordDuration);
+  }, moment.duration(0));
+
+  return (
+    <DateGroupWrapper>
+      <DateRow>
+        <Date>{date}</Date>
+        <TotalDuration>{formatDuration(totalDuration)}</TotalDuration>
+        <MultiSelectWrapper>
+          <MultiSelect>
+            <FaList />
+          </MultiSelect>
+        </MultiSelectWrapper>
+      </DateRow>
+      {records}
+    </DateGroupWrapper>
+  );
+}
+
 const DateGroupWrapper = styled.div`
   margin-top: 30px;
   box-shadow: 0px 1px 3px 0px #dedede;
@@ -61,39 +97,3 @@ const MultiSelect = styled.div`
   justify-items: center;
   align-items: center;
 `;
-
-export default function DateGroup({ date, timeRecords }: Props) {
-  const records = timeRecords.map(
-    ({ startTime, endTime, label, tags, project, id }: ITimeRecord) => (
-      <HistoryItem
-        key={id}
-        startTime={moment(startTime)}
-        endTime={moment(endTime)}
-        label={label}
-        project={project}
-        tags={tags}
-        id={id}
-      />
-    )
-  );
-
-  const totalDuration = timeRecords.reduce((acc, timeRecord) => {
-    const timeRecordDuration = moment.duration(timeRecord.duration, 's');
-    return acc.add(timeRecordDuration);
-  }, moment.duration(0));
-
-  return (
-    <DateGroupWrapper>
-      <DateRow>
-        <Date>{date}</Date>
-        <TotalDuration>{formatDuration(totalDuration)}</TotalDuration>
-        <MultiSelectWrapper>
-          <MultiSelect>
-            <FaList />
-          </MultiSelect>
-        </MultiSelectWrapper>
-      </DateRow>
-      {records}
-    </DateGroupWrapper>
-  );
-}

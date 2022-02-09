@@ -9,7 +9,7 @@ export default function useReducer<T, R extends Reducer<T, any>>(
   const _initialValue = initialValue instanceof Function ? initialValue() : initialValue;
   const [getState, setState, control] = useObjectState(_initialValue);
 
-  // use a reducer to the ref to avoid the dispatch function to change
+  // use a reducer ref to avoid the dispatch function to change
   const reducerRef = useRef(reducer);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import InputMask from 'react-input-mask';
@@ -10,6 +10,79 @@ import { colors, buttonResets } from 'src/styles';
 import useUser from 'src/hooks/useUser';
 import useDateGroups from 'src/hooks/useDateGroups';
 import { dateGroupActions } from 'src/Contexts/DateGroupsContext';
+
+const convertToMoment = (value: string) => moment(value, 'HH:mm A').format('HH:mm A');
+
+export default function ManualMode() {
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [isSubmitting, setSubmitting] = useState(false);
+  const { getTimeRecord, resetTimeRecord } = useTracker();
+  const { user } = useUser();
+  const { dispatchDateGroups } = useDateGroups();
+
+  useEffect(() => {
+    const actualMoment = moment().format('HH:mm A');
+    setStartTime(actualMoment);
+    setEndTime(actualMoment);
+  }, []);
+
+  const handleStartTimeOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setStartTime(event.target.value);
+  };
+
+  const handleEndTimeOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setEndTime(event.target.value);
+  };
+
+  const handleStartTimeOnBlur = () => {
+    setStartTime((prevState) => convertToMoment(prevState));
+  };
+
+  const handleEndTimeOnBlur = () => {
+    setEndTime((prevState) => convertToMoment(prevState));
+  };
+
+  const handleClickOnButton = async () => {
+    setSubmitting(true);
+
+    const { data } = await createTimeRecord({
+      ...getTimeRecord(),
+      userId: user.id,
+      startTime: moment(startTime, 'HH:mm A'),
+      endTime: moment(endTime, 'HH:mm A'),
+    });
+    dispatchDateGroups(dateGroupActions.add(data));
+
+    resetTimeRecord();
+    setSubmitting(false);
+  };
+
+  return (
+    <>
+      <ManualTimerWrapper>
+        <StartTimeInput
+          mask="99:99 aa"
+          maskChar=""
+          value={startTime}
+          onChange={handleStartTimeOnChange}
+          onBlur={handleStartTimeOnBlur}
+        />
+        <Arrow />
+        <EndTimeInput
+          mask="99:99 aa"
+          maskChar=""
+          value={endTime}
+          onChange={handleEndTimeOnChange}
+          onBlur={handleEndTimeOnBlur}
+        />
+      </ManualTimerWrapper>
+      <CheckButton onClick={handleClickOnButton} disabled={isSubmitting}>
+        <Check />
+      </CheckButton>
+    </>
+  );
+}
 
 const ManualTimerWrapper = styled.div`
   width: 250px;
@@ -79,73 +152,3 @@ const Arrow = styled(FaLongArrowAltRight)`
 const Check = styled(IoIosCheckmark)`
   position: absolute;
 `;
-
-const convertToMoment = (value: string) => moment(value, 'HH:mm A').format('HH:mm A');
-
-interface Props {
-  startTime: string;
-  setStartTime: React.Dispatch<React.SetStateAction<string>>;
-  endTime: string;
-  setEndTime: React.Dispatch<React.SetStateAction<string>>;
-}
-
-const ManualTimer = ({ startTime, setStartTime, endTime, setEndTime }: Props) => (
-  <ManualTimerWrapper>
-    <StartTimeInput
-      mask="99:99 aa"
-      maskChar=""
-      value={startTime}
-      onChange={(event) => setStartTime(event.target.value)}
-      onBlur={() => setStartTime((prevState) => convertToMoment(prevState))}
-    />
-    <Arrow />
-    <EndTimeInput
-      mask="99:99 aa"
-      maskChar=""
-      value={endTime}
-      onChange={(event) => setEndTime(event.target.value)}
-      onBlur={() => setEndTime((prevState) => convertToMoment(prevState))}
-    />
-  </ManualTimerWrapper>
-);
-
-export default function ManualMode() {
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const { getTimeRecord, resetTimeRecord } = useTracker();
-  const { user } = useUser();
-  const { dispatchDateGroups } = useDateGroups();
-
-  const handleClickOnButton = () => {
-    createTimeRecord({
-      ...getTimeRecord(),
-      userId: user.id,
-      startTime: moment(startTime, 'HH:mm A'),
-      endTime: moment(endTime, 'HH:mm A'),
-    }).then((response) => {
-      dispatchDateGroups(dateGroupActions.add(response.data));
-    });
-
-    resetTimeRecord();
-  };
-
-  useEffect(() => {
-    const actualMoment = moment().format('HH:mm A');
-    setStartTime(actualMoment);
-    setEndTime(actualMoment);
-  }, []);
-
-  return (
-    <>
-      <ManualTimer
-        startTime={startTime}
-        setStartTime={setStartTime}
-        endTime={endTime}
-        setEndTime={setEndTime}
-      />
-      <CheckButton onClick={handleClickOnButton}>
-        <Check />
-      </CheckButton>
-    </>
-  );
-}

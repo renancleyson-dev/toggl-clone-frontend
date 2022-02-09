@@ -29,97 +29,6 @@ const TIME_FORMAT = 'HH:mm A';
 const handleInputWidth = (width: number) => (width > 400 ? 400 : width);
 const hasKeys = (obj: any) => Object.keys(obj).length > 0;
 
-const TimeRecordWrapper = styled.div`
-  padding: 10px 10px 10px 0px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-
-  &:hover,
-  &:hover input {
-    background-color: #f9f9f9;
-  }
-
-  & *[data-hover='true'] {
-    opacity: 0;
-  }
-
-  &:hover *[data-hover='true'] {
-    opacity: 1;
-  }
-`;
-
-const NamingSection = styled.div`
-  display: flex;
-`;
-
-const LabelWrapper = styled(TextInput)`
-  flex: 1 1;
-  width: ${({ value }: { value: string }) =>
-    value ? `${handleInputWidth((value.length + 1) * 8)}px` : '105px'};
-`;
-
-const ProjectSelectWrapper = styled.div`
-  font-size: 18px;
-  margin-left: 10px;
-`;
-
-const TagsWrapper = styled.div`
-  font-size: 20px;
-  height: 100%;
-  margin: 0 35px 0 auto;
-`;
-
-const TagNamesWrapper = styled.p`
-  cursor: pointer;
-  font-size: 14px;
-  margin: 0;
-`;
-
-const EditSection = styled.div`
-  display: flex;
-`;
-
-const EditOptions = styled.div`
-  width: 290px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Actions = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const ActionsIconWrapper = styled.button`
-  ${buttonResets}
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: #a1a1a1;
-
-  &:hover {
-    color: #555;
-  }
-`;
-
-const PlayWrapper = styled(ActionsIconWrapper).attrs({
-  type: 'button',
-})`
-  font-size: 29px;
-`;
-
-const MoreActionsWrapper = styled(ActionsIconWrapper)`
-  font-size: 20px;
-`;
-
-const DurationDetailed = styled.span`
-  color: ${colors.purpleDark};
-`;
-
 const TagNames = ({ names, showBox }: { names?: string[]; showBox?: boolean }) => {
   if (!names?.length) {
     return (
@@ -161,11 +70,11 @@ const Label = ({
 
 // UI to show a specific time record
 export default function HistoryItem(props: Props) {
-  const { startTracking } = useTracker();
   const [timeRecord, _setTimeRecord] = useState(props);
-  const timeRecordRef = useRef(timeRecord);
-
   const { id, label = '', startTime, endTime, tags = [], project } = timeRecord;
+
+  const { startTracking } = useTracker();
+  const timeRecordRef = useRef(timeRecord);
   const { isTagsOpen, registerTagsPosition } = useTags(id, tags);
   const { isProjectsOpen, registerProjectsPosition } = useProjects(id, project);
 
@@ -256,3 +165,94 @@ export default function HistoryItem(props: Props) {
     </TimeRecordWrapper>
   );
 }
+
+const TimeRecordWrapper = styled.div`
+  padding: 10px 10px 10px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+
+  &:hover,
+  &:hover input {
+    background-color: #f9f9f9;
+  }
+
+  & *[data-hover='true'] {
+    opacity: 0;
+  }
+
+  &:hover *[data-hover='true'] {
+    opacity: 1;
+  }
+`;
+
+const NamingSection = styled.div`
+  display: flex;
+`;
+
+const LabelWrapper = styled(TextInput)`
+  flex: 1 1;
+  width: ${({ value }: { value: string }) =>
+    value ? `${handleInputWidth((value.length + 1) * 8)}px` : '105px'};
+`;
+
+const ProjectSelectWrapper = styled.div`
+  font-size: 18px;
+  margin-left: 10px;
+`;
+
+const TagsWrapper = styled.div`
+  font-size: 20px;
+  height: 100%;
+  margin: 0 35px 0 auto;
+`;
+
+const TagNamesWrapper = styled.p`
+  cursor: pointer;
+  font-size: 14px;
+  margin: 0;
+`;
+
+const EditSection = styled.div`
+  display: flex;
+`;
+
+const EditOptions = styled.div`
+  width: 290px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const ActionsIconWrapper = styled.button`
+  ${buttonResets}
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #a1a1a1;
+
+  &:hover {
+    color: #555;
+  }
+`;
+
+const PlayWrapper = styled(ActionsIconWrapper).attrs({
+  type: 'button',
+})`
+  font-size: 29px;
+`;
+
+const MoreActionsWrapper = styled(ActionsIconWrapper)`
+  font-size: 20px;
+`;
+
+const DurationDetailed = styled.span`
+  color: ${colors.purpleDark};
+`;
