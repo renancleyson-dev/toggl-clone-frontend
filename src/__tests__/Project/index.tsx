@@ -63,9 +63,9 @@ describe('when start tracking by history item', () => {
       waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i))
     );
 
-    const trackerBar = within(screen.getByTestId('tracker-bar'));
     const [dateGroup]: IDateGroup[] = response.body;
     const [timeRecord] = dateGroup.timeRecords;
+    const trackerBar = within(screen.getByTestId('tracker-bar'));
     const item = within(await screen.findByTestId(`time-record-${timeRecord.id}`));
     fireEvent.click(await item.findByRole('button', { name: /start time record/i }));
 
