@@ -108,7 +108,7 @@ export default function HistoryItem(props: Props) {
       const valueDidUpdate = hasKeys(updatedDiff(value, timeRecordRef.current));
 
       if (!valueDidUpdate) {
-        setTimeRecord(timeRecordDiff);
+        setTimeRecord(timeRecord);
       }
     }
   };
