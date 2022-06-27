@@ -39,6 +39,7 @@ export default function UserProvider({ children }: PropsWithChildren<{}>) {
 
       setJsonWebToken(authToken);
       setUser(sessionResponse);
+      setIsLoading(false);
       localStorage.setItem(JWT_KEY, authToken);
 
       history.push('/');
